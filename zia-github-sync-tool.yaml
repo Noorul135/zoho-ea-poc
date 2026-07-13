@@ -1,0 +1,44 @@
+openapi: 3.0.0
+info:
+  title: Zoho EA - GitHub Sync
+  version: "1.0.0"
+  description: >
+    Separate tool that ingests a GitHub organization's repositories into the
+    Enterprise Intelligence Graph as EA objects (repos -> Applications,
+    owners -> Persons, the org -> Org Unit, GitHub -> Tech Service).
+servers:
+  - url: https://YOUR-RENDER-APP.onrender.com
+paths:
+  /api/github/sync:
+    post:
+      summary: Sync a GitHub org/user into the graph
+      description: >
+        Fetches repositories for the given GitHub org or user and upserts them
+        into Neo4j with metamodel-valid references. Uses the server's
+        GITHUB_TOKEN for private repos and higher rate limits.
+      operationId: syncGitHub
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [org]
+              properties:
+                org:
+                  type: string
+                  description: GitHub organization or username (e.g. "zoho").
+                maxRepos:
+                  type: integer
+                  description: Max repositories to ingest (default 30).
+      responses:
+        '200': { description: Sync summary returned }
+        '400': { description: Missing org }
+      security:
+        - ApiKeyAuth: []
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
