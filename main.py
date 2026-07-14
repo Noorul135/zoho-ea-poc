@@ -107,12 +107,31 @@ def health():
 
 # ---- full graph -----------------------------------------------------
 @app.get("/api/graph")
-def graph():
-    nodes = [parse_node(r["c"]) for r in run("MATCH (c:Component) RETURN c")]
-    edges = [{"id": e["id"], "s": e["s"], "t": e["t"], "r": e["r"]} for e in run(
-        "MATCH (a:Component)-[r]->(b:Component) WHERE r.ref IS NOT NULL "
-        "RETURN r.id AS id, a.id AS s, b.id AS t, r.ref AS r")]
+def graph(workspace: str = None):
+    # Optional ?workspace= filters to one company's graph. Existing seed data
+    # (no workspace property) is treated as workspace "Zoho Corporation".
+    if workspace:
+        nodes = [parse_node(r["c"]) for r in run(
+            "MATCH (c:Component) WHERE coalesce(c.workspace,'Zoho Corporation')=$ws RETURN c",
+            {"ws": workspace})]
+        edges = [{"id": e["id"], "s": e["s"], "t": e["t"], "r": e["r"]} for e in run(
+            "MATCH (a:Component)-[r]->(b:Component) WHERE r.ref IS NOT NULL "
+            "AND coalesce(a.workspace,'Zoho Corporation')=$ws "
+            "AND coalesce(b.workspace,'Zoho Corporation')=$ws "
+            "RETURN r.id AS id, a.id AS s, b.id AS t, r.ref AS r", {"ws": workspace})]
+    else:
+        nodes = [parse_node(r["c"]) for r in run("MATCH (c:Component) RETURN c")]
+        edges = [{"id": e["id"], "s": e["s"], "t": e["t"], "r": e["r"]} for e in run(
+            "MATCH (a:Component)-[r]->(b:Component) WHERE r.ref IS NOT NULL "
+            "RETURN r.id AS id, a.id AS s, b.id AS t, r.ref AS r")]
     return {"nodes": nodes, "edges": edges}
+
+# ---- list workspaces (for the dashboard workspace selector) ---------
+@app.get("/api/workspaces")
+def workspaces():
+    rows = run("MATCH (c:Component) WITH coalesce(c.workspace,'Zoho Corporation') AS ws, "
+               "count(*) AS n RETURN ws, n ORDER BY n DESC")
+    return [{"workspace": r["ws"], "components": r["n"]} for r in rows]
 
 # ---- metamodel ------------------------------------------------------
 @app.get("/api/metamodel")
@@ -308,6 +327,131 @@ async def github_sync_endpoint(request: Request, x_api_key: str = Header(default
     import github_sync
     return github_sync.sync_org(org, token=os.getenv("GITHUB_TOKEN"), max_repos=b.get("maxRepos", 30))
 
+# =====================================================================
+# ONBOARDING  —  build a new customer's EA graph from scratch via the
+# Zia agent. The agent interviews the user, enriches from their website,
+# then calls bulk-build to create the whole graph in one shot.
+# =====================================================================
+
+# ---- enrich a company from its public website ----------------------
+def _http_get(url):
+    try:
+        r = requests.get(url, timeout=12, headers={"User-Agent": "Mozilla/5.0 zoho-ea-poc"})
+        return r.text if r.status_code < 400 else ""
+    except Exception:
+        return ""
+
+def _extract(html):
+    if not html:
+        return {}
+    title = ""
+    m = re.search(r"<title[^>]*>(.*?)</title>", html, re.I | re.S)
+    if m:
+        title = re.sub(r"\s+", " ", m.group(1)).strip()
+    desc = ""
+    m = re.search(r'<meta[^>]+name=["\']description["\'][^>]+content=["\'](.*?)["\']', html, re.I | re.S)
+    if m:
+        desc = m.group(1).strip()
+    heads = re.findall(r"<h[1-3][^>]*>(.*?)</h[1-3]>", html, re.I | re.S)
+    heads = [re.sub(r"<[^>]+>", "", h).strip() for h in heads]
+    heads = [h for h in heads if h][:25]
+    jsonld = re.findall(r'<script[^>]+application/ld\+json[^>]*>(.*?)</script>', html, re.I | re.S)
+    body = re.sub(r"<(script|style|nav|footer)[^>]*>.*?</\1>", " ", html, flags=re.I | re.S)
+    body = re.sub(r"<[^>]+>", " ", body)
+    body = re.sub(r"\s+", " ", body).strip()[:3500]
+    return {"title": title, "description": desc, "headings": heads,
+            "jsonld": [j.strip()[:1500] for j in jsonld[:3]], "text": body}
+
+@app.post("/api/onboard/enrich")
+async def onboard_enrich(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    b = await request.json()
+    url = (b.get("url") or "").strip()
+    if not url:
+        raise HTTPException(status_code=400, detail="url is required")
+    if not url.startswith("http"):
+        url = "https://" + url
+    base = url.rstrip("/")
+    pages = {}
+    for suffix in ["", "/about", "/about-us", "/products", "/solutions", "/company"]:
+        data = _extract(_http_get(base + suffix))
+        if data and (data.get("text") or data.get("headings")):
+            pages[suffix or "/"] = data
+    if not pages:
+        return {"url": url, "reachable": False,
+                "note": "Could not fetch the site server-side. Ask the user to describe the company instead."}
+    return {"url": url, "reachable": True, "pages": pages}
+
+# ---- bulk build the graph (agent constructs the whole EA model) -----
+@app.post("/api/graph/bulk")
+async def graph_bulk(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    b = await request.json()
+    ws = b.get("workspace") or "default"
+    comps = b.get("components") or []
+    refs = b.get("references") or []
+
+    def num(v):
+        if v is None:
+            return None
+        m = re.search(r"-?\d+(\.\d+)?", str(v))
+        return float(m.group()) if m else None
+
+    rows = []
+    for c in comps:
+        f = dict(c.get("fields") or {})
+        f.setdefault("Name", c.get("label"))
+        if c.get("description"):
+            f["Description"] = c["description"]
+        if c.get("phase"):
+            f["Lifecycle Phase"] = c["phase"]
+        if c.get("tags"):
+            f["Tags"] = c["tags"]
+        rows.append({
+            "id": c.get("id") or (ws.lower().replace(" ", "-") + "_" + re.sub(r"[^a-zA-Z0-9]+", "-", (c.get("label") or "n")).lower()),
+            "label": c.get("label"), "type": c.get("type"), "ws": ws,
+            "name": f.get("Name", c.get("label")), "desc": f.get("Description", ""),
+            "life": f.get("Lifecycle Phase", ""),
+            "sr": (re.sub(r"\s*\(.*?\)", "", str(f.get("Strategic Rating", ""))) or None),
+            "bv": num(f.get("Business Value")), "tf": num(f.get("Technical Fit")),
+            "fields": json.dumps(f, ensure_ascii=False),
+        })
+    if rows:
+        run("""UNWIND $rows AS row MERGE (c:Component {id: row.id})
+               SET c.label=row.label, c.type=row.type, c.workspace=row.ws, c.name=row.name,
+                   c.description=row.desc, c.lifecycle=row.life, c.strategicRating=row.sr,
+                   c.businessValue=row.bv, c.technicalFit=row.tf, c.fields=row.fields""",
+            {"rows": rows}, True)
+        for t in {r["type"] for r in rows if r["type"]}:
+            run(f"MATCH (c:Component {{type:$t, workspace:$ws}}) SET c:{type_to_label(t)}", {"t": t, "ws": ws}, True)
+
+    # references: accept ids OR labels (agent may pass labels)
+    made = 0
+    for e in refs:
+        s, t, r = e.get("s"), e.get("t"), e.get("r")
+        if not (s and t and r):
+            continue
+        rel = ref_to_rel(r)
+        eid = "e_" + re.sub(r"[^a-zA-Z0-9]+", "-", f"{ws}-{s}-{rel}-{t}").lower()
+        res = run(f"""MATCH (a:Component) WHERE (a.id=$s OR a.label=$s) AND coalesce(a.workspace,'Zoho Corporation')=$ws
+                      MATCH (b:Component) WHERE (b.id=$t OR b.label=$t) AND coalesce(b.workspace,'Zoho Corporation')=$ws
+                      MERGE (a)-[x:{rel} {{id:$eid}}]->(b) SET x.ref=$r RETURN count(x) AS n""",
+                  {"s": s, "t": t, "eid": eid, "r": r, "ws": ws}, True)
+        made += (res[0]["n"] if res else 0)
+    return {"workspace": ws, "componentsUpserted": len(rows), "referencesCreated": made,
+            "dashboardUrl": f"/?workspace={ws}"}
+
+# ---- reset a workspace (fresh start) -------------------------------
+@app.post("/api/onboard/reset")
+async def onboard_reset(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    b = await request.json()
+    ws = b.get("workspace")
+    if not ws:
+        raise HTTPException(status_code=400, detail="workspace is required")
+    run("MATCH (c:Component) WHERE c.workspace=$ws DETACH DELETE c", {"ws": ws}, True)
+    return {"reset": ws}
+
 # ---- one-click seed loader (POC convenience) -----------------------
 # Loads data.json (65 components + 115 references) into Neo4j. Idempotent.
 # Call once:  https://<app>/api/admin/seed?x-api-key=YOUR_API_KEY
@@ -339,6 +483,7 @@ def admin_seed(request: Request, x_api_key: str = Header(default="")):
     } for n in nodes]
     run("""UNWIND $rows AS row MERGE (c:Component {id: row.id})
            SET c.label=row.label, c.type=row.type, c.name=row.name,
+               c.workspace='Zoho Corporation',
                c.description=row.description, c.lifecycle=row.lifecycle,
                c.strategicRating=row.strategicRating, c.businessValue=row.businessValue,
                c.technicalFit=row.technicalFit, c.fields=row.fields""", {"rows": rows}, True)
