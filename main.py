@@ -290,6 +290,8 @@ def admin_seed(request: Request, x_api_key: str = Header(default="")):
 
 # ---- dashboard with runtime config injection -----------------------
 @app.get("/", response_class=HTMLResponse)
+@app.get("/graph/view", response_class=HTMLResponse)
+@app.get("/dashboard", response_class=HTMLResponse)
 def dashboard():
     path = os.path.join(os.path.dirname(__file__), "public", "index.html")
     if not os.path.exists(path):
