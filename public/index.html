@@ -282,6 +282,36 @@ var TC={
   'Location':{c:'#993556',b:'#72243E',s:'roundrectangle',w:122,h:40,tier:10}
 };
 var RC={'Owns':'#3B6D11','Is Expert In':'#1D9E75','Belongs To':'#888780','Reports To':'#5F5E5A','Consumes':'#185FA5','Is Realized By':'#993C1D','Is Supported By':'#444441','Connects To':'#085041','Has Successor':'#BA7517','Deploys To':'#534AB7','Is Located At':'#993556','Child Of':'#b4b2a9','Module Of':'#97C459'};
+/* Cartograph layered EA ontology (added alongside the Ardoq types) */
+Object.assign(TC,{
+  'Company':{c:'#E8212A',b:'#C41019',s:'roundrectangle',w:150,h:50,tier:1},
+  'Objective':{c:'#7A1FA2',b:'#521070',s:'roundrectangle',w:140,h:46,tier:2},
+  'KPI':{c:'#0F9D9D',b:'#0A6E6E',s:'roundrectangle',w:120,h:42,tier:3},
+  'Capability':{c:'#993C1D',b:'#712B13',s:'roundrectangle',w:140,h:46,tier:3},
+  'Process':{c:'#B5651D',b:'#854A12',s:'roundrectangle',w:132,h:44,tier:4},
+  'OrgUnit':{c:'#185FA5',b:'#0C447C',s:'roundrectangle',w:134,h:44,tier:2},
+  'Data':{c:'#BA7517',b:'#854F0B',s:'roundrectangle',w:126,h:42,tier:6},
+  'Integration':{c:'#854F0B',b:'#633806',s:'roundrectangle',w:128,h:42,tier:6},
+  'Technology':{c:'#444441',b:'#2C2C2A',s:'roundrectangle',w:130,h:44,tier:7},
+  'Vendor':{c:'#888780',b:'#5F5E5A',s:'roundrectangle',w:122,h:42,tier:8},
+  'Policy':{c:'#5F5E5A',b:'#3C3B39',s:'roundrectangle',w:124,h:42,tier:9},
+  'Risk':{c:'#C41019',b:'#8A0B12',s:'diamond',w:126,h:50,tier:9},
+  'Initiative':{c:'#534AB7',b:'#372F87',s:'roundrectangle',w:132,h:44,tier:3},
+  'Compliance':{c:'#72243E',b:'#4E1729',s:'roundrectangle',w:126,h:42,tier:9},
+  'Product':{c:'#1D9E75',b:'#0F6E56',s:'roundrectangle',w:128,h:44,tier:5},
+  'Customer':{c:'#378ADD',b:'#185FA5',s:'ellipse',w:124,h:46,tier:5},
+  'Market':{c:'#993556',b:'#72243E',s:'roundrectangle',w:122,h:42,tier:4},
+  'Competitor':{c:'#9A6324',b:'#6E4718',s:'roundrectangle',w:126,h:42,tier:5},
+  'Document':{c:'#b4b2a9',b:'#8f8d85',s:'roundrectangle',w:126,h:40,tier:11}
+});
+Object.assign(RC,{
+  'HAS_OBJECTIVE':'#7A1FA2','MEASURED_BY':'#0F9D9D','ENABLED_BY':'#993C1D','REALIZED_BY':'#B5651D',
+  'SUPPORTED_BY':'#085041','OWNS':'#3B6D11','OWNED_BY':'#3B6D11','AFFECTS':'#C41019','DEPENDS_ON':'#854F0B',
+  'SUPPORTS':'#534AB7','IMPACTED_BY':'#534AB7','RUNS_ON':'#444441','PROVIDED_BY':'#888780','COMPLIES_WITH':'#72243E',
+  'INTEGRATES_VIA':'#854F0B','CONNECTS_TO':'#085041','REPORTS_TO':'#5F5E5A','MEMBER_OF':'#185FA5','LEADS':'#185FA5',
+  'PART_OF':'#888780','GOVERNED_BY':'#5F5E5A','LOCATED_IN':'#993556','DERIVED_FROM':'#b4b2a9','MITIGATES':'#3B6D11',
+  'COMPETES_WITH':'#9A6324','SERVES':'#378ADD','SELLS':'#1D9E75'
+});
 function tcfg(t){return TC[t]||{c:'#888780',b:'#5F5E5A',s:'roundrectangle',w:130,h:44,tier:11};}
 function rcol(r){return RC[r]||'#888780';}
 
@@ -305,14 +335,16 @@ function chip(n){return '<span class="chip" style="background:'+tcfg(n.type).c+'
 /* ─── CYTOSCAPE GRAPH ───────────────────────────────────────── */
 function initCy(){
   var els=[];
-  NODES.forEach(function(n){var t=tcfg(n.type);els.push({data:{id:n.id,label:n.label,type:n.type,nf:n.f,color:t.c,bc:t.b,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px'}});});
-  EDGES.forEach(function(e){els.push({data:{id:e.id,source:e.s,target:e.t,ref:e.r,rc:rcol(e.r)}});});
+  NODES.forEach(function(n){var t=tcfg(n.type);els.push({data:{id:n.id,label:n.label,type:n.type,nf:n.f,color:t.c,bc:t.b,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px',missing:(n.status==='missing')}});});
+  EDGES.forEach(function(e){els.push({data:{id:e.id,source:e.s,target:e.t,ref:e.r,rc:rcol(e.r),inferred:!!e.inferred}});});
   cy=cytoscape({container:document.getElementById('cy'),elements:els,
     style:[
       {selector:'node',style:{'label':'data(label)','color':'#fff','background-color':'data(color)','border-color':'data(bc)','border-width':2,'shape':'data(shape)','width':'data(nw)','height':'data(nh)','font-size':10,'font-weight':'500','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'data(tmw)','cursor':'pointer','transition-property':'opacity','transition-duration':'150ms'}},
       {selector:'node:selected',style:{'border-width':4,'border-color':'#2c2c2a'}},
       {selector:'edge',style:{'curve-style':'bezier','target-arrow-shape':'vee','target-arrow-color':'#c0beba','line-color':'#c0beba','width':1.5,'label':'data(ref)','font-size':8,'color':'#888780','text-rotation':'autorotate','text-background-color':'#fafaf8','text-background-opacity':0.88,'text-background-padding':'2px','opacity':0.6}},
       {selector:'edge[ref="Child Of"],edge[ref="Module Of"]',style:{'line-style':'dashed','width':1}},
+      {selector:'edge[?inferred]',style:{'line-style':'dashed','line-dash-pattern':[6,3],'opacity':0.75}},
+      {selector:'node[?missing]',style:{'border-style':'dashed','border-width':2,'opacity':0.55}},
       {selector:'.hi',style:{'line-color':'data(rc)','target-arrow-color':'data(rc)','color':'data(rc)','opacity':1,'width':2.5,'font-weight':'600'}},
       {selector:'.dim',style:{'opacity':0.06}},{selector:'.dim-n',style:{'opacity':0.09}}
     ],
@@ -786,7 +818,7 @@ function deleteNode(){
   if(LIVE)apiSend('DELETE','/api/node/'+encodeURIComponent(id)).catch(function(e){alert('Removed on screen but not deleted: '+e.message);});
   selNodeId=null;hideDetail();refreshAll();
 }
-function refreshAll(){var els=[];NODES.forEach(function(n){var t=tcfg(n.type);els.push({data:{id:n.id,label:n.label,type:n.type,nf:n.f,color:t.c,bc:t.b,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px'}});});EDGES.forEach(function(e){els.push({data:{id:e.id,source:e.s,target:e.t,ref:e.r,rc:rcol(e.r)}});});cy.json({elements:els});cy.on('tap','node',function(evt){onGraphTap(evt.target);});applyLayout(document.getElementById('layout-sel').value);buildLegend();if(currentView!=='graph')setView(currentView);}
+function refreshAll(){var els=[];NODES.forEach(function(n){var t=tcfg(n.type);els.push({data:{id:n.id,label:n.label,type:n.type,nf:n.f,color:t.c,bc:t.b,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px',missing:(n.status==='missing')}});});EDGES.forEach(function(e){els.push({data:{id:e.id,source:e.s,target:e.t,ref:e.r,rc:rcol(e.r),inferred:!!e.inferred}});});cy.json({elements:els});cy.on('tap','node',function(evt){onGraphTap(evt.target);});applyLayout(document.getElementById('layout-sel').value);buildLegend();if(currentView!=='graph')setView(currentView);}
 
 /* ─── METAMODEL EDITOR ──────────────────────────────────────── */
 var MM={componentTypes:[],referenceTypes:[],allowed:[]};
