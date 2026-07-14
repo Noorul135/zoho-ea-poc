@@ -203,6 +203,77 @@ def delete_edge(id: str, request: Request, x_api_key: str = Header(default="")):
     run("MATCH ()-[r {id:$id}]->() DELETE r", {"id": id}, True)
     return {"deleted": id}
 
+# ---- update component fields / tags (custom fields) ----------------
+@app.patch("/api/node/{id}")
+async def update_node(id: str, request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    b = await request.json()
+    rows = run("MATCH (c:Component {id:$id}) RETURN c", {"id": id})
+    if not rows:
+        raise HTTPException(status_code=404, detail="Not found")
+    props = rows[0]["c"]
+    try:
+        f = json.loads(props.get("fields") or "{}")
+    except Exception:
+        f = {}
+    if b.get("fields"):
+        f.update(b["fields"])
+    if "tags" in b:
+        f["Tags"] = b["tags"]
+    label = b.get("label", props.get("label"))
+    run("MATCH (c:Component {id:$id}) SET c.label=$label, c.name=$name, c.fields=$fields",
+        {"id": id, "label": label, "name": f.get("Name", label),
+         "fields": json.dumps(f, ensure_ascii=False)}, True)
+    return {"id": id, "label": label, "type": props.get("type"), "f": f}
+
+# ---- metamodel editing (add/remove types & allowed connections) ----
+@app.post("/api/metamodel/component-type")
+async def add_ctype(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    b = await request.json()
+    run("""MERGE (t:MetaComponentType {name:$name})
+           SET t.tier=$tier, t.category=$cat, t.shape=$shape, t.color=$color""",
+        {"name": b["name"], "tier": b.get("tier", 99), "cat": b.get("category", "Other"),
+         "shape": b.get("shape", "roundrectangle"), "color": b.get("color", "#888780")}, True)
+    return {"ok": True, "name": b["name"]}
+
+@app.delete("/api/metamodel/component-type/{name}")
+def del_ctype(name: str, request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    run("MATCH (t:MetaComponentType {name:$name}) DETACH DELETE t", {"name": name}, True)
+    return {"deleted": name}
+
+@app.post("/api/metamodel/reference-type")
+async def add_rtype(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    b = await request.json()
+    run("MERGE (r:MetaReferenceType {name:$name}) SET r.color=$color, r.relType=$rel",
+        {"name": b["name"], "color": b.get("color", "#888780"), "rel": ref_to_rel(b["name"])}, True)
+    return {"ok": True, "name": b["name"]}
+
+@app.delete("/api/metamodel/reference-type/{name}")
+def del_rtype(name: str, request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    run("MATCH (r:MetaReferenceType {name:$name}) DETACH DELETE r", {"name": name}, True)
+    return {"deleted": name}
+
+@app.post("/api/metamodel/allowed")
+async def add_allowed(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    b = await request.json()
+    run("""MATCH (a:MetaComponentType {name:$f}) MATCH (b:MetaComponentType {name:$t})
+           MERGE (a)-[x:ALLOWS {ref:$r}]->(b)""",
+        {"f": b["from"], "t": b["to"], "r": b["ref"]}, True)
+    return {"ok": True}
+
+@app.delete("/api/metamodel/allowed")
+async def del_allowed(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    b = await request.json()
+    run("""MATCH (a:MetaComponentType {name:$f})-[x:ALLOWS {ref:$r}]->(b:MetaComponentType {name:$t})
+           DELETE x""", {"f": b["from"], "t": b["to"], "r": b["ref"]}, True)
+    return {"deleted": True}
+
 # ---- rationalization (TIME model) ----------------------------------
 @app.get("/api/analytics/rationalization")
 def rationalization():
