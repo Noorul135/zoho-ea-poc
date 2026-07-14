@@ -189,6 +189,24 @@ Tech Service and owned by imported Persons.
 
 ---
 
+## Part G — Onboard a new company via the Zia chat
+
+A second agent (**EA Onboarding Architect**, see `zia/ZIA-AGENT-CONFIG.md` Part 2)
+builds a brand-new customer's graph from a short chat:
+
+1. It knows the user's name, email, company name and URL from sign-up.
+2. It calls `enrichCompany(url)` → the backend fetches the company's website
+   (home/about/products) and returns text the agent uses to infer the segment,
+   products, and structure.
+3. It asks a few questions (employees, capabilities, apps, KPIs, infra).
+4. It calls `bulkBuildGraph({workspace:"<Company>", components, references})`
+   to create the whole graph under that company's **workspace**.
+5. It returns the live link `…/?workspace=<Company>`.
+
+Each company lives in its own **workspace**; the dashboard has a workspace
+selector (top bar) to switch between them. Upload `zia/zia-onboarding-tools.yaml`
+as a third tool group (same API-key connection).
+
 ## Using the dashboard
 
 **Views** (the "View" dropdown, Ardoq-style, all over live Neo4j data):
