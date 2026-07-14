@@ -44,6 +44,15 @@ async def _unhandled(request: Request, exc: Exception):
               traceback.format_exc())
     return JSONResponse(status_code=500, content={"error": str(exc)})
 
+# Collapse accidental double slashes (e.g. //api/metamodel -> /api/metamodel)
+# so a trailing-slash base URL in Zia still routes correctly.
+@app.middleware("http")
+async def _normalize_path(request: Request, call_next):
+    p = request.scope.get("path", "")
+    if "//" in p:
+        request.scope["path"] = re.sub(r"/{2,}", "/", p)
+    return await call_next(request)
+
 _driver = None
 def driver():
     global _driver
@@ -81,9 +90,14 @@ def parse_node(props):
         f = {}
     return {"id": props.get("id"), "label": props.get("label"), "type": props.get("type"), "f": f}
 
-def require_key(x_api_key):
-    if API_KEY and x_api_key != API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid or missing x-api-key header.")
+def require_key(x_api_key, request=None):
+    if not API_KEY:
+        return
+    key = x_api_key
+    if (not key) and request is not None:
+        key = request.query_params.get("x-api-key") or request.query_params.get("api_key")
+    if key != API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid or missing API key (header x-api-key).")
 
 # ---- health ---------------------------------------------------------
 @app.get("/api/health")
@@ -138,7 +152,7 @@ def node360(id: str):
 # ---- create component (+ optional reference) ------------------------
 @app.post("/api/node")
 async def create_node(request: Request, x_api_key: str = Header(default="")):
-    require_key(x_api_key)
+    require_key(x_api_key, request)
     b = await request.json()
     if not b.get("type") or not b.get("label"):
         raise HTTPException(status_code=400, detail="type and label are required")
@@ -164,7 +178,7 @@ async def create_node(request: Request, x_api_key: str = Header(default="")):
 # ---- create reference ----------------------------------------------
 @app.post("/api/edge")
 async def create_edge(request: Request, x_api_key: str = Header(default="")):
-    require_key(x_api_key)
+    require_key(x_api_key, request)
     b = await request.json()
     if not (b.get("s") and b.get("t") and b.get("r")):
         raise HTTPException(status_code=400, detail="s, t and r are required")
@@ -177,15 +191,15 @@ async def create_edge(request: Request, x_api_key: str = Header(default="")):
 
 # ---- delete component ----------------------------------------------
 @app.delete("/api/node/{id}")
-def delete_node(id: str, x_api_key: str = Header(default="")):
-    require_key(x_api_key)
+def delete_node(id: str, request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
     run("MATCH (c:Component {id:$id}) DETACH DELETE c", {"id": id}, True)
     return {"deleted": id}
 
 # ---- delete reference ----------------------------------------------
 @app.delete("/api/edge/{id}")
-def delete_edge(id: str, x_api_key: str = Header(default="")):
-    require_key(x_api_key)
+def delete_edge(id: str, request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
     run("MATCH ()-[r {id:$id}]->() DELETE r", {"id": id}, True)
     return {"deleted": id}
 
@@ -215,7 +229,7 @@ def capability_coverage():
 # ---- GitHub sync ---------------------------------------------------
 @app.post("/api/github/sync")
 async def github_sync_endpoint(request: Request, x_api_key: str = Header(default="")):
-    require_key(x_api_key)
+    require_key(x_api_key, request)
     b = await request.json()
     org = b.get("org")
     if not org:
