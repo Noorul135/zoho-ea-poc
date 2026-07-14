@@ -1,14 +1,254 @@
-# zoho-ea-poc
-EA POC
-Create a new empty GitHub repo, e.g. zoho-ea-poc.
-From this folder:
+# Zoho EA POC — Enterprise Intelligence Graph
 
+A working proof-of-concept of an Ardoq-style Enterprise Architecture platform for
+Zoho. **Neo4j is the system of record**; a Node.js API on Render serves both a
+REST API and the interactive graph dashboard; **Zia agents** call that API as
+tools; and GitHub is used both to auto-deploy (on push) and — optionally — as a
+**data source** ingested into the graph.
 
-bash   git init
+```
+                 ┌────────────────────────┐
+   Zia Agent ───▶│                        │
+   (tools)       │   Node.js API (Render) │──────▶  Neo4j Aura
+   Dashboard ───▶│   server.js  + db.js   │◀──────  (the graph =
+   Browser       │                        │          system of record)
+                 └────────────────────────┘
+                        ▲          ▲
+              GitHub push│          │GitHub REST (github-sync.js)
+              auto-deploy│          │ingests repos as EA objects
+```
+
+## Choose your backend — Python OR Node (same API)
+
+This repo ships **two interchangeable backends** that expose the **identical**
+REST API. Pick one:
+
+- **Python / FastAPI** → `main.py` (+ `requirements.txt`, `seed.py`,
+  `github_sync.py`). Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`.
+  **Use this if your Render service runs uvicorn / asks for `main.py`.**
+- **Node / Express** → `server.js` (+ `package.json`, `db.js`, `scripts/`).
+  Start command: `npm start`.
+
+The dashboard, Cypher schema, seed data, and Zia tool configs are shared and
+work with either backend. `render.yaml` is currently set to the **Python**
+option. Don't run both at once.
+
+## What's in this repo
+
+| Path | What it is |
+|---|---|
+| `public/index.html` | The dashboard (your original file, now API-backed). |
+| **`main.py`** | **Python/FastAPI API + dashboard host (uvicorn).** |
+| **`requirements.txt`** | **Python dependencies.** |
+| **`seed.py`** | **Python seed loader (reads `data.json`).** |
+| **`github_sync.py`** | **Python GitHub → graph ingestion.** |
+| **`data.json`** | **Seed dataset used by the Python loader.** |
+| `server.js` | Node/Express API + dashboard host (alternative to main.py). |
+| `db.js` | Neo4j driver + shared helpers (Node). |
+| `cypher/01-constraints.cypher` | Unique-id constraints + indexes. |
+| `cypher/02-metamodel.cypher` | The metamodel (component types, reference types, allowed connections). |
+| `scripts/data.js` | The full Zoho seed dataset (65 components, 115 references). |
+| `scripts/load-seed.js` | Loads the seed into Neo4j. |
+| `scripts/github-sync.js` | **Separate** GitHub → graph ingestion tool. |
+| `zia/zia-ea-tools.yaml` | OpenAPI 3.0 custom tools for the Zia agent. |
+| `zia/zia-github-sync-tool.yaml` | OpenAPI 3.0 GitHub-sync tool for Zia. |
+| `zia/ZIA-AGENT-CONFIG.md` | Agent name, instructions, and each tool's Parameter/Type/Value. |
+| `zia/EA-KNOWLEDGE-BASE.md` | Knowledge base to upload to the agent. |
+| `render.yaml` | Render Blueprint (auto-deploy config). |
+| `.env.example` | Environment variable template. |
+
+You can do the whole thing in well under a day. Order matters — follow A → E.
+
+---
+
+## Part A — Neo4j Aura (the graph / system of record)  ~10 min
+
+1. Go to **https://neo4j.com/product/auradb/** → **Start free**. Sign in.
+2. Click **New Instance → AuraDB Free**. Pick a region, name it `zoho-ea`.
+3. When it creates, a **credentials file downloads** (or is shown once). It
+   contains:
+   - `NEO4J_URI` — looks like `neo4j+s://xxxxxxxx.databases.neo4j.io`
+   - `NEO4J_USERNAME` — `neo4j`
+   - `NEO4J_PASSWORD` — a generated password
+   **Save these now — the password is shown only once.**
+4. Open the instance → **Query** (the console). Paste and run, in order:
+   - the contents of `cypher/01-constraints.cypher`
+   - the contents of `cypher/02-metamodel.cypher`
+   (You'll seed the actual data in Part C with one command.)
+
+> AuraDB Free pauses after a few days idle — just resume it from the console.
+
+---
+
+## Part B — GitHub (host the repo)  ~5 min
+
+1. Create a new **empty** GitHub repo, e.g. `zoho-ea-poc`.
+2. From this folder:
+   ```bash
+   git init
    git add .
    git commit -m "Zoho EA POC"
    git branch -M main
    git remote add origin https://github.com/<you>/zoho-ea-poc.git
    git push -u origin main
+   ```
+   `.gitignore` already excludes `.env` and `node_modules/`.
 
-.gitignore already excludes .env and node_modules/.
+---
+
+## Part C — Load the seed data into Neo4j  ~3 min
+
+Do this locally once (you can also re-run any time):
+
+```bash
+cp .env.example .env          # then edit .env with your Aura URI/password
+```
+
+**Python:**
+```bash
+pip install -r requirements.txt
+python seed.py                # loads 65 components + 115 references
+# python seed.py --wipe       # (optional) wipe + reload from scratch
+```
+
+**Node (alternative):**
+```bash
+npm install
+npm run seed                  # npm run seed:wipe to wipe + reload
+```
+
+You should see `Done. Graph now holds: 65 components, 115 references`.
+
+---
+
+## Part D — Render (deploy the API + dashboard)  ~10 min
+
+1. Go to **https://render.com** → sign in with GitHub.
+2. **New + → Blueprint** → pick your `zoho-ea-poc` repo. Render reads
+   `render.yaml` and proposes a free web service.
+3. Set the secret environment variables when prompted (or under the service →
+   **Environment**):
+   - `NEO4J_URI` = your Aura URI
+   - `NEO4J_PASSWORD` = your Aura password
+   - (`NEO4J_USER` defaults to `neo4j`; `API_KEY` is auto-generated — **copy it**;
+     `GITHUB_TOKEN` optional)
+4. Click **Apply / Deploy**. `render.yaml` deploys the **Python** backend:
+   build `pip install -r requirements.txt`, start
+   `uvicorn main:app --host 0.0.0.0 --port $PORT`.
+   *If you configured the service by hand instead of Blueprint, set exactly
+   those Build and Start commands and Runtime = Python.*
+5. When live, open `https://<your-app>.onrender.com` → the dashboard loads
+   **live from Neo4j** (the hint bar shows "● Live"). Health check:
+   `https://<your-app>.onrender.com/api/health` → `{"status":"ok"}`.
+
+> Free tier sleeps after 15 min idle; the first request then takes ~30–60s to
+> wake. That's expected for a POC.
+
+Every `git push` to `main` now auto-redeploys.
+
+---
+
+## Part E — Zia Agent Studio (the AI agent)  ~15 min
+
+Full detail (agent instructions + every tool's Parameter/Type/Value) is in
+**`zia/ZIA-AGENT-CONFIG.md`**. Short version:
+
+1. In `zia/zia-ea-tools.yaml` and `zia/zia-github-sync-tool.yaml`, set the
+   `servers.url` to your Render URL.
+2. Zia Agent Studio → **Agents → Create** → name it `Zoho EA Architect`,
+   paste the instructions from `ZIA-AGENT-CONFIG.md`.
+3. **Knowledge Base** → upload `zia/EA-KNOWLEDGE-BASE.md`.
+4. **Tools → + New Tool Group** → name `EA Graph` → **Add Schema → Custom
+   Service** → upload `zia-ea-tools.yaml` → **Validate**.
+5. **Test All Tools** → **Choose Connection → New → API Key**: header
+   `x-api-key` = your Render `API_KEY`. Fill test values from the config doc →
+   **Test** → **Mark as Ready → Save**.
+6. Repeat 4–5 for `zia-github-sync-tool.yaml` (tool group `GitHub Sync`).
+7. Attach both tool groups to the agent. Try: *"Give me the 360 of Zoho CRM."*
+
+---
+
+## Part F (optional) — Ingest GitHub as EA data
+
+Bring repos/owners into the graph as Applications/Persons:
+
+```bash
+# locally — Python
+GITHUB_TOKEN=<token> python github_sync.py zoho 30
+# locally — Node (alternative)
+GITHUB_TOKEN=<token> node scripts/github-sync.js zoho 30
+```
+or via the API / Zia tool:
+```bash
+curl -X POST https://<your-app>.onrender.com/api/github/sync \
+  -H "x-api-key: <API_KEY>" -H "Content-Type: application/json" \
+  -d '{"org":"zoho","maxRepos":30}'
+```
+Reload the dashboard — the new repos appear as Applications hosted on a "GitHub"
+Tech Service and owned by imported Persons.
+
+---
+
+## Using the dashboard
+
+**Views** (the "View" dropdown, Ardoq-style, all over live Neo4j data):
+
+- *Graph* — Block / Graph — Dependency Map — Component Tree — Swimlanes — Dependency Wheel
+- *Lists* — Pages — Table (sortable) — Reference Table — Component Matrix (type × lifecycle) — Dependency Matrix (adjacency) — Relationships
+- *Analytics* — Capability Map — Treemap — Bubble Chart (BV × TF, size = criticality) — Spider Chart — Tagscape
+
+Other controls:
+
+- **Click any node or chip** → 360 panel (fields + tags + incoming/outgoing references + generated narrative). Works in every view.
+- **Layouts** dropdown (Graph view only) → Force / Tree / Concentric / Circle / Grid.
+- **Graph traversal** (left sidebar) → pick a start component + depth → shows only the reachable sub-graph.
+- **Tags** (left sidebar) → click a tag to filter; add tags via a component's **✎ Edit fields & tags**.
+- **⚡ Rationalize** → recolours applications by TIME quadrant (Invest / Tolerate / Migrate / Eliminate).
+- **+ Add node** → create a component with custom fields + tags (persisted to Neo4j). Delete + edit persist too.
+- **⚙ Metamodel** → add/remove component types, reference types, and allowed connections (persisted to Neo4j).
+- **Search** filters the current view.
+
+## API reference (quick)
+
+| Method | Path | Auth | Purpose |
+|---|---|---|---|
+| GET | `/api/health` | – | Liveness + Neo4j check |
+| GET | `/api/graph` | – | All nodes + edges |
+| GET | `/api/metamodel` | – | Types + allowed connections |
+| GET | `/api/search?q=` | – | Search components |
+| GET | `/api/node/:id` | – | 360 view of a component |
+| POST | `/api/node` | key | Create component (+ optional edge) |
+| POST | `/api/edge` | key | Create a reference |
+| DELETE | `/api/node/:id` | key | Delete component + edges |
+| DELETE | `/api/edge/:id` | key | Delete a reference |
+| GET | `/api/analytics/rationalization` | – | TIME buckets for apps |
+| GET | `/api/analytics/capability-coverage` | – | Apps per capability |
+| POST | `/api/github/sync` | key | Ingest a GitHub org |
+
+`key` = send header `x-api-key: <API_KEY>`.
+
+## Local development
+
+```bash
+npm install
+cp .env.example .env      # fill in Aura creds + API_KEY
+npm run seed              # once
+npm start                 # http://localhost:3000
+```
+
+## Security note (POC)
+
+For simplicity the dashboard receives the `API_KEY` injected at page-serve time,
+so browser writes work. Anyone who can open the page can read the key from page
+source. That is fine for a POC/demo. For production: move writes behind
+authenticated user sessions, keep the key server-side only, and restrict CORS.
+
+## Troubleshooting
+
+- **Dashboard says "○ Offline demo data"** → the API/Neo4j isn't reachable.
+  Check `/api/health`, the Render env vars, and that Aura is running (not paused).
+- **`Missing NEO4J_URI / NEO4J_PASSWORD`** → env vars not set (Render Environment
+  or local `.env`).
+- **401 on writes** → the `x-api-key` header doesn't match Render's `API_KEY`.
+- **GitHub 403 / rate limit** → set `GITHUB_TOKEN`.
+- **Relationship type errors** → only use the reference names from the metamodel.
