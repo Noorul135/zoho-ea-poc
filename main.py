@@ -88,7 +88,8 @@ def parse_node(props):
         f = json.loads(props.get("fields") or "{}")
     except Exception:
         f = {}
-    return {"id": props.get("id"), "label": props.get("label"), "type": props.get("type"), "f": f}
+    return {"id": props.get("id"), "label": props.get("label"), "type": props.get("type"),
+            "f": f, "status": props.get("status"), "layer": props.get("layer")}
 
 def require_key(x_api_key, request=None):
     if not API_KEY:
@@ -114,16 +115,16 @@ def graph(workspace: str = None):
         nodes = [parse_node(r["c"]) for r in run(
             "MATCH (c:Component) WHERE coalesce(c.workspace,'Zoho Corporation')=$ws RETURN c",
             {"ws": workspace})]
-        edges = [{"id": e["id"], "s": e["s"], "t": e["t"], "r": e["r"]} for e in run(
+        edges = [{"id": e["id"], "s": e["s"], "t": e["t"], "r": e["r"], "inferred": e["inf"]} for e in run(
             "MATCH (a:Component)-[r]->(b:Component) WHERE r.ref IS NOT NULL "
             "AND coalesce(a.workspace,'Zoho Corporation')=$ws "
             "AND coalesce(b.workspace,'Zoho Corporation')=$ws "
-            "RETURN r.id AS id, a.id AS s, b.id AS t, r.ref AS r", {"ws": workspace})]
+            "RETURN r.id AS id, a.id AS s, b.id AS t, r.ref AS r, coalesce(r.inferred,false) AS inf", {"ws": workspace})]
     else:
         nodes = [parse_node(r["c"]) for r in run("MATCH (c:Component) RETURN c")]
-        edges = [{"id": e["id"], "s": e["s"], "t": e["t"], "r": e["r"]} for e in run(
+        edges = [{"id": e["id"], "s": e["s"], "t": e["t"], "r": e["r"], "inferred": e["inf"]} for e in run(
             "MATCH (a:Component)-[r]->(b:Component) WHERE r.ref IS NOT NULL "
-            "RETURN r.id AS id, a.id AS s, b.id AS t, r.ref AS r")]
+            "RETURN r.id AS id, a.id AS s, b.id AS t, r.ref AS r, coalesce(r.inferred,false) AS inf")]
     return {"nodes": nodes, "edges": edges}
 
 # ---- list workspaces (for the dashboard workspace selector) ---------
@@ -407,11 +408,16 @@ async def graph_bulk(request: Request, x_api_key: str = Header(default="")):
             f["Lifecycle Phase"] = c["phase"]
         if c.get("tags"):
             f["Tags"] = c["tags"]
+        # provenance (Cartograph): confidence, evidence, source_doc, as_of
+        for pk in ("confidence", "evidence", "source_doc", "as_of"):
+            if c.get(pk) is not None:
+                f[pk.replace("_", " ").title()] = c[pk]
         rows.append({
             "id": c.get("id") or (ws.lower().replace(" ", "-") + "_" + re.sub(r"[^a-zA-Z0-9]+", "-", (c.get("label") or "n")).lower()),
             "label": c.get("label"), "type": c.get("type"), "ws": ws,
             "name": f.get("Name", c.get("label")), "desc": f.get("Description", ""),
             "life": f.get("Lifecycle Phase", ""),
+            "status": c.get("status") or "active", "layer": c.get("layer"),
             "sr": (re.sub(r"\s*\(.*?\)", "", str(f.get("Strategic Rating", ""))) or None),
             "bv": num(f.get("Business Value")), "tf": num(f.get("Technical Fit")),
             "fields": json.dumps(f, ensure_ascii=False),
@@ -419,24 +425,25 @@ async def graph_bulk(request: Request, x_api_key: str = Header(default="")):
     if rows:
         run("""UNWIND $rows AS row MERGE (c:Component {id: row.id})
                SET c.label=row.label, c.type=row.type, c.workspace=row.ws, c.name=row.name,
-                   c.description=row.desc, c.lifecycle=row.life, c.strategicRating=row.sr,
-                   c.businessValue=row.bv, c.technicalFit=row.tf, c.fields=row.fields""",
+                   c.description=row.desc, c.lifecycle=row.life, c.status=row.status, c.layer=row.layer,
+                   c.strategicRating=row.sr, c.businessValue=row.bv, c.technicalFit=row.tf, c.fields=row.fields""",
             {"rows": rows}, True)
         for t in {r["type"] for r in rows if r["type"]}:
             run(f"MATCH (c:Component {{type:$t, workspace:$ws}}) SET c:{type_to_label(t)}", {"t": t, "ws": ws}, True)
 
-    # references: accept ids OR labels (agent may pass labels)
+    # references: accept ids OR labels (agent may pass labels); support inferred (dashed)
     made = 0
     for e in refs:
         s, t, r = e.get("s"), e.get("t"), e.get("r")
         if not (s and t and r):
             continue
         rel = ref_to_rel(r)
+        inferred = bool(e.get("inferred"))
         eid = "e_" + re.sub(r"[^a-zA-Z0-9]+", "-", f"{ws}-{s}-{rel}-{t}").lower()
         res = run(f"""MATCH (a:Component) WHERE (a.id=$s OR a.label=$s) AND coalesce(a.workspace,'Zoho Corporation')=$ws
                       MATCH (b:Component) WHERE (b.id=$t OR b.label=$t) AND coalesce(b.workspace,'Zoho Corporation')=$ws
-                      MERGE (a)-[x:{rel} {{id:$eid}}]->(b) SET x.ref=$r RETURN count(x) AS n""",
-                  {"s": s, "t": t, "eid": eid, "r": r, "ws": ws}, True)
+                      MERGE (a)-[x:{rel} {{id:$eid}}]->(b) SET x.ref=$r, x.inferred=$inf RETURN count(x) AS n""",
+                  {"s": s, "t": t, "eid": eid, "r": r, "ws": ws, "inf": inferred}, True)
         made += (res[0]["n"] if res else 0)
     return {"workspace": ws, "componentsUpserted": len(rows), "referencesCreated": made,
             "dashboardUrl": f"/?workspace={ws}"}
@@ -451,6 +458,153 @@ async def onboard_reset(request: Request, x_api_key: str = Header(default="")):
         raise HTTPException(status_code=400, detail="workspace is required")
     run("MATCH (c:Component) WHERE c.workspace=$ws DETACH DELETE c", {"ws": ws}, True)
     return {"reset": ws}
+
+# =====================================================================
+# CARTOGRAPH tools — web fetch, graph summary, read-only query, ontology
+# =====================================================================
+
+# ---- fetch any public web page (agent website intake) --------------
+def _same_site_links(html, base):
+    out, seen = [], set()
+    for m in re.finditer(r'<a[^>]+href=["\']([^"\'#]+)["\'][^>]*>(.*?)</a>', html, re.I | re.S):
+        href, txt = m.group(1).strip(), re.sub(r"<[^>]+>", "", m.group(2)).strip()
+        if not href or href.startswith(("mailto:", "tel:", "javascript:")):
+            continue
+        if href.startswith("/"):
+            href = base.rstrip("/") + href
+        if not href.startswith("http"):
+            continue
+        try:
+            from urllib.parse import urlparse as _up
+            if _up(href).netloc != _up(base).netloc:
+                continue
+        except Exception:
+            continue
+        if len(txt) < 3 or href in seen:
+            continue
+        seen.add(href)
+        out.append({"url": href.split("#")[0], "text": txt[:120]})
+        if len(out) >= 40:
+            break
+    return out
+
+@app.post("/api/web/fetch")
+async def fetch_web_page(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    b = await request.json()
+    url = (b.get("url") or "").strip()
+    if not url:
+        raise HTTPException(status_code=400, detail="url is required")
+    if not url.startswith("http"):
+        url = "https://" + url
+    host = url.split("//", 1)[-1].split("/", 1)[0].lower()
+    if host in ("localhost", "127.0.0.1", "0.0.0.0") or host.startswith(("10.", "192.168.", "172.16.")):
+        raise HTTPException(status_code=400, detail="Cannot fetch private/localhost URLs.")
+    html = _http_get(url)
+    if not html:
+        raise HTTPException(status_code=502, detail="Could not reach the URL (private, gated, or removed).")
+    data = _extract(html)
+    data["url"] = url
+    data["same_site_links"] = _same_site_links(html, url)
+    data["reachable"] = True
+    return data
+
+# ---- graph summary + gap analysis (getGraphSummary) ----------------
+@app.get("/api/graph/summary")
+def graph_summary(workspace: str = None):
+    wsf = "coalesce(c.workspace,'Zoho Corporation')=$ws" if workspace else "true"
+    p = {"ws": workspace} if workspace else {}
+    counts = run(f"MATCH (c:Component) WHERE {wsf} RETURN c.type AS type, count(*) AS n ORDER BY n DESC", p)
+    total = run(f"MATCH (c:Component) WHERE {wsf} RETURN count(c) AS n", p)[0]["n"]
+    refs = run(f"MATCH (a:Component)-[r]->(b:Component) WHERE r.ref IS NOT NULL AND {wsf.replace('c.','a.')} "
+               f"RETURN count(r) AS n", p)[0]["n"]
+    # spine gaps
+    gaps = {}
+    def cnt(q):
+        return run(q, p)[0]["n"]
+    gaps["objectivesWithoutKpi"] = cnt(f"MATCH (o:Component) WHERE o.type IN ['Objective'] AND {wsf.replace('c.','o.')} AND NOT (o)-[:MEASURED_BY]->() RETURN count(o) AS n") if _has_type("Objective") else 0
+    gaps["objectivesWithoutCapability"] = cnt(f"MATCH (o:Component) WHERE o.type IN ['Objective'] AND {wsf.replace('c.','o.')} AND NOT (o)-[:ENABLED_BY]->() RETURN count(o) AS n") if _has_type("Objective") else 0
+    gaps["capabilitiesWithoutProcess"] = cnt(f"MATCH (c:Component) WHERE c.type IN ['Capability','Business Capability'] AND {wsf} AND NOT (c)-[:REALIZED_BY]->() RETURN count(c) AS n")
+    gaps["processesWithoutApp"] = cnt(f"MATCH (c:Component) WHERE c.type='Process' AND {wsf} AND NOT (c)-[:SUPPORTED_BY]->() RETURN count(c) AS n")
+    gaps["risksWithoutOwner"] = cnt(f"MATCH (c:Component) WHERE c.type='Risk' AND {wsf} AND NOT ()-[:OWNS]->(c) AND NOT (c)-[:OWNED_BY]->() RETURN count(c) AS n")
+    gaps["missingNodes"] = cnt(f"MATCH (c:Component) WHERE c.status='missing' AND {wsf} RETURN count(c) AS n")
+    return {"workspace": workspace or "all", "totalComponents": total, "totalReferences": refs,
+            "countsByType": [{"type": r["type"], "n": r["n"]} for r in counts], "gaps": gaps}
+
+def _has_type(t):
+    try:
+        return run("MATCH (c:Component) WHERE c.type=$t RETURN count(c) AS n", {"t": t})[0]["n"] >= 0
+    except Exception:
+        return True
+
+# ---- read-only Cypher (runReadQuery) -------------------------------
+_WRITE_KW = re.compile(r"\b(CREATE|MERGE|SET|DELETE|REMOVE|DROP|DETACH|FOREACH|LOAD\s+CSV)\b", re.I)
+@app.post("/api/query")
+async def read_query(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    b = await request.json()
+    cypher = (b.get("cypher") or "").strip()
+    if not cypher:
+        raise HTTPException(status_code=400, detail="cypher is required")
+    if _WRITE_KW.search(cypher):
+        raise HTTPException(status_code=400, detail="Only read-only queries are allowed (no CREATE/MERGE/SET/DELETE).")
+    if " limit " not in cypher.lower():
+        cypher += " LIMIT 200"
+    try:
+        return {"rows": run(cypher, b.get("params") or {})}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Query error: {e}")
+
+# ---- install the Cartograph EA ontology into the metamodel ----------
+@app.api_route("/api/admin/install-ontology", methods=["GET", "POST"])
+def install_ontology(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    ctypes = [
+        ("Company", 1, "Business", "#E8212A"), ("Objective", 2, "Strategy", "#7A1FA2"),
+        ("KPI", 3, "Performance", "#0F9D9D"), ("Capability", 3, "Business", "#993C1D"),
+        ("Process", 4, "Operations", "#B5651D"), ("Person", 4, "Organization", "#3B6D11"),
+        ("OrgUnit", 2, "Organization", "#185FA5"), ("Application", 5, "Application", "#085041"),
+        ("Data", 6, "Data", "#BA7517"), ("Integration", 6, "Application", "#854F0B"),
+        ("Technology", 7, "Technology", "#444441"), ("Vendor", 8, "Technology", "#888780"),
+        ("Policy", 9, "Governance", "#5F5E5A"), ("Risk", 9, "Risk", "#C41019"),
+        ("Initiative", 3, "Actions", "#534AB7"), ("Compliance", 9, "Governance", "#72243E"),
+        ("Product", 5, "Commercial", "#1D9E75"), ("Customer", 5, "Commercial", "#378ADD"),
+        ("Market", 4, "Commercial", "#993556"), ("Competitor", 5, "Commercial", "#9A6324"),
+        ("Location", 10, "Other", "#993556"), ("Document", 11, "Provenance", "#b4b2a9"),
+    ]
+    rtypes = [
+        ("HAS_OBJECTIVE", "#7A1FA2"), ("MEASURED_BY", "#0F9D9D"), ("ENABLED_BY", "#993C1D"),
+        ("REALIZED_BY", "#B5651D"), ("SUPPORTED_BY", "#085041"), ("OWNS", "#3B6D11"),
+        ("OWNED_BY", "#3B6D11"), ("AFFECTS", "#C41019"), ("DEPENDS_ON", "#854F0B"),
+        ("SUPPORTS", "#534AB7"), ("IMPACTED_BY", "#534AB7"), ("RUNS_ON", "#444441"),
+        ("PROVIDED_BY", "#888780"), ("COMPLIES_WITH", "#72243E"), ("INTEGRATES_VIA", "#854F0B"),
+        ("CONNECTS_TO", "#085041"), ("REPORTS_TO", "#5F5E5A"), ("MEMBER_OF", "#185FA5"),
+        ("LEADS", "#185FA5"), ("PART_OF", "#888780"), ("GOVERNED_BY", "#5F5E5A"),
+        ("LOCATED_IN", "#993556"), ("DERIVED_FROM", "#b4b2a9"), ("MITIGATES", "#3B6D11"),
+        ("COMPETES_WITH", "#9A6324"), ("SERVES", "#378ADD"), ("SELLS", "#1D9E75"),
+    ]
+    allowed = [
+        ("Company", "HAS_OBJECTIVE", "Objective"), ("Objective", "MEASURED_BY", "KPI"),
+        ("Objective", "ENABLED_BY", "Capability"), ("Capability", "REALIZED_BY", "Process"),
+        ("Process", "SUPPORTED_BY", "Application"), ("Application", "OWNS", "Data"),
+        ("Application", "RUNS_ON", "Technology"), ("Application", "PROVIDED_BY", "Vendor"),
+        ("Application", "COMPLIES_WITH", "Compliance"), ("Application", "INTEGRATES_VIA", "Integration"),
+        ("Integration", "CONNECTS_TO", "Application"), ("Risk", "AFFECTS", "Capability"),
+        ("Risk", "AFFECTS", "Application"), ("Initiative", "SUPPORTS", "Objective"),
+        ("Capability", "IMPACTED_BY", "Initiative"), ("Person", "OWNS", "Objective"),
+        ("Person", "LEADS", "OrgUnit"), ("Person", "REPORTS_TO", "Person"),
+        ("OrgUnit", "PART_OF", "Company"), ("Company", "SELLS", "Product"),
+        ("Company", "COMPETES_WITH", "Competitor"), ("Company", "SERVES", "Customer"),
+    ]
+    for name, tier, cat, color in ctypes:
+        run("MERGE (t:MetaComponentType {name:$n}) SET t.tier=$tier, t.category=$c, t.shape='roundrectangle', t.color=$col",
+            {"n": name, "tier": tier, "c": cat, "col": color}, True)
+    for name, color in rtypes:
+        run("MERGE (r:MetaReferenceType {name:$n}) SET r.color=$c, r.relType=$n", {"n": name, "c": color}, True)
+    for f, r, t in allowed:
+        run("MATCH (a:MetaComponentType {name:$f}) MATCH (b:MetaComponentType {name:$t}) "
+            "MERGE (a)-[x:ALLOWS {ref:$r}]->(b)", {"f": f, "t": t, "r": r}, True)
+    return {"installed": True, "componentTypes": len(ctypes), "referenceTypes": len(rtypes), "allowed": len(allowed)}
 
 # ---- one-click seed loader (POC convenience) -----------------------
 # Loads data.json (65 components + 115 references) into Neo4j. Idempotent.
