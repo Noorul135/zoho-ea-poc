@@ -237,6 +237,57 @@ async def github_sync_endpoint(request: Request, x_api_key: str = Header(default
     import github_sync
     return github_sync.sync_org(org, token=os.getenv("GITHUB_TOKEN"), max_repos=b.get("maxRepos", 30))
 
+# ---- one-click seed loader (POC convenience) -----------------------
+# Loads data.json (65 components + 115 references) into Neo4j. Idempotent.
+# Call once:  https://<app>/api/admin/seed?x-api-key=YOUR_API_KEY
+@app.api_route("/api/admin/seed", methods=["GET", "POST"])
+def admin_seed(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+
+    def num(v):
+        if v is None:
+            return None
+        m = re.search(r"-?\d+(\.\d+)?", str(v))
+        return float(m.group()) if m else None
+
+    data = json.load(open(os.path.join(os.path.dirname(__file__), "data.json"), encoding="utf-8"))
+    nodes, edges = data["nodes"], data["edges"]
+
+    try:
+        run("CREATE CONSTRAINT component_id IF NOT EXISTS FOR (c:Component) REQUIRE c.id IS UNIQUE", {}, True)
+    except Exception as e:
+        log.warning("constraint step skipped: %s", e)
+
+    rows = [{
+        "id": n["id"], "label": n["label"], "type": n["type"],
+        "name": n["f"].get("Name", n["label"]), "description": n["f"].get("Description", ""),
+        "lifecycle": n["f"].get("Lifecycle Phase", ""),
+        "strategicRating": (re.sub(r"\s*\(.*?\)", "", n["f"].get("Strategic Rating", "")) or None),
+        "businessValue": num(n["f"].get("Business Value")), "technicalFit": num(n["f"].get("Technical Fit")),
+        "fields": json.dumps(n["f"], ensure_ascii=False),
+    } for n in nodes]
+    run("""UNWIND $rows AS row MERGE (c:Component {id: row.id})
+           SET c.label=row.label, c.type=row.type, c.name=row.name,
+               c.description=row.description, c.lifecycle=row.lifecycle,
+               c.strategicRating=row.strategicRating, c.businessValue=row.businessValue,
+               c.technicalFit=row.technicalFit, c.fields=row.fields""", {"rows": rows}, True)
+
+    for t in {n["type"] for n in nodes}:
+        run(f"MATCH (c:Component {{type:$t}}) SET c:{type_to_label(t)}", {"t": t}, True)
+
+    by_ref = {}
+    for e in edges:
+        by_ref.setdefault(e["r"], []).append(e)
+    for ref, group in by_ref.items():
+        rel = ref_to_rel(ref)
+        run(f"""UNWIND $rows AS row MATCH (a:Component {{id: row.s}}) MATCH (b:Component {{id: row.t}})
+                MERGE (a)-[x:{rel} {{id: row.id}}]->(b) SET x.ref=$ref""", {"rows": group, "ref": ref}, True)
+
+    c = run("MATCH (c:Component) RETURN count(c) AS n")[0]["n"]
+    r = run("MATCH ()-[x]->() WHERE x.ref IS NOT NULL RETURN count(x) AS n")[0]["n"]
+    log.info("Seed complete: %s components, %s references", c, r)
+    return {"seeded": True, "components": c, "references": r}
+
 # ---- dashboard with runtime config injection -----------------------
 @app.get("/", response_class=HTMLResponse)
 def dashboard():
