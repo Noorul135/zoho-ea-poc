@@ -11,23 +11,22 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 #topbar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fff;border-bottom:1px solid #d3d1c7;flex-shrink:0;flex-wrap:wrap}
 .logo{font-size:14px;font-weight:700;color:#E8212A;white-space:nowrap;display:flex;align-items:center;gap:6px}
 .logo-sub{font-size:11px;font-weight:400;color:#888780;border-left:1px solid #d3d1c7;padding-left:8px}
-#search{flex:1;max-width:240px;padding:6px 10px;border:1px solid #d3d1c7;border-radius:6px;font-size:12px;background:#f8f7f5;outline:none;color:#2c2c2a}
+#search{flex:1;max-width:220px;padding:6px 10px;border:1px solid #d3d1c7;border-radius:6px;font-size:12px;background:#f8f7f5;outline:none;color:#2c2c2a}
 #search:focus{border-color:#E8212A;background:#fff}
-#layout-sel{padding:6px 8px;border:1px solid #d3d1c7;border-radius:6px;font-size:11px;background:#fff;cursor:pointer;outline:none;color:#2c2c2a}
+select.sel{padding:6px 8px;border:1px solid #d3d1c7;border-radius:6px;font-size:11px;background:#fff;cursor:pointer;outline:none;color:#2c2c2a}
 .btn{padding:5px 11px;border:1px solid #d3d1c7;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;background:#fff;color:#444441;white-space:nowrap;transition:background .12s}
 .btn:hover{background:#f1efe8}
 .btn.green{background:#E8212A;color:#fff;border-color:#C41019}
 .btn.green:hover{background:#C41019}
 .btn.red{color:#993C1D;border-color:#993C1D;background:#FAECE7}
 .btn.red:hover{background:#F5C4B3}
-#ctx-pill{display:none;align-items:center;gap:5px;padding:4px 10px;background:#fff3f3;border:1px solid #F5C4B3;border-radius:20px;font-size:11px;color:#C41019;font-weight:500}
-#ctx-name{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn.on{background:#2c2c2a;color:#fff;border-color:#2c2c2a}
 #main{display:flex;flex:1;overflow:hidden;min-height:0}
-#sidebar{width:170px;flex-shrink:0;background:#fff;border-right:1px solid #d3d1c7;overflow-y:auto;padding:8px 6px}
-.sb-hd{font-size:9px;font-weight:700;color:#888780;text-transform:uppercase;letter-spacing:.08em;margin:4px 4px 5px}
+#sidebar{width:186px;flex-shrink:0;background:#fff;border-right:1px solid #d3d1c7;overflow-y:auto;padding:8px 6px}
+.sb-hd{font-size:9px;font-weight:700;color:#888780;text-transform:uppercase;letter-spacing:.08em;margin:8px 4px 5px}
 .leg-row{display:flex;align-items:center;gap:6px;padding:3px 5px;border-radius:5px;cursor:pointer;user-select:none}
 .leg-row:hover{background:#f1efe8}
-.leg-row.off{opacity:.25}
+.leg-row.off{opacity:.28}
 .ldot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
 .ldot.oval{border-radius:50%}
 .lname{color:#444441;flex:1;font-size:10.5px}
@@ -36,73 +35,80 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 .ref-row{display:flex;align-items:center;gap:7px;padding:2.5px 5px}
 .ref-sw{width:20px;height:2px;border-radius:1px;flex-shrink:0}
 .ref-nm{font-size:10px;color:#888780}
+.sb-field{width:100%;padding:5px 7px;border:1px solid #d3d1c7;border-radius:5px;font-size:11px;margin:3px 0;background:#f8f7f5;outline:none}
 #canvas-wrap{flex:1;position:relative;display:flex;flex-direction:column;min-width:0}
 #cy{flex:1;background:#fafaf8;background-image:radial-gradient(circle,#e0ded8 1px,transparent 1px);background-size:22px 22px}
+#viewpane{flex:1;overflow:auto;background:#fafaf8;display:none;padding:16px}
 #hint-bar{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(44,44,42,.78);color:#fff;padding:6px 16px;border-radius:20px;font-size:11px;pointer-events:none;white-space:nowrap}
 #rpanel{width:300px;flex-shrink:0;display:flex;flex-direction:column;background:#fff;border-left:1px solid #d3d1c7;min-height:0;overflow:hidden}
 #rp-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px 18px;text-align:center;gap:10px}
-.rpe-ico{font-size:36px}
-.rpe-t{font-size:13px;color:#888780;font-weight:500}
-.rpe-s{font-size:11px;color:#b4b2a9;line-height:1.6;margin-top:4px}
+.rpe-ico{font-size:36px}.rpe-t{font-size:13px;color:#888780;font-weight:500}.rpe-s{font-size:11px;color:#b4b2a9;line-height:1.6;margin-top:4px}
 #rp-content{display:none;flex-direction:column;overflow:hidden;height:100%}
-#rpc-hd{padding:10px 14px 8px;border-bottom:1px solid #f1efe8;flex-shrink:0;display:flex;align-items:flex-start;gap:8px}
-#rpc-hd-text{flex:1;min-width:0}
+#rpc-hd{padding:10px 14px 8px;border-bottom:1px solid #f1efe8;flex-shrink:0}
 #rp-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-bottom:4px}
 #rp-name{font-size:14px;font-weight:700;color:#2c2c2a;line-height:1.3}
 #rpc-scroll{flex:1;overflow-y:auto}
 .rp-narr{margin:10px 14px 2px;padding:10px 12px;background:#f4f3f0;border-radius:8px;border-left:3px solid #E8212A;font-size:11px;color:#444441;line-height:1.65}
-.rp-focus-btn{display:block;margin:8px 14px 2px;padding:7px;text-align:center;background:#fff3f3;color:#C41019;border:1px solid #F5C4B3;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer}
-.rp-focus-btn:hover{background:#fde8e8}
-.rp-del-btn{display:block;margin:4px 14px 8px;padding:7px;text-align:center;background:#fff;color:#993C1D;border:1px solid #F5C4B3;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer}
-.rp-del-btn:hover{background:#FAECE7}
+.rp-btn{display:block;margin:8px 14px 2px;padding:7px;text-align:center;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer}
+.rp-btn.foc{background:#fff3f3;color:#C41019;border:1px solid #F5C4B3}
+.rp-btn.edit{background:#EAF3DE;color:#3B6D11;border:1px solid #97C459}
+.rp-btn.del{background:#fff;color:#993C1D;border:1px solid #F5C4B3;margin-bottom:8px}
 .rp-sec{padding:8px 14px 4px;border-bottom:1px solid #f4f3f0}
-.rp-sec:last-child{border-bottom:none;padding-bottom:14px}
 .rp-sec-hd{font-size:9px;font-weight:700;color:#888780;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
 .frow{display:flex;justify-content:space-between;gap:6px;padding:2px 0}
 .fk{font-size:10px;color:#888780;flex-shrink:0;max-width:44%}
 .fv{font-size:10px;color:#2c2c2a;text-align:right;word-break:break-word;line-height:1.4}
-.fv.calc{color:#854F0B}
-.fv.good{color:#3B6D11;font-weight:600}
-.fv.warn{color:#993C1D;font-weight:600}
-.rref{display:flex;align-items:flex-start;gap:7px;padding:6px 14px;border-bottom:1px solid #f4f3f0;cursor:pointer;transition:background .1s}
-.rref:last-child{border-bottom:none}
+.fv.calc{color:#854F0B}.fv.good{color:#3B6D11;font-weight:600}.fv.warn{color:#993C1D;font-weight:600}
+.rp-tag{display:inline-block;background:#EEEDFE;color:#534AB7;border:1px solid #AFA9EC;border-radius:20px;padding:1px 8px;font-size:10px;margin:2px 3px 0 0}
+.rref{display:flex;align-items:flex-start;gap:7px;padding:6px 14px;border-bottom:1px solid #f4f3f0;cursor:pointer}
 .rref:hover{background:#f8f7f5}
 .rr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.rr-body{flex:1;min-width:0}
-.rr-type{font-size:9px;font-weight:700;color:#888780;margin-bottom:1px}
+.rr-body{flex:1;min-width:0}.rr-type{font-size:9px;font-weight:700;color:#888780}
 .rr-tgt{font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rr-dir{font-size:9px;padding:1px 5px;border-radius:20px;flex-shrink:0;margin-top:2px}
-.rr-dir.out{background:#fff3f3;color:#C41019}
-.rr-dir.in{background:#EAF3DE;color:#3B6D11}
+.rr-dir.out{background:#fff3f3;color:#C41019}.rr-dir.in{background:#EAF3DE;color:#3B6D11}
 #ins-wrap{flex-shrink:0;background:#fff;border-top:1px solid #d3d1c7;height:88px;display:flex;align-items:center;gap:8px;padding:0 12px;overflow-x:auto}
-#ins-wrap::-webkit-scrollbar{height:3px}
-#ins-wrap::-webkit-scrollbar-thumb{background:#d3d1c7;border-radius:2px}
 .ic{flex-shrink:0;width:230px;height:68px;border:1px solid;border-radius:8px;padding:7px 10px;display:flex;gap:8px;overflow:hidden}
-.ic.blue{background:#E6F1FB;border-color:#85B7EB}
-.ic.amber{background:#FAEEDA;border-color:#EF9F27}
-.ic.red{background:#FAECE7;border-color:#F0997B}
-.ic.green{background:#EAF3DE;border-color:#97C459}
-.ic.purple{background:#EEEDFE;border-color:#AFA9EC}
-.ic-i{font-size:17px;flex-shrink:0;line-height:1.3}
-.ic-b .ic-t{font-size:10.5px;font-weight:600;color:#2c2c2a;margin-bottom:2px}
-.ic-b .ic-d{font-size:9.5px;color:#5F5E5A;line-height:1.45}
-/* MODAL */
+.ic.blue{background:#E6F1FB;border-color:#85B7EB}.ic.amber{background:#FAEEDA;border-color:#EF9F27}
+.ic.red{background:#FAECE7;border-color:#F0997B}.ic.green{background:#EAF3DE;border-color:#97C459}.ic.purple{background:#EEEDFE;border-color:#AFA9EC}
+.ic-i{font-size:17px;flex-shrink:0}.ic-t{font-size:10.5px;font-weight:600;color:#2c2c2a;margin-bottom:2px}.ic-d{font-size:9.5px;color:#5F5E5A;line-height:1.4}
+/* view-pane generic */
+.vp-title{font-size:15px;font-weight:700;color:#2c2c2a;margin-bottom:2px}
+.vp-sub{font-size:11px;color:#888780;margin-bottom:14px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;font-size:11px;color:#fff;cursor:pointer;margin:3px 4px 0 0;border:1px solid rgba(0,0,0,.15);max-width:220px}
+.chip:hover{filter:brightness(1.08)}
+.chip .cdot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.85);flex-shrink:0}
+.card{background:#fff;border:1px solid #e2e0d8;border-radius:9px;padding:11px 13px;margin:0 0 10px}
+.grid{display:grid;gap:12px}
+table.dt{border-collapse:collapse;width:100%;background:#fff;font-size:11px}
+table.dt th{position:sticky;top:0;background:#f1efe8;text-align:left;padding:7px 9px;font-size:10px;color:#5F5E5A;border-bottom:1px solid #d3d1c7;cursor:pointer;white-space:nowrap}
+table.dt td{padding:6px 9px;border-bottom:1px solid #f1efe8;vertical-align:top}
+table.dt tr:hover td{background:#f8f7f5}
+.typedot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.lane{display:flex;align-items:flex-start;gap:8px;padding:8px 6px;border-bottom:1px solid #ece9e0}
+.lane-lbl{width:150px;flex-shrink:0;font-size:11px;font-weight:600;color:#444441;display:flex;align-items:center;gap:6px}
+.lane-body{flex:1;display:flex;flex-wrap:wrap;min-width:0}
+.matrix-cell{border:1px solid #ece9e0;padding:5px;vertical-align:top;min-width:120px}
+.tm-block{border-radius:8px;padding:8px;color:#fff;overflow:hidden;min-width:120px;min-height:80px}
+.tm-block .tm-h{font-size:11px;font-weight:700;margin-bottom:5px}
+.tm-item{font-size:9.5px;background:rgba(255,255,255,.18);border-radius:4px;padding:2px 5px;margin:2px 0;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:999;align-items:center;justify-content:center}
 .modal-overlay.show{display:flex}
-.modal-box{background:#fff;border-radius:12px;padding:24px;width:420px;max-width:95vw;max-height:90vh;overflow-y:auto;border:1px solid #d3d1c7}
+.modal-box{background:#fff;border-radius:12px;padding:22px;width:460px;max-width:95vw;max-height:90vh;overflow-y:auto;border:1px solid #d3d1c7}
 .modal-title{font-size:16px;font-weight:700;color:#2c2c2a;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.modal-title span{font-size:20px}
-.modal-field{margin-bottom:14px}
-.modal-field label{display:block;font-size:11px;font-weight:600;color:#888780;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
-.modal-field input,.modal-field select,.modal-field textarea{width:100%;padding:8px 10px;border:1px solid #d3d1c7;border-radius:6px;font-size:12px;color:#2c2c2a;background:#f8f7f5;outline:none;font-family:inherit}
-.modal-field input:focus,.modal-field select:focus{border-color:#E8212A;background:#fff}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:16px;border-top:1px solid #f1efe8}
-.modal-actions button{padding:8px 18px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid}
-#btn-modal-add{background:#E8212A;color:#fff;border-color:#C41019}
-#btn-modal-add:hover{background:#C41019}
-#btn-modal-cancel{background:#fff;color:#444441;border-color:#d3d1c7}
-#btn-modal-cancel:hover{background:#f1efe8}
-.modal-hint{font-size:10px;color:#888780;margin-top:4px;line-height:1.5}
+.mf{margin-bottom:12px}
+.mf label{display:block;font-size:11px;font-weight:600;color:#888780;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.mf input,.mf select,.mf textarea{width:100%;padding:8px 10px;border:1px solid #d3d1c7;border-radius:6px;font-size:12px;color:#2c2c2a;background:#f8f7f5;outline:none;font-family:inherit}
+.mf input:focus,.mf select:focus{border-color:#E8212A;background:#fff}
+.cf-row{display:flex;gap:6px;margin-bottom:6px}
+.cf-row input{flex:1}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid #f1efe8}
+.modal-actions button{padding:8px 16px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid}
+.mm-list{max-height:170px;overflow:auto;border:1px solid #ece9e0;border-radius:6px;padding:6px;margin-bottom:8px}
+.mm-item{display:flex;align-items:center;justify-content:space-between;padding:3px 4px;font-size:11px}
+.mm-x{cursor:pointer;color:#C41019;font-weight:700;padding:0 6px}
+.hint{font-size:10px;color:#888780;margin-top:3px;line-height:1.5}
+svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 </style>
 </head>
 <body>
@@ -110,27 +116,45 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 <div id="topbar">
   <div class="logo">
     <svg width="20" height="20" viewBox="0 0 40 40"><rect width="40" height="40" rx="6" fill="#E8212A"/><text x="20" y="28" text-anchor="middle" fill="white" font-size="22" font-family="Arial" font-weight="bold">Z</text></svg>
-    Zoho EA
-    <span class="logo-sub">Enterprise Architecture Graph — Zoho Corporation 2026</span>
+    Zoho EA <span class="logo-sub">Enterprise Intelligence Graph — Zoho Corporation 2026</span>
   </div>
   <input id="search" type="text" placeholder="Search…" autocomplete="off">
-  <select id="layout-sel">
+  <select id="view-sel" class="sel" title="View">
+    <optgroup label="Graph">
+      <option value="graph">Block / Graph</option>
+      <option value="dependency-map">Dependency Map</option>
+      <option value="tree">Component Tree</option>
+      <option value="swimlanes">Swimlanes</option>
+      <option value="wheel">Dependency Wheel</option>
+    </optgroup>
+    <optgroup label="Lists">
+      <option value="pages">Pages</option>
+      <option value="table">Table</option>
+      <option value="reference-table">Reference Table</option>
+      <option value="matrix">Component Matrix</option>
+      <option value="dependency-matrix">Dependency Matrix</option>
+      <option value="relationships">Relationships</option>
+    </optgroup>
+    <optgroup label="Analytics">
+      <option value="capability-map">Capability Map</option>
+      <option value="treemap">Treemap</option>
+      <option value="bubble">Bubble Chart</option>
+      <option value="spider">Spider Chart</option>
+      <option value="tagscape">Tagscape</option>
+    </optgroup>
+  </select>
+  <select id="layout-sel" class="sel">
     <option value="cose">Force directed</option>
     <option value="tree-td">Tree — top down</option>
     <option value="tree-lr">Tree — left to right</option>
-    <option value="concentric">Concentric (by tier)</option>
+    <option value="concentric">Concentric (tier)</option>
     <option value="circle">Circle</option>
     <option value="grid">Grid</option>
   </select>
   <button class="btn" id="show-all-btn">Show all</button>
-  <div id="ctx-pill">
-    <span id="ctx-name"></span>
-    <button class="btn" style="padding:2px 7px;font-size:10px;margin-left:2px;background:transparent;border:none;cursor:pointer;color:#C41019" id="exit-focus-btn">✕</button>
-  </div>
-  <button class="btn" id="focus-btn" style="display:none">Focus</button>
   <button class="btn green" id="add-node-btn">+ Add node</button>
-  <button class="btn" id="relayout-btn">Re-layout</button>
-  <button class="btn red" id="rationalize-btn">⚡ Rationalize apps</button>
+  <button class="btn" id="metamodel-btn">⚙ Metamodel</button>
+  <button class="btn red" id="rationalize-btn">⚡ Rationalize</button>
 </div>
 <div id="main">
   <div id="sidebar">
@@ -139,28 +163,37 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
     <div class="sb-sep"></div>
     <div class="sb-hd">Reference types</div>
     <div id="ref-legend"></div>
+    <div class="sb-sep"></div>
+    <div class="sb-hd">Graph traversal</div>
+    <select id="tv-start" class="sb-field"><option value="">— start component —</option></select>
+    <select id="tv-depth" class="sb-field"><option value="1">Depth 1</option><option value="2" selected>Depth 2</option><option value="3">Depth 3</option><option value="4">Depth 4</option></select>
+    <div style="display:flex;gap:5px;margin-top:4px">
+      <button class="btn" id="tv-apply" style="flex:1">Traverse</button>
+      <button class="btn" id="tv-clear" style="flex:1">Clear</button>
+    </div>
+    <div class="hint">Shows only the sub-graph reachable from the start node.</div>
+    <div class="sb-sep"></div>
+    <div class="sb-hd">Tags</div>
+    <div id="tag-legend"><div class="hint">No tags yet. Add tags via a component's Edit panel.</div></div>
   </div>
   <div id="canvas-wrap">
     <div id="cy"></div>
-    <div id="hint-bar">Click any node to explore · Scroll to zoom · Drag to pan</div>
+    <div id="viewpane"></div>
+    <div id="hint-bar">Loading…</div>
   </div>
   <div id="rpanel">
     <div id="rp-empty">
       <div class="rpe-ico">🔍</div>
       <div class="rpe-t">Select a component</div>
-      <div class="rpe-s">Click any node in the graph to see its fields, relationships, and contextual analysis.</div>
+      <div class="rpe-s">Click any node or chip to see its 360° — fields, tags, relationships, and analysis.</div>
     </div>
     <div id="rp-content">
-      <div id="rpc-hd">
-        <div id="rpc-hd-text">
-          <div id="rp-badge"></div>
-          <div id="rp-name"></div>
-        </div>
-      </div>
+      <div id="rpc-hd"><div id="rp-badge"></div><div id="rp-name"></div></div>
       <div id="rpc-scroll">
         <div class="rp-narr" id="rp-narr"></div>
-        <div class="rp-focus-btn" id="rp-focus-btn">Show neighborhood only →</div>
-        <div class="rp-del-btn" id="rp-del-btn">🗑 Delete this component</div>
+        <div class="rp-btn foc" id="rp-focus-btn">Show neighborhood only →</div>
+        <div class="rp-btn edit" id="rp-edit-btn">✎ Edit fields & tags</div>
+        <div class="rp-btn del" id="rp-del-btn">🗑 Delete this component</div>
         <div id="rp-fields"></div>
         <div id="rp-refs"></div>
       </div>
@@ -170,904 +203,610 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 <div id="ins-wrap"></div>
 </div>
 
-<!-- Add Node Modal -->
+<!-- Add / Edit Node Modal -->
 <div class="modal-overlay" id="modal-add">
   <div class="modal-box">
-    <div class="modal-title"><span>＋</span> Add new component</div>
-    <div class="modal-field">
-      <label>Component type *</label>
-      <select id="an-type"></select>
-    </div>
-    <div class="modal-field">
-      <label>Name *</label>
-      <input id="an-name" type="text" placeholder="e.g. Zoho Sign, Marketing Division…">
-    </div>
-    <div class="modal-field">
-      <label>Description</label>
-      <input id="an-desc" type="text" placeholder="Brief description">
-    </div>
-    <div class="modal-field">
-      <label>Lifecycle phase</label>
-      <select id="an-phase">
-        <option>Live</option>
-        <option>Implementing</option>
-        <option>Phasing Out</option>
-        <option>Retired</option>
-      </select>
-    </div>
-    <div class="modal-field">
+    <div class="modal-title"><span id="an-modal-ico">＋</span> <span id="an-modal-title">Add new component</span></div>
+    <div class="mf"><label>Component type *</label><select id="an-type"></select></div>
+    <div class="mf"><label>Name *</label><input id="an-name" type="text" placeholder="e.g. Zoho Sign"></div>
+    <div class="mf"><label>Description</label><input id="an-desc" type="text" placeholder="Brief description"></div>
+    <div class="mf"><label>Lifecycle phase</label><select id="an-phase"><option>Live</option><option>Implementing</option><option>Phasing Out</option><option>Retired</option></select></div>
+    <div class="mf"><label>Tags (comma separated)</label><input id="an-tags" type="text" placeholder="e.g. gdpr, core, sovereign-cloud"></div>
+    <div class="mf" id="an-connect-wrap">
       <label>Connect to existing node (optional)</label>
       <select id="an-parent"><option value="">— No connection —</option></select>
-      <div class="modal-hint">Select a parent/related node to automatically create a reference.</div>
+      <div class="mf" id="an-ref-wrap" style="display:none;margin-top:8px"><label>Reference type</label><select id="an-ref"></select></div>
     </div>
-    <div class="modal-field" id="an-ref-wrap" style="display:none">
-      <label>Reference type</label>
-      <select id="an-ref"></select>
+    <div class="mf">
+      <label>Custom fields</label>
+      <div id="an-custom"></div>
+      <button class="btn" id="an-add-field" style="margin-top:4px">+ Add field</button>
+      <div class="hint">Any key/value. Number/URL/date supported — stored on the component.</div>
     </div>
     <div class="modal-actions">
-      <button id="btn-modal-cancel">Cancel</button>
-      <button id="btn-modal-add">Add component</button>
+      <button id="btn-modal-cancel" style="background:#fff;color:#444441;border-color:#d3d1c7">Cancel</button>
+      <button id="btn-modal-add" style="background:#E8212A;color:#fff;border-color:#C41019">Save</button>
     </div>
+  </div>
+</div>
+
+<!-- Metamodel editor -->
+<div class="modal-overlay" id="modal-mm">
+  <div class="modal-box">
+    <div class="modal-title"><span>⚙</span> Metamodel editor</div>
+    <div class="sb-hd" style="margin-left:0">Component types</div>
+    <div class="mm-list" id="mm-ctypes"></div>
+    <div class="cf-row"><input id="mm-ct-name" placeholder="New component type name"><input id="mm-ct-color" type="color" value="#185FA5" style="width:44px;padding:2px"><button class="btn" id="mm-ct-add">Add</button></div>
+    <div class="sb-hd" style="margin-left:0;margin-top:12px">Reference types</div>
+    <div class="mm-list" id="mm-rtypes"></div>
+    <div class="cf-row"><input id="mm-rt-name" placeholder="New reference type name"><input id="mm-rt-color" type="color" value="#3B6D11" style="width:44px;padding:2px"><button class="btn" id="mm-rt-add">Add</button></div>
+    <div class="sb-hd" style="margin-left:0;margin-top:12px">Allowed connections</div>
+    <div class="mm-list" id="mm-allowed"></div>
+    <div class="cf-row"><select id="mm-al-from"></select><select id="mm-al-ref"></select><select id="mm-al-to"></select><button class="btn" id="mm-al-add">Add</button></div>
+    <div class="modal-actions"><button id="btn-mm-close" style="background:#E8212A;color:#fff;border-color:#C41019">Done</button></div>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
 <script>
-/* ─── API LAYER (Neo4j via Render backend) ──────────────────────
-   __API_BASE__ and __API_KEY__ are replaced at runtime by server.js.
-   If the file is opened directly (offline), they stay literal and the
-   dashboard falls back to the built-in NODES/EDGES below. */
+/* ─── API LAYER (Neo4j via backend) ─────────────────────────── */
 var API_BASE=('__API_BASE__'.indexOf('__API')===0)?'':'__API_BASE__';
 var API_KEY=('__API_KEY__'.indexOf('__API')===0)?'':'__API_KEY__';
-var LIVE=false; /* set true once we successfully load from the API */
+var LIVE=false;
 function apiHeaders(){var h={'Content-Type':'application/json'};if(API_KEY)h['x-api-key']=API_KEY;return h;}
 function apiGet(p){return fetch(API_BASE+p,{headers:apiHeaders()}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();});}
-function apiSend(method,p,body){return fetch(API_BASE+p,{method:method,headers:apiHeaders(),body:body?JSON.stringify(body):undefined}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();});}
+function apiSend(m,p,b){return fetch(API_BASE+p,{method:m,headers:apiHeaders(),body:b?JSON.stringify(b):undefined}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();});}
 
 /* ─── CONFIG ────────────────────────────────────────────────── */
 var TC={
-  'Organization':        {c:'#E8212A',b:'#C41019',tc:'#fff',s:'roundrectangle',w:152,h:52},
-  'Org Unit':            {c:'#185FA5',b:'#0C447C',tc:'#fff',s:'roundrectangle',w:134,h:44},
-  'Person':              {c:'#3B6D11',b:'#27500A',tc:'#fff',s:'ellipse',        w:120,h:48},
-  'Business Capability': {c:'#993C1D',b:'#712B13',tc:'#fff',s:'roundrectangle',w:144,h:46},
-  'Application':         {c:'#085041',b:'#04342C',tc:'#fff',s:'roundrectangle',w:134,h:46},
-  'App Module':          {c:'#1D9E75',b:'#0F6E56',tc:'#fff',s:'roundrectangle',w:130,h:42},
-  'Interface':           {c:'#854F0B',b:'#633806',tc:'#fff',s:'roundrectangle',w:128,h:42},
-  'Data Store':          {c:'#BA7517',b:'#854F0B',tc:'#fff',s:'roundrectangle',w:128,h:42},
-  'Server':              {c:'#444441',b:'#2C2C2A',tc:'#fff',s:'roundrectangle',w:130,h:44},
-  'Tech Service':        {c:'#378ADD',b:'#185FA5',tc:'#fff',s:'roundrectangle',w:132,h:42},
-  'Tech Product':        {c:'#888780',b:'#5F5E5A',tc:'#fff',s:'roundrectangle',w:122,h:42},
-  'Location':            {c:'#993556',b:'#72243E',tc:'#fff',s:'roundrectangle',w:122,h:40},
+  'Organization':{c:'#E8212A',b:'#C41019',s:'roundrectangle',w:152,h:52,tier:1},
+  'Org Unit':{c:'#185FA5',b:'#0C447C',s:'roundrectangle',w:134,h:44,tier:2},
+  'Business Capability':{c:'#993C1D',b:'#712B13',s:'roundrectangle',w:144,h:46,tier:3},
+  'Person':{c:'#3B6D11',b:'#27500A',s:'ellipse',w:120,h:48,tier:4},
+  'Application':{c:'#085041',b:'#04342C',s:'roundrectangle',w:134,h:46,tier:5},
+  'App Module':{c:'#1D9E75',b:'#0F6E56',s:'roundrectangle',w:130,h:42,tier:6},
+  'Interface':{c:'#854F0B',b:'#633806',s:'roundrectangle',w:128,h:42,tier:7},
+  'Data Store':{c:'#BA7517',b:'#854F0B',s:'roundrectangle',w:128,h:42,tier:7},
+  'Server':{c:'#444441',b:'#2C2C2A',s:'roundrectangle',w:130,h:44,tier:8},
+  'Tech Service':{c:'#378ADD',b:'#185FA5',s:'roundrectangle',w:132,h:42,tier:8},
+  'Tech Product':{c:'#888780',b:'#5F5E5A',s:'roundrectangle',w:122,h:42,tier:9},
+  'Location':{c:'#993556',b:'#72243E',s:'roundrectangle',w:122,h:40,tier:10}
 };
-var RC={
-  'Owns':            '#3B6D11',
-  'Is Expert In':    '#1D9E75',
-  'Belongs To':      '#888780',
-  'Reports To':      '#5F5E5A',
-  'Consumes':        '#185FA5',
-  'Is Realized By':  '#993C1D',
-  'Is Supported By': '#444441',
-  'Connects To':     '#085041',
-  'Has Successor':   '#BA7517',
-  'Deploys To':      '#534AB7',
-  'Is Located At':   '#993556',
-  'Child Of':        '#b4b2a9',
-  'Module Of':       '#97C459',
-};
+var RC={'Owns':'#3B6D11','Is Expert In':'#1D9E75','Belongs To':'#888780','Reports To':'#5F5E5A','Consumes':'#185FA5','Is Realized By':'#993C1D','Is Supported By':'#444441','Connects To':'#085041','Has Successor':'#BA7517','Deploys To':'#534AB7','Is Located At':'#993556','Child Of':'#b4b2a9','Module Of':'#97C459'};
+function tcfg(t){return TC[t]||{c:'#888780',b:'#5F5E5A',s:'roundrectangle',w:130,h:44,tier:11};}
+function rcol(r){return RC[r]||'#888780';}
 
-/* ─── ZOHO DATA ─────────────────────────────────────────────── */
-var NODES=[
-  /* Organisation */
-  {id:'org1',label:'Zoho Corporation',type:'Organization',
-   f:{Name:'Zoho Corporation',Founded:'1996 (as AdventNet)',Headquarters:'Chennai, India','US HQ':'Austin, Texas','Employees':'17,856 (2025)',Revenue:'~USD 1B+ (private)',CEO:'Shailesh Kumar Davey',Model:'100% bootstrapped, private'}},
+var NODES=[],EDGES=[];
+var cy,selNodeId=null,inFocus=false,hiddenTypes={},currentView='graph',SEARCH='',activeTag=null;
 
-  /* Org Units — Engineering */
-  {id:'ou1',label:'CRM & Sales Products',type:'Org Unit',
-   f:{Name:'CRM & Sales Products Group',Description:'Builds Zoho CRM, SalesIQ, Bigin, Campaigns, Social',Location:'Chennai, India'}},
-  {id:'ou2',label:'Collaboration Products',type:'Org Unit',
-   f:{Name:'Collaboration Products Group',Description:'Builds Zoho Cliq, WorkDrive, Mail, Projects, Meeting',Location:'Chennai, India'}},
-  {id:'ou3',label:'Finance Products',type:'Org Unit',
-   f:{Name:'Finance Products Group',Description:'Builds Zoho Books, Expense, Invoice, Payroll, ERP',Location:'Chennai, India'}},
-  {id:'ou4',label:'Analytics & Platform',type:'Org Unit',
-   f:{Name:'Analytics & Platform Group',Description:'Builds Zoho Analytics, Creator, Flow, Catalyst',Location:'Chennai, India'}},
-  {id:'ou5',label:'HR & IT Products',type:'Org Unit',
-   f:{Name:'HR & IT Products Group',Description:'Builds Zoho People, Recruit, Desk, ServiceDesk Plus',Location:'Chennai + Tenkasi, India'}},
-  {id:'ou6',label:'AI Research (Zia)',type:'Org Unit',
-   f:{Name:'Zia AI Research Group',Description:'Develops Zia LLM and AI capabilities across all Zoho products',Location:'Chennai R&D Campus'}},
+/* ─── HELPERS ───────────────────────────────────────────────── */
+function nById(id){for(var i=0;i<NODES.length;i++)if(NODES[i].id===id)return NODES[i];return null;}
+function nl(id){var n=nById(id);return n?n.label:id;}
+function ntype(id){var n=nById(id);return n?n.type:'';}
+function outE(id,ref){return EDGES.filter(function(e){return e.s===id&&(!ref||e.r===ref);});}
+function inE(id,ref){return EDGES.filter(function(e){return e.t===id&&(!ref||e.r===ref);});}
+function num(v){var m=String(v==null?'':v).match(/-?\d+(\.\d+)?/);return m?parseFloat(m[0]):null;}
+function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function tagsOf(n){var t=n&&n.f&&n.f.Tags;if(!t)return [];if(Array.isArray(t))return t;return String(t).split(',').map(function(x){return x.trim();}).filter(Boolean);}
+function typesInUse(){var s={};NODES.forEach(function(n){s[n.type]=(s[n.type]||0)+1;});return s;}
+function matchesSearch(n){if(!SEARCH)return true;var q=SEARCH.toLowerCase();return n.label.toLowerCase().indexOf(q)>=0||n.type.toLowerCase().indexOf(q)>=0||tagsOf(n).join(' ').toLowerCase().indexOf(q)>=0;}
+function visibleNodes(){return NODES.filter(function(n){return !hiddenTypes[n.type]&&matchesSearch(n)&&(!activeTag||tagsOf(n).indexOf(activeTag)>=0);});}
+function chip(n){return '<span class="chip" style="background:'+tcfg(n.type).c+'" onclick="openDetail(\''+n.id+'\')" title="'+escH(n.type)+'"><span class="cdot"></span>'+escH(n.label)+'</span>';}
 
-  /* Org Units — Business */
-  {id:'ou7',label:'Global Sales & Revenue',type:'Org Unit',
-   f:{Name:'Global Sales & Revenue',Description:'Global sales, partnerships, channel management',Location:'Multiple — Austin, Chennai, Dublin, Dubai'}},
-  {id:'ou8',label:'Customer Success',type:'Org Unit',
-   f:{Name:'Customer Success & Support',Description:'Customer onboarding, health, retention, global support',Location:'Chennai, Austin, London'}},
-  {id:'ou9',label:'People Operations',type:'Org Unit',
-   f:{Name:'People Operations (HR)',Description:'Internal HR, talent acquisition, learning and payroll',Location:'Chennai HQ'}},
-  {id:'ou10',label:'Finance & Corporate Ops',type:'Org Unit',
-   f:{Name:'Finance & Corporate Operations',Description:'Internal finance, legal, compliance, procurement',Location:'Chennai HQ'}},
-  {id:'ou11',label:'IT Infrastructure',type:'Org Unit',
-   f:{Name:'IT Infrastructure & Security',Description:'Data centre operations, network, cybersecurity, compliance',Location:'Chennai, Austin, Amsterdam, Sydney, London'}},
-
-  /* Persons */
-  {id:'p1',label:'Shailesh Kumar Davey',type:'Person',
-   f:{Name:'Shailesh Kumar Davey',Role:'Group CEO (since Jan 2025)','Contact Email':'ceo@zoho.com',Status:'Co-founder, succeeded Sridhar Vembu as CEO'}},
-  {id:'p2',label:'Sridhar Vembu',type:'Person',
-   f:{Name:'Sridhar Vembu',Role:'Chief Scientist (formerly CEO)','Contact Email':'sridhar@zoho.com',Status:'Co-founder. Transitioned from CEO to R&D focus Jan 2025'}},
-  {id:'p3',label:'Vamsi Krishna',type:'Person',
-   f:{Name:'Vamsi Krishna',Role:'CEO (Operations)','Contact Email':'vamsi@zoho.com',Status:'Oversees day-to-day global operations'}},
-  {id:'p4',label:'Luke Xia',type:'Person',
-   f:{Name:'Luke Xia',Role:'Chief Operating Officer','Contact Email':'luke.xia@zoho.com',Status:'Oversees global operations and delivery'}},
-  {id:'p5',label:'Sridhar Iyengar',type:'Person',
-   f:{Name:'Sridhar Iyengar',Role:'VP & Head of Europe','Contact Email':'sridhar.iyengar@zoho.com',Status:'Leads European expansion, EMEA operations'}},
-  {id:'p6',label:'Bharath Sridhar',type:'Person',
-   f:{Name:'Bharath Sridhar',Role:'CTO, Labs (VP R&D)','Contact Email':'bharath@zoho.com',Status:'Leads Zoho Labs — Zia AI and experimental engineering'}},
-
-  /* Business Capabilities */
-  {id:'bc1',label:'Customer Relationship Mgmt',type:'Business Capability',
-   f:{Name:'Customer Relationship Management',Maturity:'5 — Measured','Market Diff':'5 — Market-disruptive','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'8 (calc)',Note:'Core market differentiator. Zoho CRM competes directly with Salesforce.'}},
-  {id:'bc2',label:'Marketing Automation',type:'Business Capability',
-   f:{Name:'Marketing Automation & Lead Generation',Maturity:'4 — Managed','Market Diff':'4 — Market-leading','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'6 (calc)'}},
-  {id:'bc3',label:'Financial Management',type:'Business Capability',
-   f:{Name:'Financial Management & Accounting',Maturity:'4 — Managed','Market Diff':'3 — Market-competitive','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'5 (calc)'}},
-  {id:'bc4',label:'Human Capital Management',type:'Business Capability',
-   f:{Name:'Human Capital Management',Maturity:'3 — Defined','Market Diff':'3 — Market-competitive','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'4 (calc)'}},
-  {id:'bc5',label:'IT Service Management',type:'Business Capability',
-   f:{Name:'IT Service Management (ITSM)',Maturity:'4 — Managed','Market Diff':'4 — Market-leading','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'4 (calc)'}},
-  {id:'bc6',label:'Product Engineering & R&D',type:'Business Capability',
-   f:{Name:'Product Engineering & R&D',Maturity:'5 — Measured','Market Diff':'5 — Market-disruptive','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'12 (calc)',Note:'Zoho builds 100% of its products in-house. No third-party acquisitions.'}},
-  {id:'bc7',label:'Customer Success & Support',type:'Business Capability',
-   f:{Name:'Customer Success & Support',Maturity:'4 — Managed','Market Diff':'3 — Market-competitive','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'5 (calc)'}},
-  {id:'bc8',label:'Business Intelligence & BI',type:'Business Capability',
-   f:{Name:'Business Intelligence & Analytics',Maturity:'4 — Managed','Market Diff':'4 — Market-leading','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'4 (calc)'}},
-  {id:'bc9',label:'Platform Integration',type:'Business Capability',
-   f:{Name:'Platform Integration & Automation',Maturity:'4 — Managed','Market Diff':'4 — Market-leading','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'6 (calc)'}},
-  {id:'bc10',label:'Collaboration & Productivity',type:'Business Capability',
-   f:{Name:'Collaboration & Productivity',Maturity:'4 — Managed','Market Diff':'3 — Market-competitive','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'7 (calc)',Note:'Zoho Workplace deployed for 1.2M Indian govt employees (2025).'}},
-  {id:'bc11',label:'AI & Machine Learning',type:'Business Capability',
-   f:{Name:'AI & Machine Learning (Zia)',Maturity:'3 — Defined','Market Diff':'4 — Market-leading','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'3 (calc)',Note:'Zia LLM launched 2025. Embedded across all Zoho One products.'}},
-
-  /* Applications — CRM & Sales */
-  {id:'app1',label:'Zoho CRM',type:'Application',
-   f:{Name:'Zoho CRM','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Mission Critical','Strategic Rating':'Invest (calc)','Business Value':'4.9 (calc)','Technical Fit':'4.7 (calc)','Criticality':'5 — Mission Critical','Ownership State':'Managed (calc)',Customers:'250,000+ businesses worldwide',Note:'Flagship product. Competes with Salesforce CRM.'}},
-  {id:'app2',label:'Zoho SalesIQ',type:'Application',
-   f:{Name:'Zoho SalesIQ','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.3 (calc)','Technical Fit':'4.1 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Live chat, bot builder, visitor intelligence.'}},
-  {id:'app3',label:'Zoho Campaigns',type:'Application',
-   f:{Name:'Zoho Campaigns','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Operational','Strategic Rating':'Tolerate (calc)','Business Value':'3.8 (calc)','Technical Fit':'3.2 (calc)','Criticality':'3 — Business Operational','Ownership State':'Managed (calc)',Note:'Email marketing. UI refresh planned. Competitor: Mailchimp, HubSpot.'}},
-  {id:'app4',label:'Zoho Social',type:'Application',
-   f:{Name:'Zoho Social','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Operational','Strategic Rating':'Invest (calc)','Business Value':'4.0 (calc)','Technical Fit':'4.0 (calc)','Criticality':'3 — Business Operational','Ownership State':'Managed (calc)'}},
-
-  /* Applications — Collaboration */
-  {id:'app5',label:'Zoho Cliq',type:'Application',
-   f:{Name:'Zoho Cliq','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.5 (calc)','Technical Fit':'4.3 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Team messaging. Internal primary comms tool across all Zoho divisions.'}},
-  {id:'app6',label:'Zoho WorkDrive',type:'Application',
-   f:{Name:'Zoho WorkDrive','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.4 (calc)','Technical Fit':'4.2 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Cloud document storage. Feb 2026 security incident noted (WorkDrive backdoor).'}},
-  {id:'app7',label:'Zoho Mail',type:'Application',
-   f:{Name:'Zoho Mail','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Mission Critical','Strategic Rating':'Invest (calc)','Business Value':'4.6 (calc)','Technical Fit':'4.4 (calc)','Criticality':'5 — Mission Critical','Ownership State':'Managed (calc)',Note:'1.2M Indian central government accounts migrated to Zoho Mail (2025).'}},
-  {id:'app8',label:'Zoho Projects',type:'Application',
-   f:{Name:'Zoho Projects','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Operational','Strategic Rating':'Invest (calc)','Business Value':'4.2 (calc)','Technical Fit':'4.0 (calc)','Criticality':'3 — Business Operational','Ownership State':'Managed (calc)'}},
-
-  /* Applications — Finance */
-  {id:'app9',label:'Zoho Books',type:'Application',
-   f:{Name:'Zoho Books','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.6 (calc)','Technical Fit':'4.4 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Cloud accounting. Used internally for Zoho corporate finance.'}},
-  {id:'app10',label:'Zoho Expense',type:'Application',
-   f:{Name:'Zoho Expense','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Operational','Strategic Rating':'Invest (calc)','Business Value':'4.1 (calc)','Technical Fit':'4.0 (calc)','Criticality':'3 — Business Operational','Ownership State':'Managed (calc)'}},
-  {id:'app11',label:'Zoho ERP',type:'Application',
-   f:{Name:'Zoho ERP','App Type':'SaaS — Own Product','Lifecycle Phase':'Implementing','Service Level':'TBD — Not Yet Live','Strategic Rating':'Invest (planned)','Business Value':'4.8 (projected)','Technical Fit':'3.5 (early build)','Criticality':'TBD','Ownership State':'Nominated (calc)',Note:'Launched Jan 2026. Built in Kumbakonam, Tamil Nadu. ERP for mid-market.'}},
-
-  /* Applications — HR */
-  {id:'app12',label:'Zoho People',type:'Application',
-   f:{Name:'Zoho People','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.3 (calc)','Technical Fit':'4.2 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'HRMS. Used internally to manage Zoho\'s own 17,856 employees.'}},
-  {id:'app13',label:'Zoho Recruit',type:'Application',
-   f:{Name:'Zoho Recruit','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Operational','Strategic Rating':'Invest (calc)','Business Value':'4.0 (calc)','Technical Fit':'3.9 (calc)','Criticality':'3 — Business Operational','Ownership State':'Managed (calc)'}},
-
-  /* Applications — IT & Platform */
-  {id:'app14',label:'Zoho Desk',type:'Application',
-   f:{Name:'Zoho Desk','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Mission Critical','Strategic Rating':'Invest (calc)','Business Value':'4.7 (calc)','Technical Fit':'4.5 (calc)','Criticality':'5 — Mission Critical','Ownership State':'Managed (calc)',Note:'Helpdesk. Built in Tenkasi office. Used for all customer support.'}},
-  {id:'app15',label:'Zoho Analytics',type:'Application',
-   f:{Name:'Zoho Analytics','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.8 (calc)','Technical Fit':'4.5 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'BI platform. Connects natively to all 40+ Zoho One apps.'}},
-  {id:'app16',label:'Zoho Creator',type:'Application',
-   f:{Name:'Zoho Creator','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.6 (calc)','Technical Fit':'4.7 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Low-code platform. Powers custom internal apps and customer-facing apps.'}},
-  {id:'app17',label:'Zoho Flow',type:'Application',
-   f:{Name:'Zoho Flow','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.7 (calc)','Technical Fit':'4.5 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Integration automation. 700+ connectors. Zoho One integration backbone.'}},
-  {id:'app18',label:'Zia LLM',type:'Application',
-   f:{Name:'Zia — Zoho AI Platform','App Type':'SaaS — Own Build','Lifecycle Phase':'Implementing','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.9 (projected)','Technical Fit':'3.8 (early)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Zoho large language model launched 2025. Embedding AI across all products.'}},
-
-  /* App Module */
-  {id:'am1',label:'Zoho CRM — Deals Pipeline',type:'App Module',
-   f:{Name:'Deals Pipeline Module','Lifecycle Phase':'Live',Description:'Core sales pipeline management within Zoho CRM',Parent:'Zoho CRM'}},
-
-  /* Interface */
-  {id:'if1',label:'Zoho One API Gateway',type:'Interface',
-   f:{Name:'Zoho One Unified API Gateway',Protocol:'REST/GraphQL','Request Type':'Read/Write','Lifecycle Phase':'Live',Description:'Central API gateway connecting all Zoho One products'}},
-
-  /* Data Store */
-  {id:'ds1',label:'Zoho Analytics Data Lake',type:'Data Store',
-   f:{Name:'Zoho Analytics Data Lake','Lifecycle Phase':'Live',Description:'Centralised data warehouse feeding all BI reports across Zoho One suite'}},
-
-  /* Infrastructure */
-  {id:'srv1',label:'Zoho DC — Chennai (Primary)',type:'Server',
-   f:{Name:'Zoho Data Centre — Chennai','Server Hosting':'Physical + VM','Server Type':'Primary Production DC','Network Zone':'Private','Deploy Env':'Production','Lifecycle Phase':'Live',Note:'Main DC. Hosts majority of production workloads.'}},
-  {id:'srv2',label:'Zoho DC — US East (Austin)',type:'Server',
-   f:{Name:'Zoho Data Centre — Austin, Texas','Server Hosting':'Physical + VM','Server Type':'Regional Production DC','Network Zone':'Private','Deploy Env':'Production','Lifecycle Phase':'Live'}},
-  {id:'srv3',label:'Zoho DC — EU (Amsterdam)',type:'Server',
-   f:{Name:'Zoho Data Centre — Amsterdam, Netherlands','Server Hosting':'Physical + VM','Server Type':'EU Regional DC','Network Zone':'Private','Deploy Env':'Production','Lifecycle Phase':'Live',Note:'EU data residency for GDPR compliance.'}},
-  {id:'srv4',label:'Zoho DC — AU (Sydney)',type:'Server',
-   f:{Name:'Zoho Data Centre — Sydney, Australia','Server Hosting':'Physical + VM','Server Type':'APAC Regional DC','Network Zone':'Private','Deploy Env':'Production','Lifecycle Phase':'Live'}},
-  {id:'srv5',label:'Zoho DC — UK (London)',type:'Server',
-   f:{Name:'Zoho Data Centre — London, UK','Server Hosting':'Physical + VM','Server Type':'UK Regional DC','Network Zone':'Private','Deploy Env':'Implementing','Lifecycle Phase':'Implementing',Note:'New UK DC announced April 2026. Digital sovereignty positioning.'}},
-
-  /* Tech Services */
-  {id:'ts1',label:'Cloudflare CDN',type:'Tech Service',
-   f:{Name:'Cloudflare CDN','Server Hosting':'Cloud — Global','Deploy Env':'Production','Lifecycle Phase':'Live',Description:'Global CDN for all Zoho web properties and app delivery'}},
-  {id:'ts2',label:'AWS S3 — Backup',type:'Tech Service',
-   f:{Name:'AWS S3 — Backup Storage','Server Hosting':'Cloud — AWS','Deploy Env':'Production','Lifecycle Phase':'Live',Description:'Amazon S3 used for off-site backup and archival storage'}},
-
-  /* Tech Products */
-  {id:'tp1',label:'Linux (Ubuntu LTS)',type:'Tech Product',
-   f:{Name:'Linux — Ubuntu LTS',Vendor:'Canonical',Version:'22.04 LTS','Lifecycle Phase':'Live',Description:'Base OS across all Zoho data centres'}},
-  {id:'tp2',label:'Kubernetes (k8s)',type:'Tech Product',
-   f:{Name:'Kubernetes',Vendor:'CNCF',Version:'1.28+','Lifecycle Phase':'Live',Description:'Container orchestration for microservices across Zoho products'}},
-  {id:'tp3',label:'PostgreSQL',type:'Tech Product',
-   f:{Name:'PostgreSQL',Vendor:'Open Source',Version:'15+','Lifecycle Phase':'Live',Description:'Primary relational database for multiple Zoho products'}},
-
-  /* Locations */
-  {id:'loc1',label:'Chennai, India (HQ)',type:'Location',
-   f:{Name:'Chennai, India — Global HQ',Address:'Estancia IT Park, Chennai, Tamil Nadu',Type:'Global Headquarters & Primary Engineering Campus'}},
-  {id:'loc2',label:'Austin, Texas, USA',type:'Location',
-   f:{Name:'Austin, Texas — US HQ',Address:'Del Valle, Austin, Texas (moved from Pleasanton CA in 2019)',Type:'US Headquarters'}},
-  {id:'loc3',label:'Amsterdam, Netherlands',type:'Location',
-   f:{Name:'Amsterdam, Netherlands',Address:'Amsterdam, Netherlands',Type:'EU Headquarters & EU DC — GDPR data residency'}},
-  {id:'loc4',label:'Sydney, Australia',type:'Location',
-   f:{Name:'Sydney, Australia',Address:'Sydney, New South Wales',Type:'APAC Regional Office & Data Centre'}},
-  {id:'loc5',label:'London, UK',type:'Location',
-   f:{Name:'London, United Kingdom',Address:'London, UK',Type:'UK Office & New Data Centre (April 2026)'}},
-];
-
-var EDGES=[
-  /* Person → Owns */
-  {id:'e1', s:'p1',t:'ou7', r:'Owns'},
-  {id:'e2', s:'p1',t:'app1',r:'Owns'},
-  {id:'e3', s:'p2',t:'ou6', r:'Owns'},
-  {id:'e4', s:'p2',t:'app18',r:'Owns'},
-  {id:'e5', s:'p3',t:'ou1', r:'Owns'},
-  {id:'e6', s:'p6',t:'ou4', r:'Owns'},
-  {id:'e7', s:'p6',t:'app15',r:'Owns'},
-  {id:'e8', s:'p6',t:'app16',r:'Owns'},
-  {id:'e9', s:'p4',t:'ou11',r:'Owns'},
-  {id:'e10',s:'p5',t:'ou8', r:'Owns'},
-  /* Person → Is Expert In */
-  {id:'e11',s:'p2',t:'bc1', r:'Is Expert In'},
-  {id:'e12',s:'p2',t:'bc6', r:'Is Expert In'},
-  {id:'e13',s:'p2',t:'bc11',r:'Is Expert In'},
-  {id:'e14',s:'p6',t:'bc8', r:'Is Expert In'},
-  {id:'e15',s:'p6',t:'bc9', r:'Is Expert In'},
-  {id:'e16',s:'p5',t:'bc10',r:'Is Expert In'},
-  {id:'e17',s:'p3',t:'bc1', r:'Is Expert In'},
-  /* Person → Reports To */
-  {id:'e18',s:'p2',t:'p1',r:'Reports To'},
-  {id:'e19',s:'p3',t:'p1',r:'Reports To'},
-  {id:'e20',s:'p4',t:'p1',r:'Reports To'},
-  {id:'e21',s:'p5',t:'p1',r:'Reports To'},
-  {id:'e22',s:'p6',t:'p3',r:'Reports To'},
-  /* Person → Belongs To */
-  {id:'e23',s:'p1',t:'ou7', r:'Belongs To'},
-  {id:'e24',s:'p2',t:'ou6', r:'Belongs To'},
-  {id:'e25',s:'p3',t:'ou1', r:'Belongs To'},
-  {id:'e26',s:'p4',t:'ou11',r:'Belongs To'},
-  {id:'e27',s:'p5',t:'ou8', r:'Belongs To'},
-  {id:'e28',s:'p6',t:'ou4', r:'Belongs To'},
-  /* Org Unit → Belongs To Organization */
-  {id:'e29',s:'ou1', t:'org1',r:'Belongs To'},
-  {id:'e30',s:'ou2', t:'org1',r:'Belongs To'},
-  {id:'e31',s:'ou3', t:'org1',r:'Belongs To'},
-  {id:'e32',s:'ou4', t:'org1',r:'Belongs To'},
-  {id:'e33',s:'ou5', t:'org1',r:'Belongs To'},
-  {id:'e34',s:'ou6', t:'org1',r:'Belongs To'},
-  {id:'e35',s:'ou7', t:'org1',r:'Belongs To'},
-  {id:'e36',s:'ou8', t:'org1',r:'Belongs To'},
-  {id:'e37',s:'ou9', t:'org1',r:'Belongs To'},
-  {id:'e38',s:'ou10',t:'org1',r:'Belongs To'},
-  {id:'e39',s:'ou11',t:'org1',r:'Belongs To'},
-  /* Org Unit → Consumes (dogfooding & internal use) */
-  {id:'e40',s:'ou7', t:'app1', r:'Consumes'},
-  {id:'e41',s:'ou7', t:'app2', r:'Consumes'},
-  {id:'e42',s:'ou7', t:'app3', r:'Consumes'},
-  {id:'e43',s:'ou10',t:'app9', r:'Consumes'},
-  {id:'e44',s:'ou10',t:'app10',r:'Consumes'},
-  {id:'e45',s:'ou9', t:'app12',r:'Consumes'},
-  {id:'e46',s:'ou9', t:'app13',r:'Consumes'},
-  {id:'e47',s:'ou8', t:'app14',r:'Consumes'},
-  {id:'e48',s:'ou8', t:'app5', r:'Consumes'},
-  {id:'e49',s:'ou1', t:'app1', r:'Consumes'},
-  {id:'e50',s:'ou2', t:'app5', r:'Consumes'},
-  {id:'e51',s:'ou2', t:'app6', r:'Consumes'},
-  {id:'e52',s:'ou4', t:'app15',r:'Consumes'},
-  {id:'e53',s:'ou11',t:'app17',r:'Consumes'},
-  {id:'e54',s:'ou11',t:'app16',r:'Consumes'},
-  /* Business Capability → Is Realized By */
-  {id:'e55',s:'bc1', t:'app1', r:'Is Realized By'},
-  {id:'e56',s:'bc1', t:'ou1',  r:'Is Realized By'},
-  {id:'e57',s:'bc2', t:'app3', r:'Is Realized By'},
-  {id:'e58',s:'bc2', t:'app2', r:'Is Realized By'},
-  {id:'e59',s:'bc2', t:'app4', r:'Is Realized By'},
-  {id:'e60',s:'bc3', t:'app9', r:'Is Realized By'},
-  {id:'e61',s:'bc3', t:'app10',r:'Is Realized By'},
-  {id:'e62',s:'bc3', t:'ou3',  r:'Is Realized By'},
-  {id:'e63',s:'bc4', t:'app12',r:'Is Realized By'},
-  {id:'e64',s:'bc4', t:'app13',r:'Is Realized By'},
-  {id:'e65',s:'bc4', t:'ou5',  r:'Is Realized By'},
-  {id:'e66',s:'bc5', t:'app14',r:'Is Realized By'},
-  {id:'e67',s:'bc5', t:'ou5',  r:'Is Realized By'},
-  {id:'e68',s:'bc6', t:'ou1',  r:'Is Realized By'},
-  {id:'e69',s:'bc6', t:'ou4',  r:'Is Realized By'},
-  {id:'e70',s:'bc7', t:'app14',r:'Is Realized By'},
-  {id:'e71',s:'bc7', t:'ou8',  r:'Is Realized By'},
-  {id:'e72',s:'bc8', t:'app15',r:'Is Realized By'},
-  {id:'e73',s:'bc8', t:'ou4',  r:'Is Realized By'},
-  {id:'e74',s:'bc9', t:'app16',r:'Is Realized By'},
-  {id:'e75',s:'bc9', t:'app17',r:'Is Realized By'},
-  {id:'e76',s:'bc10',t:'app5', r:'Is Realized By'},
-  {id:'e77',s:'bc10',t:'app7', r:'Is Realized By'},
-  {id:'e78',s:'bc10',t:'app6', r:'Is Realized By'},
-  {id:'e79',s:'bc10',t:'app8', r:'Is Realized By'},
-  {id:'e80',s:'bc10',t:'ou2',  r:'Is Realized By'},
-  {id:'e81',s:'bc11',t:'app18',r:'Is Realized By'},
-  {id:'e82',s:'bc11',t:'ou6',  r:'Is Realized By'},
-  /* App Module */
-  {id:'e83',s:'am1',t:'app1',r:'Module Of'},
-  /* Interface connections */
-  {id:'e84',s:'app17',t:'if1',r:'Connects To'},
-  {id:'e85',s:'if1',t:'app1',r:'Connects To'},
-  {id:'e86',s:'if1',t:'app15',r:'Connects To'},
-  {id:'e87',s:'if1',t:'app14',r:'Connects To'},
-  /* Data Store */
-  {id:'e88',s:'ds1',t:'app15',r:'Module Of'},
-  /* Application → Is Supported By */
-  {id:'e89',s:'app1', t:'srv1',r:'Is Supported By'},
-  {id:'e90',s:'app1', t:'srv2',r:'Is Supported By'},
-  {id:'e91',s:'app14',t:'srv1',r:'Is Supported By'},
-  {id:'e92',s:'app14',t:'srv2',r:'Is Supported By'},
-  {id:'e93',s:'app7', t:'srv1',r:'Is Supported By'},
-  {id:'e94',s:'app7', t:'srv3',r:'Is Supported By'},
-  {id:'e95',s:'app14',t:'srv3',r:'Is Supported By'},
-  {id:'e96',s:'app5', t:'srv1',r:'Is Supported By'},
-  {id:'e97',s:'app5', t:'srv2',r:'Is Supported By'},
-  {id:'e98',s:'app9', t:'srv1',r:'Is Supported By'},
-  {id:'e99',s:'app12',t:'srv2',r:'Is Supported By'},
-  {id:'e100',s:'app6',t:'srv2',r:'Is Supported By'},
-  {id:'e101',s:'app6',t:'ts1',r:'Is Supported By'},
-  {id:'e102',s:'ds1', t:'srv1',r:'Is Supported By'},
-  /* Server → Is Located At */
-  {id:'e103',s:'srv1',t:'loc1',r:'Is Located At'},
-  {id:'e104',s:'srv2',t:'loc2',r:'Is Located At'},
-  {id:'e105',s:'srv3',t:'loc3',r:'Is Located At'},
-  {id:'e106',s:'srv4',t:'loc4',r:'Is Located At'},
-  {id:'e107',s:'srv5',t:'loc5',r:'Is Located At'},
-  /* Tech Service → Is Located At */
-  {id:'e108',s:'ts2',t:'loc2',r:'Is Located At'},
-  /* Tech Product → Deploys To */
-  {id:'e109',s:'tp1',t:'srv1',r:'Deploys To'},
-  {id:'e110',s:'tp1',t:'srv2',r:'Deploys To'},
-  {id:'e111',s:'tp1',t:'srv3',r:'Deploys To'},
-  {id:'e112',s:'tp2',t:'srv1',r:'Deploys To'},
-  {id:'e113',s:'tp3',t:'srv1',r:'Deploys To'},
-  {id:'e114',s:'tp3',t:'ds1', r:'Deploys To'},
-  /* Has Successor */
-  {id:'e115',s:'app3',t:'app2',r:'Has Successor'},
-];
-
-/* ─── STATE ─────────────────────────────────────────────────── */
-var cy,selNode=null,inFocus=false,hiddenTypes={},selNodeId=null;
-
-/* ─── UTIL ──────────────────────────────────────────────────── */
-function nl(id){var n=NODES.find(function(x){return x.id===id;});return n?n.label:id;}
-function ntype(id){var n=NODES.find(function(x){return x.id===id;});return n?n.type:'';}
-function outE(id,ref){return EDGES.filter(function(e){return e.s===id&&(!ref||e.r===ref);}); }
-function inE(id,ref){return EDGES.filter(function(e){return e.t===id&&(!ref||e.r===ref);}); }
-
-/* ─── CYTOSCAPE ─────────────────────────────────────────────── */
+/* ─── CYTOSCAPE GRAPH ───────────────────────────────────────── */
 function initCy(){
   var els=[];
-  NODES.forEach(function(n){
-    var t=TC[n.type]||TC['Location'];
-    els.push({data:{id:n.id,label:n.label,type:n.type,nf:n.f,
-      color:t.c,bc:t.b,tc:t.tc,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px'}});
-  });
-  EDGES.forEach(function(e){
-    els.push({data:{id:e.id,source:e.s,target:e.t,ref:e.r,rc:RC[e.r]||'#888780'}});
-  });
-  cy=cytoscape({
-    container:document.getElementById('cy'),
-    elements:els,
+  NODES.forEach(function(n){var t=tcfg(n.type);els.push({data:{id:n.id,label:n.label,type:n.type,nf:n.f,color:t.c,bc:t.b,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px'}});});
+  EDGES.forEach(function(e){els.push({data:{id:e.id,source:e.s,target:e.t,ref:e.r,rc:rcol(e.r)}});});
+  cy=cytoscape({container:document.getElementById('cy'),elements:els,
     style:[
-      {selector:'node',style:{
-        'label':'data(label)','color':'data(tc)',
-        'background-color':'data(color)','border-color':'data(bc)','border-width':2,
-        'shape':'data(shape)','width':'data(nw)','height':'data(nh)',
-        'font-size':10,'font-family':'-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
-        'font-weight':'500','text-valign':'center','text-halign':'center',
-        'text-wrap':'wrap','text-max-width':'data(tmw)','cursor':'pointer',
-        'overlay-padding':'6px','transition-property':'opacity','transition-duration':'150ms',
-      }},
-      {selector:'node:selected',style:{
-        'border-width':4,'border-color':'#2c2c2a','overlay-color':'#000','overlay-opacity':0.05}},
-      {selector:'edge',style:{
-        'curve-style':'bezier','target-arrow-shape':'vee',
-        'target-arrow-color':'#c0beba','line-color':'#c0beba','width':1.5,
-        'label':'data(ref)','font-size':8,
-        'font-family':'-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
-        'color':'#888780','text-rotation':'autorotate',
-        'text-background-color':'#fafaf8','text-background-opacity':0.88,'text-background-padding':'2px',
-        'opacity':0.65,'transition-property':'opacity,line-color,width','transition-duration':'150ms',
-      }},
-      {selector:'edge[ref="Child Of"],edge[ref="Module Of"]',style:{
-        'line-style':'dashed','line-dash-pattern':[5,4],'width':1}},
-      {selector:'.hi',style:{
-        'line-color':'data(rc)','target-arrow-color':'data(rc)','color':'data(rc)',
-        'opacity':1,'width':2.5,'font-size':9,'font-weight':'600',
-        'text-background-color':'#fff','text-background-padding':'3px'}},
-      {selector:'.dim',style:{'opacity':0.07}},
-      {selector:'.dim-n',style:{'opacity':0.1}},
+      {selector:'node',style:{'label':'data(label)','color':'#fff','background-color':'data(color)','border-color':'data(bc)','border-width':2,'shape':'data(shape)','width':'data(nw)','height':'data(nh)','font-size':10,'font-weight':'500','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'data(tmw)','cursor':'pointer','transition-property':'opacity','transition-duration':'150ms'}},
+      {selector:'node:selected',style:{'border-width':4,'border-color':'#2c2c2a'}},
+      {selector:'edge',style:{'curve-style':'bezier','target-arrow-shape':'vee','target-arrow-color':'#c0beba','line-color':'#c0beba','width':1.5,'label':'data(ref)','font-size':8,'color':'#888780','text-rotation':'autorotate','text-background-color':'#fafaf8','text-background-opacity':0.88,'text-background-padding':'2px','opacity':0.6}},
+      {selector:'edge[ref="Child Of"],edge[ref="Module Of"]',style:{'line-style':'dashed','width':1}},
+      {selector:'.hi',style:{'line-color':'data(rc)','target-arrow-color':'data(rc)','color':'data(rc)','opacity':1,'width':2.5,'font-weight':'600'}},
+      {selector:'.dim',style:{'opacity':0.06}},{selector:'.dim-n',style:{'opacity':0.09}}
     ],
-    layout:{name:'cose',idealEdgeLength:120,nodeOverlap:20,fit:true,padding:50,
-      randomize:false,componentSpacing:120,nodeRepulsion:500000,edgeElasticity:100,
-      gravity:80,numIter:1200,initialTemp:250,coolingFactor:0.95,minTemp:1.0},
-    minZoom:0.08,maxZoom:4,wheelSensitivity:0.3,
-  });
-  cy.on('tap','node',function(evt){onNodeTap(evt.target);});
+    layout:{name:'cose',idealEdgeLength:120,nodeOverlap:20,fit:true,padding:50,randomize:false,componentSpacing:120,nodeRepulsion:500000,gravity:80,numIter:1200},
+    minZoom:0.08,maxZoom:4,wheelSensitivity:0.3});
+  cy.on('tap','node',function(evt){onGraphTap(evt.target);});
   cy.on('tap',function(evt){if(evt.target===cy)onBgTap();});
 }
-
-/* ─── NODE EVENTS ───────────────────────────────────────────── */
-function onNodeTap(node){
-  selNode=node; selNodeId=node.data('id');
+function onGraphTap(node){
+  selNodeId=node.data('id');
   cy.elements().removeClass('hi dim dim-n');
   var nb=node.closedNeighborhood();
   cy.elements().not(nb).each(function(el){el.addClass(el.isNode()?'dim-n':'dim');});
   node.connectedEdges().addClass('hi');
-  cy.$(':selected').unselect(); node.select();
-  showDetail(node);
-  document.getElementById('focus-btn').style.display='';
+  cy.$(':selected').unselect();node.select();
+  showDetail(selNodeId);
   document.getElementById('hint-bar').style.display='none';
 }
-function onBgTap(){
-  if(inFocus)return;
-  selNode=null; selNodeId=null;
-  cy.elements().removeClass('hi dim dim-n');
-  cy.$(':selected').unselect();
-  hideDetail();
-  document.getElementById('focus-btn').style.display='none';
-  document.getElementById('hint-bar').style.display='';
-}
+function onBgTap(){if(inFocus)return;selNodeId=null;cy.elements().removeClass('hi dim dim-n');cy.$(':selected').unselect();hideDetail();document.getElementById('hint-bar').style.display='';}
 
-/* ─── DETAIL PANEL ──────────────────────────────────────────── */
-function showDetail(node){
-  var d=node.data(), t=TC[d.type]||TC['Location'];
-  var badge=document.getElementById('rp-badge');
-  badge.textContent=d.type;
-  badge.style.cssText='background:'+d.color+'22;color:'+d.color+';border:1px solid '+d.color+'55;display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-bottom:4px';
-  document.getElementById('rp-name').textContent=d.label;
-  document.getElementById('rp-narr').textContent=buildNarrative(d.id);
+/* ─── DETAIL 360 (works in every view) ──────────────────────── */
+function openDetail(id){selNodeId=id;showDetail(id);if(currentView==='graph'){var n=cy.$('#'+id);if(n.length)n.emit('tap');}}
+function showDetail(id){
+  var n=nById(id);if(!n)return;var t=tcfg(n.type);
+  var badge=document.getElementById('rp-badge');badge.textContent=n.type;
+  badge.style.cssText='background:'+t.c+'22;color:'+t.c+';border:1px solid '+t.c+'55;display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-bottom:4px';
+  document.getElementById('rp-name').textContent=n.label;
+  document.getElementById('rp-narr').textContent=buildNarrative(id);
   var fh='<div class="rp-sec"><div class="rp-sec-hd">Fields</div>';
-  var fields=d.nf||{};
-  Object.keys(fields).forEach(function(k){
-    var v=String(fields[k]),calc=v.indexOf('(calc)')>-1||v.indexOf('(proj)')>-1;
-    var cls='fv'+(calc?' calc':'');
-    if(v==='Invest (calc)'||v==='5 — Measured'||v==='4 — Managed') cls+=' good';
-    if(v==='Tolerate (calc)'||v.indexOf('⚠')>-1) cls+=' warn';
+  var tags=tagsOf(n);
+  Object.keys(n.f||{}).forEach(function(k){
+    if(k==='Tags')return;
+    var v=String(n.f[k]),calc=v.indexOf('(calc)')>-1||v.indexOf('(proj')>-1,cls='fv'+(calc?' calc':'');
+    if(v==='Invest (calc)'||v.indexOf('Measured')>-1||v.indexOf('Managed')>-1)cls+=' good';
+    if(v==='Tolerate (calc)'||v.indexOf('⚠')>-1)cls+=' warn';
     fh+='<div class="frow"><span class="fk">'+escH(k)+'</span><span class="'+cls+'">'+escH(v)+'</span></div>';
   });
   fh+='</div>';
+  if(tags.length){fh+='<div class="rp-sec"><div class="rp-sec-hd">Tags</div>'+tags.map(function(t){return '<span class="rp-tag">'+escH(t)+'</span>';}).join('')+'</div>';}
   document.getElementById('rp-fields').innerHTML=fh;
-  var outEdges=cy.edges('[source="'+d.id+'"]');
-  var inEdges=cy.edges('[target="'+d.id+'"]');
-  var rh='';
-  if(outEdges.length){
-    rh+='<div class="rp-sec"><div class="rp-sec-hd">Outgoing ('+outEdges.length+')</div></div>';
-    outEdges.forEach(function(e){
-      var tgt=cy.$('#'+e.data('target'));
-      var tc2=TC[tgt.data('type')]||TC['Location'];
-      rh+='<div class="rref" onclick="jumpTo(\''+e.data('target')+'\')">'
-        +'<div class="rr-dot" style="background:'+e.data('rc')+'"></div>'
-        +'<div class="rr-body"><div class="rr-type">'+escH(e.data('ref'))+'</div>'
-        +'<div class="rr-tgt" style="color:'+tc2.c+'">'+escH(tgt.data('label'))+'</div></div>'
-        +'<div class="rr-dir out">out</div></div>';
-    });
-  }
-  if(inEdges.length){
-    rh+='<div class="rp-sec"><div class="rp-sec-hd">Incoming ('+inEdges.length+')</div></div>';
-    inEdges.forEach(function(e){
-      var src=cy.$('#'+e.data('source'));
-      var sc2=TC[src.data('type')]||TC['Location'];
-      rh+='<div class="rref" onclick="jumpTo(\''+e.data('source')+'\')">'
-        +'<div class="rr-dot" style="background:'+e.data('rc')+'"></div>'
-        +'<div class="rr-body"><div class="rr-type">'+escH(e.data('ref'))+'</div>'
-        +'<div class="rr-tgt" style="color:'+sc2.c+'">'+escH(src.data('label'))+'</div></div>'
-        +'<div class="rr-dir in">in</div></div>';
-    });
-  }
-  if(!outEdges.length&&!inEdges.length) rh='<div style="padding:12px 14px;font-size:11px;color:#888780;font-style:italic">No references found.</div>';
+  var oe=outE(id),ie=inE(id),rh='';
+  if(oe.length){rh+='<div class="rp-sec"><div class="rp-sec-hd">Outgoing ('+oe.length+')</div></div>';oe.forEach(function(e){rh+=refRow(e.r,e.t,'out');});}
+  if(ie.length){rh+='<div class="rp-sec"><div class="rp-sec-hd">Incoming ('+ie.length+')</div></div>';ie.forEach(function(e){rh+=refRow(e.r,e.s,'in');});}
+  if(!oe.length&&!ie.length)rh='<div style="padding:12px 14px;font-size:11px;color:#888780;font-style:italic">No references.</div>';
   document.getElementById('rp-refs').innerHTML=rh;
   document.getElementById('rp-empty').style.display='none';
   document.getElementById('rp-content').style.display='flex';
+  document.getElementById('rp-focus-btn').style.display=currentView==='graph'?'':'none';
 }
-function hideDetail(){
-  document.getElementById('rp-empty').style.display='';
-  document.getElementById('rp-content').style.display='none';
-}
-function jumpTo(id){
-  var n=cy.$('#'+id);
-  if(!n.length)return;
-  cy.animate({center:{eles:n},zoom:Math.max(cy.zoom(),1.1)},{duration:350});
-  setTimeout(function(){n.emit('tap');},400);
-}
-function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-/* ─── FOCUS ─────────────────────────────────────────────────── */
-function doFocus(){
-  if(!selNode)return;
-  inFocus=true;
-  var nb=selNode.closedNeighborhood();
-  cy.elements().not(nb).style('display','none');
-  nb.style('display','element');
-  cy.elements().removeClass('hi dim dim-n');
-  selNode.connectedEdges().addClass('hi');
-  cy.layout({name:'cose',fit:true,padding:70,nodeRepulsion:620000,idealEdgeLength:170,animate:true,animationDuration:500,randomize:false}).run();
-  document.getElementById('ctx-pill').style.display='flex';
-  document.getElementById('ctx-name').textContent=selNode.data('label');
-  document.getElementById('focus-btn').style.display='none';
-}
-function exitFocus(){
-  inFocus=false;
-  cy.elements().style('display','element');
-  applyHiddenTypes();
-  document.getElementById('ctx-pill').style.display='none';
-  if(selNode){
-    cy.elements().removeClass('hi dim dim-n');
-    var nb=selNode.closedNeighborhood();
-    cy.elements().not(nb).each(function(el){el.addClass(el.isNode()?'dim-n':'dim');});
-    selNode.connectedEdges().addClass('hi');
-    document.getElementById('focus-btn').style.display='';
-  }
-  applyLayout(document.getElementById('layout-sel').value);
-}
-function showAll(){
-  inFocus=false; selNode=null; selNodeId=null;
-  cy.elements().removeClass('hi dim dim-n');
-  cy.elements().style('display','element');
-  applyHiddenTypes(); cy.$(':selected').unselect();
-  hideDetail();
-  document.getElementById('ctx-pill').style.display='none';
-  document.getElementById('focus-btn').style.display='none';
-  document.getElementById('hint-bar').style.display='';
-  cy.fit(50);
-}
-
-/* ─── ADD NODE ──────────────────────────────────────────────── */
-function openAddModal(){
-  var parentSel=document.getElementById('an-parent');
-  parentSel.innerHTML='<option value="">— No connection —</option>';
-  NODES.forEach(function(n){
-    var o=document.createElement('option');
-    o.value=n.id; o.textContent='['+n.type+'] '+n.label;
-    parentSel.appendChild(o);
-  });
-  if(selNodeId){
-    for(var i=0;i<parentSel.options.length;i++){
-      if(parentSel.options[i].value===selNodeId){parentSel.selectedIndex=i;break;}
-    }
-  }
-  var refSel=document.getElementById('an-ref');
-  refSel.innerHTML='';
-  Object.keys(RC).forEach(function(r){
-    var o=document.createElement('option');
-    o.value=r; o.textContent=r;
-    refSel.appendChild(o);
-  });
-  parentSel.onchange=function(){
-    document.getElementById('an-ref-wrap').style.display=this.value?'':'none';
-  };
-  document.getElementById('an-ref-wrap').style.display=selNodeId?'':'none';
-  document.getElementById('an-name').value='';
-  document.getElementById('an-desc').value='';
-  document.getElementById('modal-add').classList.add('show');
-  document.getElementById('an-name').focus();
-}
-function closeModal(){document.getElementById('modal-add').classList.remove('show');}
-
-function addNode(){
-  var type=document.getElementById('an-type').value;
-  var label=document.getElementById('an-name').value.trim();
-  var desc=document.getElementById('an-desc').value.trim();
-  var phase=document.getElementById('an-phase').value;
-  var parentId=document.getElementById('an-parent').value;
-  var refType=document.getElementById('an-ref').value;
-  if(!label){alert('Please enter a component name.');return;}
-  var id='n_'+Date.now();
-  var newNode={id:id,label:label,type:type,f:{Name:label,Description:desc||'','Lifecycle Phase':phase,'Added':'New component (user created)'}};
-  NODES.push(newNode);
-  var t=TC[type]||TC['Location'];
-  cy.add([{data:{id:id,label:label,type:type,nf:newNode.f,
-    color:t.c,bc:t.b,tc:t.tc,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px'}}]);
-  if(parentId){
-    var pNode=cy.$('#'+parentId);
-    var pp=pNode.position();
-    cy.$('#'+id).position({x:pp.x+120+Math.random()*40,y:pp.y+140+Math.random()*40});
-    var eid='e_'+Date.now();
-    EDGES.push({id:eid,s:parentId,t:id,r:refType});
-    cy.add([{data:{id:eid,source:parentId,target:id,ref:refType,rc:RC[refType]||'#888780'}}]);
-  } else {
-    var ext=cy.extent();
-    cy.$('#'+id).position({x:(ext.x1+ext.x2)/2+Math.random()*200-100,y:(ext.y1+ext.y2)/2+Math.random()*200-100});
-  }
-  /* Persist to Neo4j (system of record) when running live. */
-  if(LIVE){
-    apiSend('POST','/api/node',{id:id,type:type,label:label,description:desc,phase:phase,
-      parentId:parentId||undefined,refType:parentId?refType:undefined})
-      .catch(function(e){alert('Added on screen but NOT saved to the graph: '+e.message);});
-  }
-  closeModal();
-  cy.fit(30);
-  setTimeout(function(){var n=cy.$('#'+id);if(n.length)n.emit('tap');},400);
-}
-
-/* ─── DELETE NODE ───────────────────────────────────────────── */
-function deleteNode(){
-  if(!selNodeId)return;
-  var n=NODES.find(function(x){return x.id===selNodeId;});
-  var name=n?n.label:'this component';
-  if(!confirm('Delete "'+name+'" and all its connections?\nThis cannot be undone.'))return;
-  var id=selNodeId;
-  var idx=NODES.findIndex(function(x){return x.id===id;});
-  if(idx>-1)NODES.splice(idx,1);
-  EDGES=EDGES.filter(function(e){return e.s!==id&&e.t!==id;});
-  cy.$('#'+id).remove();
-  if(LIVE){apiSend('DELETE','/api/node/'+encodeURIComponent(id)).catch(function(e){alert('Removed on screen but NOT deleted from the graph: '+e.message);});}
-  selNode=null; selNodeId=null;
-  hideDetail();
-  document.getElementById('focus-btn').style.display='none';
-}
-
-/* ─── LAYOUT ────────────────────────────────────────────────── */
-function applyLayout(name){
-  var base={name:'cose',fit:true,padding:50,nodeRepulsion:500000,idealEdgeLength:120,animate:true,animationDuration:600,randomize:false,componentSpacing:120,gravity:80,numIter:800};
-  if(name==='tree-td'){
-    cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:cy.$('#org1'),spacingFactor:1.7,animate:true,animationDuration:500}).run();return;
-  }
-  if(name==='tree-lr'){
-    var l=cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:cy.$('#org1'),spacingFactor:1.7,animate:false});
-    l.run();
-    cy.nodes().forEach(function(n){var p=n.position();n.position({x:p.y*1.4,y:p.x*0.75});});
-    cy.fit(50);return;
-  }
-  if(name==='concentric'){
-    var order=['Organization','Org Unit','Business Capability','Person','Application','App Module','Interface','Data Store','Server','Tech Service','Tech Product','Location'];
-    cy.layout({name:'concentric',fit:true,padding:50,animate:true,animationDuration:500,minNodeSpacing:28,
-      concentric:function(n){return order.length-order.indexOf(n.data('type'));}
-    }).run();return;
-  }
-  if(name==='circle'){cy.layout({name:'circle',fit:true,padding:50,animate:true,animationDuration:500}).run();return;}
-  if(name==='grid'){cy.layout({name:'grid',fit:true,padding:50,animate:true,animationDuration:500,avoidOverlap:true}).run();return;}
-  cy.layout(base).run();
-}
-function resetLayout(){applyLayout(document.getElementById('layout-sel').value);}
-
-/* ─── SEARCH + FILTER ───────────────────────────────────────── */
-function doSearch(q){
-  q=(q||'').trim().toLowerCase();
-  cy.elements().removeClass('dim dim-n');
-  if(!q)return;
-  cy.nodes().forEach(function(n){
-    if(n.data('label').toLowerCase().indexOf(q)<0&&n.data('type').toLowerCase().indexOf(q)<0)n.addClass('dim-n');
-  });
-  cy.edges().addClass('dim');
-}
-function toggleType(type){hiddenTypes[type]=!hiddenTypes[type];applyHiddenTypes();}
-function applyHiddenTypes(){
-  cy.nodes().forEach(function(n){n.style('display',hiddenTypes[n.data('type')]?'none':'element');});
-  cy.edges().forEach(function(e){
-    var hs=cy.$('#'+e.data('source')).style('display')==='none';
-    var ht=cy.$('#'+e.data('target')).style('display')==='none';
-    e.style('display',(hs||ht)?'none':'element');
-  });
-}
-
-/* ─── LEGEND ────────────────────────────────────────────────── */
-function buildLegend(){
-  var counts={};NODES.forEach(function(n){counts[n.type]=(counts[n.type]||0)+1;});
-  var tDiv=document.getElementById('type-legend');
-  Object.keys(TC).forEach(function(type){
-    var cfg=TC[type],cnt=counts[type]||0;if(!cnt)return;
-    var d=document.createElement('div');d.className='leg-row';
-    d.innerHTML='<div class="ldot'+(cfg.s==='ellipse'?' oval':'')+'" style="background:'+cfg.c+'"></div>'
-      +'<span class="lname">'+type+'</span><span class="lcnt">'+cnt+'</span>';
-    d.onclick=function(){d.classList.toggle('off');toggleType(type);};
-    tDiv.appendChild(d);
-  });
-  var rDiv=document.getElementById('ref-legend');
-  var used={};EDGES.forEach(function(e){used[e.r]=true;});
-  Object.keys(RC).forEach(function(ref){
-    if(!used[ref])return;
-    var d=document.createElement('div');d.className='ref-row';
-    d.innerHTML='<div class="ref-sw" style="background:'+RC[ref]+'"></div><span class="ref-nm">'+ref+'</span>';
-    rDiv.appendChild(d);
-  });
-  var anType=document.getElementById('an-type');
-  Object.keys(TC).forEach(function(type){
-    var o=document.createElement('option');o.value=type;o.textContent=type;anType.appendChild(o);
-  });
-}
+function refRow(ref,otherId,dir){var t=tcfg(ntype(otherId));return '<div class="rref" onclick="openDetail(\''+otherId+'\')"><div class="rr-dot" style="background:'+rcol(ref)+'"></div><div class="rr-body"><div class="rr-type">'+escH(ref)+'</div><div class="rr-tgt" style="color:'+t.c+'">'+escH(nl(otherId))+'</div></div><div class="rr-dir '+dir+'">'+dir+'</div></div>';}
+function hideDetail(){document.getElementById('rp-empty').style.display='';document.getElementById('rp-content').style.display='none';}
 
 /* ─── NARRATIVE ─────────────────────────────────────────────── */
 function rDesc(r){var m={'Invest':'strong value + great fit — keep investing','Tolerate':'good value but poor fit — plan modernisation','Migrate':'low value, OK fit — migrate elsewhere','Eliminate':'retire this asset'};return m[r]||r;}
-function buildNarrative(nodeId){
-  var n=NODES.find(function(x){return x.id===nodeId;});if(!n)return '';
-  var out=EDGES.filter(function(e){return e.s===nodeId;}),inc=EDGES.filter(function(e){return e.t===nodeId;});
-  function gout(ref){return out.filter(function(e){return e.r===ref;}).map(function(e){return nl(e.t);});}
-  function gin(ref){return inc.filter(function(e){return e.r===ref;}).map(function(e){return nl(e.s);});}
-  switch(n.type){
-    case 'Organization':{
-      var units=inc.filter(function(e){return e.r==='Belongs To';}).map(function(e){return nl(e.s);});
-      return 'Zoho Corporation — founded 1996 as AdventNet. Bootstrapped, 100% privately owned. '+n.f.Employees+' employees. Headquarters in Chennai, India with 80+ country offices. Group CEO: '+n.f.CEO+'.';
-    }
-    case 'Org Unit':{
-      var owner=gin('Owns'),uses=gout('Consumes'),realizes=gin('Is Realized By'),parent=gout('Belongs To');
-      var parts=['Part of: '+(parent[0]||'Zoho Corporation')];
-      if(owner.length)parts.push('led by: '+owner.join(', '));
-      if(uses.length)parts.push('internally uses: '+uses.join(', '));
-      if(realizes.length)parts.push('realizes capabilities: '+realizes.join(', '));
-      return n.label+' — '+parts.join('. ')+'.';
-    }
-    case 'Person':{
-      var owns=gout('Owns'),expert=gout('Is Expert In'),rto=gout('Reports To'),manages=gin('Reports To'),dept=gout('Belongs To');
-      var parts=[n.f.Role];
-      if(dept.length)parts.push('in '+dept.join(', '));
-      if(owns.length)parts.push('owns/leads: '+owns.join(', '));
-      if(expert.length)parts.push('expert in: '+expert.join(', '));
-      if(rto.length)parts.push('reports to: '+rto.join(', '));
-      if(manages.length)parts.push('manages: '+manages.join(', '));
-      return n.label+' — '+parts.join('. ')+'. '+((n.f.Status||''));
-    }
-    case 'Business Capability':{
-      var appR=out.filter(function(e){return e.r==='Is Realized By'&&ntype(e.t)==='Application';}).map(function(e){return nl(e.t);});
-      var orgR=out.filter(function(e){return e.r==='Is Realized By'&&ntype(e.t)==='Org Unit';}).map(function(e){return nl(e.t);});
-      var parts=['Maturity: '+(n.f.Maturity||'?'),'Market diff: '+(n.f['Market Diff']||'?')];
-      if(appR.length)parts.push('delivered by apps: '+appR.join(', '));
-      if(orgR.length)parts.push('delivered by team: '+orgR.join(', '));
-      if(!appR.length&&!orgR.length)parts.push('⚠ No realization mapped');
-      if(n.f.Note)parts.push(n.f.Note);
-      return n.label+' — '+parts.join('. ')+'.';
-    }
-    case 'Application':{
-      var rating=(n.f['Strategic Rating']||'').replace(' (calc)','').replace(' (planned)','');
-      var bv=(n.f['Business Value']||'').replace(' (calc)','').replace(' (projected)','');
-      var tf=(n.f['Technical Fit']||'').replace(' (calc)','').replace(' (early)','');
-      var ownedBy=gin('Owns'),realizes2=gin('Is Realized By'),usedBy=gin('Consumes');
-      var infra=gout('Is Supported By'),succ=gout('Has Successor'),expertBy=gin('Is Expert In');
-      var parts=[];
-      if(rating)parts.push('Rated '+rating+' (BV:'+bv+'/TF:'+tf+') — '+rDesc(rating));
-      if(ownedBy.length)parts.push('owned by: '+ownedBy.join(', '));
-      if(realizes2.length)parts.push('realizes: '+realizes2.join(', '));
-      if(usedBy.length)parts.push('used internally by: '+usedBy.join(', ')+' teams');
-      if(infra.length)parts.push('hosted on: '+infra.join(', '));
-      if(succ.length)parts.push('📌 successor: '+succ.join(', '));
-      if(n.f.Note)parts.push(n.f.Note);
-      return n.label+' — '+(n.f['Service Level']||'')+' — '+parts.join('. ')+'.';
-    }
-    case 'Server':{
-      var apps=gin('Is Supported By'),loc=gout('Is Located At'),prods=gin('Deploys To');
-      return n.label+' — '+n.f['Server Type']+'.'
-        +(loc.length?' Location: '+loc.join(', ')+'.':(''  ))
-        +(apps.length?' Hosts: '+apps.join(', ')+'.':(''  ))
-        +(n.f.Note?' '+n.f.Note:'');
-    }
-    case 'Location':{
-      var srvs=inc.filter(function(e){return e.r==='Is Located At'&&ntype(e.s)==='Server';}).map(function(e){return nl(e.s);});
-      return n.f.Type+' at '+n.f.Address+'.'+(srvs.length?' Data centres here: '+srvs.join(', ')+'.':(''  ));
-    }
-    default:return n.label+' ('+n.type+'). '+((n.f.Description||''));
-  }
+function buildNarrative(id){
+  var n=nById(id);if(!n)return '';var f=n.f||{};
+  var out=outE(id),inc=inE(id);
+  function go(ref){return out.filter(function(e){return e.r===ref;}).map(function(e){return nl(e.t);});}
+  function gi(ref){return inc.filter(function(e){return e.r===ref;}).map(function(e){return nl(e.s);});}
+  if(n.type==='Organization')return n.label+' — '+(f.Founded?'founded '+f.Founded+'. ':'')+(f.Employees?f.Employees+' employees. ':'')+(f.CEO?'CEO: '+f.CEO+'.':'');
+  if(n.type==='Org Unit'){var p=['Part of: '+(go('Belongs To')[0]||'Zoho Corporation')];if(gi('Owns').length)p.push('led by: '+gi('Owns').join(', '));if(go('Consumes').length)p.push('uses: '+go('Consumes').join(', '));if(gi('Is Realized By').length)p.push('realizes: '+gi('Is Realized By').join(', '));return n.label+' — '+p.join('. ')+'.';}
+  if(n.type==='Person'){var p=[f.Role||''];if(go('Belongs To').length)p.push('in '+go('Belongs To').join(', '));if(go('Owns').length)p.push('owns: '+go('Owns').join(', '));if(go('Is Expert In').length)p.push('expert in: '+go('Is Expert In').join(', '));if(go('Reports To').length)p.push('reports to: '+go('Reports To').join(', '));return n.label+' — '+p.join('. ')+'. '+(f.Status||'');}
+  if(n.type==='Business Capability'){var apps=out.filter(function(e){return e.r==='Is Realized By'&&ntype(e.t)==='Application';}).map(function(e){return nl(e.t);});var p=['Maturity: '+(f.Maturity||'?'),'Market diff: '+(f['Market Diff']||'?')];if(apps.length)p.push('apps: '+apps.join(', '));else p.push('⚠ No realizing application');if(f.Note)p.push(f.Note);return n.label+' — '+p.join('. ')+'.';}
+  if(n.type==='Application'){var rating=(f['Strategic Rating']||'').replace(/\s*\(.*?\)/,''),bv=(f['Business Value']||'').replace(/\s*\(.*?\)/,''),tf=(f['Technical Fit']||'').replace(/\s*\(.*?\)/,'');var p=[];if(rating)p.push('Rated '+rating+' (BV:'+bv+'/TF:'+tf+') — '+rDesc(rating));if(gi('Owns').length)p.push('owned by: '+gi('Owns').join(', '));if(gi('Is Realized By').length)p.push('realizes: '+gi('Is Realized By').join(', '));if(go('Is Supported By').length)p.push('hosted on: '+go('Is Supported By').join(', '));if(go('Has Successor').length)p.push('successor: '+go('Has Successor').join(', '));if(f.Note)p.push(f.Note);return n.label+' — '+(f['Service Level']||'')+' — '+p.join('. ')+'.';}
+  if(n.type==='Server'){var apps=gi('Is Supported By'),loc=go('Is Located At');return n.label+' — '+(f['Server Type']||'')+'.'+(loc.length?' Location: '+loc.join(', ')+'.':'')+(apps.length?' Hosts: '+apps.join(', ')+'.':'')+(f.Note?' '+f.Note:'');}
+  if(n.type==='Location'){var s=inc.filter(function(e){return e.r==='Is Located At';}).map(function(e){return nl(e.s);});return (f.Type||'Location')+' at '+(f.Address||'')+'.'+(s.length?' Here: '+s.join(', ')+'.':'');}
+  return n.label+' ('+n.type+'). '+(f.Description||'');
 }
+
+/* ─── VIEW ROUTER ───────────────────────────────────────────── */
+var VIEWS={graph:renderGraph,'dependency-map':vDependencyMap,tree:vTree,swimlanes:vSwimlanes,wheel:vWheel,pages:vPages,table:vTable,'reference-table':vRefTable,matrix:vMatrix,'dependency-matrix':vDepMatrix,relationships:vRelationships,'capability-map':vCapabilityMap,treemap:vTreemap,bubble:vBubble,spider:vSpider,tagscape:vTagscape};
+function setView(name){
+  currentView=name;
+  var isGraph=name==='graph';
+  document.getElementById('cy').style.display=isGraph?'':'none';
+  document.getElementById('viewpane').style.display=isGraph?'none':'block';
+  document.getElementById('layout-sel').style.display=isGraph?'':'none';
+  document.getElementById('hint-bar').style.display=isGraph?'':'none';
+  (VIEWS[name]||vPages)();
+}
+function renderGraph(){if(cy)cy.resize();applyHiddenTypes();document.getElementById('hint-bar').style.display='';}
+function vp(html){document.getElementById('viewpane').innerHTML=html;}
+function head(title,sub){return '<div class="vp-title">'+title+'</div><div class="vp-sub">'+sub+'</div>';}
+
+/* Pages: cards grouped by type */
+function vPages(){
+  var ns=visibleNodes(),byT={};ns.forEach(function(n){(byT[n.type]=byT[n.type]||[]).push(n);});
+  var h=head('Pages','All '+ns.length+' components in context, grouped by type.');
+  Object.keys(TC).concat(Object.keys(byT).filter(function(k){return !TC[k];})).forEach(function(t){
+    if(!byT[t])return;
+    h+='<div style="margin:6px 0 4px;font-size:12px;font-weight:700;color:'+tcfg(t).c+'">'+escH(t)+' ('+byT[t].length+')</div>';
+    h+='<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">';
+    byT[t].forEach(function(n){
+      var f=n.f||{},keys=Object.keys(f).filter(function(k){return k!=='Tags'&&k!=='Name';}).slice(0,4);
+      h+='<div class="card"><div style="font-weight:700;font-size:12px;cursor:pointer" onclick="openDetail(\''+n.id+'\')">'+escH(n.label)+'</div>';
+      keys.forEach(function(k){h+='<div class="frow"><span class="fk">'+escH(k)+'</span><span class="fv">'+escH(String(f[k]))+'</span></div>';});
+      var tg=tagsOf(n);if(tg.length)h+='<div style="margin-top:4px">'+tg.map(function(x){return '<span class="rp-tag">'+escH(x)+'</span>';}).join('')+'</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  });
+  vp(h);
+}
+
+/* Table (sortable) */
+var tableSort={k:'label',dir:1};
+function vTable(){
+  var ns=visibleNodes().slice();
+  ns.sort(function(a,b){var va=(a[tableSort.k]||(a.f&&a.f[tableSort.k])||'').toString().toLowerCase(),vb=(b[tableSort.k]||(b.f&&b.f[tableSort.k])||'').toString().toLowerCase();return va<vb?-tableSort.dir:va>vb?tableSort.dir:0;});
+  var cols=[['label','Name'],['type','Type'],['Lifecycle Phase','Lifecycle'],['Strategic Rating','Rating'],['Business Value','BV'],['Technical Fit','TF'],['Criticality','Criticality']];
+  var h=head('Table','Sortable list of '+ns.length+' components. Click a header to sort, a row to open 360°.');
+  h+='<table class="dt"><thead><tr>';
+  cols.forEach(function(c){h+='<th onclick="sortTable(\''+c[0]+'\')">'+escH(c[1])+(tableSort.k===c[0]?(tableSort.dir>0?' ▲':' ▼'):'')+'</th>';});
+  h+='</tr></thead><tbody>';
+  ns.forEach(function(n){
+    h+='<tr style="cursor:pointer" onclick="openDetail(\''+n.id+'\')">';
+    h+='<td><span class="typedot" style="background:'+tcfg(n.type).c+'"></span>'+escH(n.label)+'</td>';
+    h+='<td>'+escH(n.type)+'</td>';
+    for(var i=2;i<cols.length;i++){var v=(n.f&&n.f[cols[i][0]])||'';h+='<td>'+escH(String(v).replace(/\s*\(.*?\)/,''))+'</td>';}
+    h+='</tr>';
+  });
+  h+='</tbody></table>';vp(h);
+}
+function sortTable(k){if(tableSort.k===k)tableSort.dir*=-1;else{tableSort.k=k;tableSort.dir=1;}vTable();}
+
+/* Reference table */
+function vRefTable(){
+  var vis={};visibleNodes().forEach(function(n){vis[n.id]=1;});
+  var es=EDGES.filter(function(e){return vis[e.s]&&vis[e.t];});
+  var h=head('Reference Table','All '+es.length+' references in context.');
+  h+='<table class="dt"><thead><tr><th>Source</th><th>Reference</th><th>Target</th></tr></thead><tbody>';
+  es.forEach(function(e){h+='<tr><td style="cursor:pointer" onclick="openDetail(\''+e.s+'\')"><span class="typedot" style="background:'+tcfg(ntype(e.s)).c+'"></span>'+escH(nl(e.s))+'</td><td><span class="typedot" style="background:'+rcol(e.r)+'"></span>'+escH(e.r)+'</td><td style="cursor:pointer" onclick="openDetail(\''+e.t+'\')"><span class="typedot" style="background:'+tcfg(ntype(e.t)).c+'"></span>'+escH(nl(e.t))+'</td></tr>';});
+  h+='</tbody></table>';vp(h);
+}
+
+/* Component Matrix: rows=type, cols=lifecycle phase */
+function vMatrix(){
+  var ns=visibleNodes();var phases=['Live','Implementing','Phasing Out','Retired','Other'];
+  function ph(n){var p=(n.f&&n.f['Lifecycle Phase'])||'';for(var i=0;i<phases.length-1;i++)if(p.indexOf(phases[i])>=0)return phases[i];return 'Other';}
+  var byT={};ns.forEach(function(n){(byT[n.type]=byT[n.type]||[]).push(n);});
+  var h=head('Component Matrix','Components grouped by type × lifecycle phase.');
+  h+='<table class="dt"><thead><tr><th>Type</th>';phases.forEach(function(p){h+='<th>'+p+'</th>';});h+='</tr></thead><tbody>';
+  Object.keys(byT).forEach(function(t){
+    h+='<tr><td><span class="typedot" style="background:'+tcfg(t).c+'"></span>'+escH(t)+'</td>';
+    phases.forEach(function(p){h+='<td class="matrix-cell">';byT[t].filter(function(n){return ph(n)===p;}).forEach(function(n){h+=chip(n);});h+='</td>';});
+    h+='</tr>';
+  });
+  h+='</tbody></table>';vp(h);
+}
+
+/* Dependency Matrix: adjacency grid (component x component) */
+function vDepMatrix(){
+  var ns=visibleNodes();
+  if(ns.length>60)ns=ns.slice(0,60);
+  var idx={};ns.forEach(function(n,i){idx[n.id]=i;});
+  var h=head('Dependency Matrix','Row → Column references. Cell colored by reference type'+(visibleNodes().length>60?' (first 60 shown — filter types to narrow)':'')+'.');
+  h+='<div style="overflow:auto"><table class="dt" style="font-size:9px"><thead><tr><th style="min-width:120px">From \\ To</th>';
+  ns.forEach(function(n){h+='<th style="writing-mode:vertical-rl;transform:rotate(180deg);height:110px">'+escH(n.label)+'</th>';});
+  h+='</tr></thead><tbody>';
+  ns.forEach(function(r){
+    h+='<tr><td style="white-space:nowrap"><span class="typedot" style="background:'+tcfg(r.type).c+'"></span>'+escH(r.label)+'</td>';
+    ns.forEach(function(c){
+      var e=EDGES.filter(function(x){return x.s===r.id&&x.t===c.id;})[0];
+      if(e)h+='<td style="background:'+rcol(e.r)+';text-align:center" title="'+escH(r.label+' — '+e.r+' → '+c.label)+'">●</td>';
+      else h+='<td></td>';
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';vp(h);
+}
+
+/* Relationships overview */
+function vRelationships(){
+  var vis={};visibleNodes().forEach(function(n){vis[n.id]=1;});
+  var cnt={};EDGES.forEach(function(e){if(vis[e.s]&&vis[e.t])cnt[e.r]=(cnt[e.r]||0)+1;});
+  var h=head('Relationships','Overview of reference types in context.');
+  h+='<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">';
+  Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a];}).forEach(function(r){
+    h+='<div class="card"><div style="display:flex;align-items:center;gap:7px"><span class="typedot" style="width:12px;height:12px;background:'+rcol(r)+'"></span><span style="font-weight:700;font-size:12px">'+escH(r)+'</span></div><div style="font-size:22px;font-weight:700;color:'+rcol(r)+';margin-top:4px">'+cnt[r]+'</div><div class="hint">references</div></div>';
+  });
+  h+='</div>';vp(h);
+}
+
+/* Capability Map */
+function vCapabilityMap(){
+  var caps=visibleNodes().filter(function(n){return n.type==='Business Capability';});
+  var h=head('Capability Map','Business capabilities with realizing applications, maturity and market differentiation.');
+  h+='<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">';
+  caps.forEach(function(c){
+    var apps=outE(c.id,'Is Realized By').filter(function(e){return ntype(e.t)==='Application';});
+    var mat=(c.f&&c.f.Maturity)||'?',md=(c.f&&c.f['Market Diff'])||'?';
+    var barW=Math.min(100,(num(mat)||0)*20);
+    h+='<div class="card" style="border-top:3px solid '+tcfg('Business Capability').c+'"><div style="font-weight:700;font-size:12px;cursor:pointer" onclick="openDetail(\''+c.id+'\')">'+escH(c.label)+'</div>';
+    h+='<div class="hint">Maturity: '+escH(mat)+' · Market: '+escH(md)+'</div>';
+    h+='<div style="height:6px;background:#eee;border-radius:3px;margin:4px 0"><div style="height:6px;width:'+barW+'%;background:'+tcfg('Business Capability').c+';border-radius:3px"></div></div>';
+    h+='<div style="margin-top:4px">'+(apps.length?apps.map(function(e){return chip(nById(e.t));}).join(''):'<span class="warn" style="color:#993C1D;font-size:10px">⚠ no realizing app</span>')+'</div></div>';
+  });
+  h+='</div>';vp(h);
+}
+
+/* Dependency Map: horizontal lanes by tier; outgoing refs listed */
+function vDependencyMap(){
+  var ns=visibleNodes();var byTier={};ns.forEach(function(n){var tr=tcfg(n.type).tier;(byTier[tr]=byTier[tr]||[]).push(n);});
+  var tiers=Object.keys(byTier).map(Number).sort(function(a,b){return a-b;});
+  var h=head('Dependency Map','Components in tier lanes; each shows its outgoing references.');
+  tiers.forEach(function(tr){
+    var group=byTier[tr];var tname=group[0].type;
+    h+='<div class="lane"><div class="lane-lbl"><span class="typedot" style="background:'+tcfg(tname).c+'"></span>Tier '+tr+'</div><div class="lane-body">';
+    group.forEach(function(n){
+      var oe=outE(n.id);
+      h+='<div class="card" style="min-width:180px;margin:0 8px 8px 0;border-left:3px solid '+tcfg(n.type).c+'"><div style="font-weight:700;font-size:11px;cursor:pointer" onclick="openDetail(\''+n.id+'\')">'+escH(n.label)+'</div><div class="hint">'+escH(n.type)+'</div>';
+      oe.slice(0,6).forEach(function(e){h+='<div style="font-size:9.5px;color:#5F5E5A;margin-top:2px"><span style="color:'+rcol(e.r)+'">'+escH(e.r)+'</span> → <span style="cursor:pointer;text-decoration:underline" onclick="openDetail(\''+e.t+'\')">'+escH(nl(e.t))+'</span></div>';});
+      if(oe.length>6)h+='<div class="hint">+'+(oe.length-6)+' more</div>';
+      h+='</div>';
+    });
+    h+='</div></div>';
+  });
+  vp(h);
+}
+
+/* Swimlanes: lanes by Org Unit (who consumes/owns), fallback type */
+function vSwimlanes(){
+  var ns=visibleNodes();var byType={};ns.forEach(function(n){(byType[n.type]=byType[n.type]||[]).push(n);});
+  var h=head('Swimlanes','Components arranged in horizontal lanes by type.');
+  Object.keys(TC).forEach(function(t){if(!byType[t])return;h+='<div class="lane"><div class="lane-lbl"><span class="typedot" style="background:'+tcfg(t).c+'"></span>'+escH(t)+'</div><div class="lane-body">';byType[t].forEach(function(n){h+=chip(n);});h+='</div></div>';});
+  vp(h);
+}
+
+/* Component Tree: hierarchy from Organization via Belongs To / Is Realized By / Module Of */
+function vTree(){
+  var roots=visibleNodes().filter(function(n){return n.type==='Organization';});
+  if(!roots.length)roots=visibleNodes().filter(function(n){return outE(n.id,'Belongs To').length===0&&n.type==='Org Unit';});
+  var seen={};
+  function kids(id){return inE(id).filter(function(e){return ['Belongs To','Is Realized By','Module Of','Reports To'].indexOf(e.r)>=0;}).map(function(e){return {id:e.s,ref:e.r};});}
+  function node(id,depth){
+    if(seen[id]||depth>6)return '';seen[id]=1;var n=nById(id);if(!n)return '';
+    var kd=kids(id);
+    var h='<li style="margin:2px 0"><span class="chip" style="background:'+tcfg(n.type).c+'" onclick="openDetail(\''+id+'\')"><span class="cdot"></span>'+escH(n.label)+'</span>';
+    if(kd.length){h+='<ul style="list-style:none;margin:2px 0 2px 18px;border-left:1px solid #e2e0d8;padding-left:10px">';kd.forEach(function(k){h+=node(k.id,depth+1);});h+='</ul>';}
+    return h+'</li>';
+  }
+  var h=head('Component Tree','Expandable hierarchy from the Organization down.');
+  h+='<ul style="list-style:none">';roots.forEach(function(r){h+=node(r.id,0);});h+='</ul>';
+  vp(h);
+}
+
+/* Treemap: type blocks sized by count */
+function vTreemap(){
+  var ns=visibleNodes();var byT={};ns.forEach(function(n){(byT[n.type]=byT[n.type]||[]).push(n);});
+  var h=head('Treemap','Components grouped by type; block size reflects count.');
+  h+='<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:stretch">';
+  Object.keys(byT).sort(function(a,b){return byT[b].length-byT[a].length;}).forEach(function(t){
+    var cnt=byT[t].length,grow=Math.max(1,cnt);
+    h+='<div class="tm-block" style="background:'+tcfg(t).c+';flex:'+grow+' 1 160px"><div class="tm-h">'+escH(t)+' · '+cnt+'</div>';
+    byT[t].forEach(function(n){h+='<div class="tm-item" onclick="openDetail(\''+n.id+'\')">'+escH(n.label)+'</div>';});
+    h+='</div>';
+  });
+  h+='</div>';vp(h);
+}
+
+/* Bubble Chart: x=Business Value, y=Technical Fit, size=Criticality */
+function vBubble(){
+  var apps=visibleNodes().filter(function(n){return n.type==='Application'&&num(n.f['Business Value'])!=null&&num(n.f['Technical Fit'])!=null;});
+  var W=760,H=520,pad=50;
+  function sx(v){return pad+((v-1)/4)*(W-2*pad);}
+  function sy(v){return H-pad-((v-1)/4)*(H-2*pad);}
+  var h=head('Bubble Chart','Applications by Business Value (x) × Technical Fit (y); bubble size = Criticality.');
+  h+='<svg viewBox="0 0 '+W+' '+H+'" style="max-width:100%;background:#fff;border:1px solid #e2e0d8;border-radius:8px">';
+  h+='<line x1="'+pad+'" y1="'+(H-pad)+'" x2="'+(W-pad)+'" y2="'+(H-pad)+'" stroke="#ccc"/><line x1="'+pad+'" y1="'+pad+'" x2="'+pad+'" y2="'+(H-pad)+'" stroke="#ccc"/>';
+  h+='<line x1="'+sx(4)+'" y1="'+pad+'" x2="'+sx(4)+'" y2="'+(H-pad)+'" stroke="#eee"/><line x1="'+pad+'" y1="'+sy(4)+'" x2="'+(W-pad)+'" y2="'+sy(4)+'" stroke="#eee"/>';
+  h+='<text x="'+(W/2)+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="#888">Business Value →</text>';
+  h+='<text x="14" y="'+(H/2)+'" text-anchor="middle" font-size="11" fill="#888" transform="rotate(-90,14,'+(H/2)+')">Technical Fit →</text>';
+  h+='<text x="'+(W-pad-4)+'" y="'+(pad+14)+'" text-anchor="end" font-size="10" fill="#3B6D11">Invest</text>';
+  h+='<text x="'+(pad+4)+'" y="'+(H-pad-6)+'" font-size="10" fill="#C41019">Eliminate</text>';
+  apps.forEach(function(n){var bv=num(n.f['Business Value']),tf=num(n.f['Technical Fit']),cr=num(n.f.Criticality)||3;var r=6+cr*3;h+='<circle cx="'+sx(bv)+'" cy="'+sy(tf)+'" r="'+r+'" fill="'+tcfg('Application').c+'" fill-opacity="0.55" stroke="#04342C" style="cursor:pointer" onclick="openDetail(\''+n.id+'\')"><title>'+escH(n.label+' — BV '+bv+' / TF '+tf)+'</title></circle><text x="'+sx(bv)+'" y="'+(sy(tf)-r-2)+'" text-anchor="middle" font-size="8" fill="#333">'+escH(n.label)+'</text>';});
+  h+='</svg>';vp(h);
+}
+
+/* Spider / Radar: compare top applications across numeric axes */
+function vSpider(){
+  var axes=['Business Value','Technical Fit','Criticality'];
+  var apps=visibleNodes().filter(function(n){return n.type==='Application';}).map(function(n){return {n:n,vals:axes.map(function(a){return num(n.f[a])||0;}),score:num(n.f['Business Value'])||0};}).sort(function(a,b){return b.score-a.score;}).slice(0,6);
+  var cx=280,cy=250,R=180,A=axes.length;
+  function pt(ai,val){var ang=-Math.PI/2+ai*2*Math.PI/A;var r=(val/5)*R;return [cx+r*Math.cos(ang),cy+r*Math.sin(ang)];}
+  var colors=['#E8212A','#185FA5','#3B6D11','#BA7517','#534AB7','#993556'];
+  var h=head('Spider Chart','Top applications compared across '+axes.join(', ')+' (1–5).');
+  h+='<svg viewBox="0 0 720 520" style="max-width:100%;background:#fff;border:1px solid #e2e0d8;border-radius:8px">';
+  [1,2,3,4,5].forEach(function(ring){var pts=[];for(var i=0;i<A;i++){var p=pt(i,ring);pts.push(p.join(','));}h+='<polygon points="'+pts.join(' ')+'" fill="none" stroke="#eee"/>';});
+  for(var i=0;i<A;i++){var p=pt(i,5);h+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'" stroke="#ddd"/><text x="'+p[0]+'" y="'+(p[1]-6)+'" text-anchor="middle" font-size="10" fill="#888">'+escH(axes[i])+'</text>';}
+  apps.forEach(function(a,ci){var pts=a.vals.map(function(v,ai){return pt(ai,v).join(',');});h+='<polygon points="'+pts.join(' ')+'" fill="'+colors[ci%6]+'" fill-opacity="0.12" stroke="'+colors[ci%6]+'" stroke-width="1.5"/>';});
+  var lx=540,ly=60;h+='<text x="'+lx+'" y="'+(ly-14)+'" font-size="11" font-weight="700" fill="#333">Applications</text>';
+  apps.forEach(function(a,ci){h+='<rect x="'+lx+'" y="'+(ly+ci*20-9)+'" width="11" height="11" fill="'+colors[ci%6]+'"/><text x="'+(lx+16)+'" y="'+(ly+ci*20)+'" font-size="10" fill="#444" style="cursor:pointer" onclick="openDetail(\''+a.n.id+'\')">'+escH(a.n.label)+'</text>';});
+  h+='</svg>';vp(h);
+}
+
+/* Tagscape */
+function vTagscape(){
+  var map={};NODES.forEach(function(n){tagsOf(n).forEach(function(t){(map[t]=map[t]||[]).push(n);});});
+  var keys=Object.keys(map).sort();
+  var h=head('Tagscape','All tags and their tagged components.');
+  if(!keys.length){h+='<div class="card">No tags yet. Open any component (click a node) → <b>Edit fields &amp; tags</b> to add tags.</div>';vp(h);return;}
+  keys.forEach(function(t){h+='<div class="card"><div style="font-weight:700"><span class="rp-tag">'+escH(t)+'</span> <span class="hint">'+map[t].length+' components</span></div><div style="margin-top:5px">'+map[t].map(function(n){return chip(n);}).join('')+'</div></div>';});
+  vp(h);
+}
+
+/* Dependency Wheel (SVG chord-ish) */
+function vWheel(){
+  var ns=visibleNodes();if(ns.length>80)ns=ns.slice(0,80);
+  var vis={};ns.forEach(function(n){vis[n.id]=1;});
+  var es=EDGES.filter(function(e){return vis[e.s]&&vis[e.t];});
+  var cx=360,cy=360,R=300,N=ns.length;
+  function pos(i){var a=-Math.PI/2+i*2*Math.PI/N;return [cx+R*Math.cos(a),cy+R*Math.sin(a),a];}
+  var idx={};ns.forEach(function(n,i){idx[n.id]=i;});
+  var h=head('Dependency Wheel','All components on a ring; arcs are references (colored by type).');
+  h+='<svg viewBox="0 0 720 720" style="max-width:100%;background:#fff;border:1px solid #e2e0d8;border-radius:8px">';
+  es.forEach(function(e){var a=pos(idx[e.s]),b=pos(idx[e.t]);h+='<path d="M'+a[0]+','+a[1]+' Q'+cx+','+cy+' '+b[0]+','+b[1]+'" fill="none" stroke="'+rcol(e.r)+'" stroke-opacity="0.3" stroke-width="1"><title>'+escH(nl(e.s)+' — '+e.r+' → '+nl(e.t))+'</title></path>';});
+  ns.forEach(function(n,i){var p=pos(i);var deg=p[2]*180/Math.PI;var anchor=(p[2]>Math.PI/2||p[2]<-Math.PI/2)?'end':'start';var rot=(p[2]>Math.PI/2||p[2]<-Math.PI/2)?deg+180:deg;h+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="'+tcfg(n.type).c+'" style="cursor:pointer" onclick="openDetail(\''+n.id+'\')"><title>'+escH(n.label)+'</title></circle>';h+='<text x="'+(p[0]+(anchor==="end"?-7:7)*Math.cos(p[2])/Math.abs(Math.cos(p[2])||1))+'" y="'+p[1]+'" font-size="7" fill="#555" text-anchor="'+anchor+'" transform="rotate('+rot+','+p[0]+','+p[1]+')" style="cursor:pointer" onclick="openDetail(\''+n.id+'\')">'+escH(n.label.length>22?n.label.slice(0,22)+'…':n.label)+'</text>';});
+  h+='</svg>';vp(h);
+}
+
+/* ─── FOCUS / TRAVERSAL (graph only) ────────────────────────── */
+function doFocus(){if(!selNodeId||currentView!=='graph')return;inFocus=true;var sn=cy.$('#'+selNodeId);var nb=sn.closedNeighborhood();cy.elements().not(nb).style('display','none');nb.style('display','element');cy.layout({name:'cose',fit:true,padding:70,nodeRepulsion:620000,idealEdgeLength:170,animate:true}).run();}
+function traverse(){
+  var start=document.getElementById('tv-start').value;if(!start){alert('Pick a start component.');return;}
+  setView('graph');document.getElementById('view-sel').value='graph';
+  var depth=parseInt(document.getElementById('tv-depth').value,10);
+  var keep={},frontier=[start];keep[start]=1;
+  for(var d=0;d<depth;d++){var next=[];frontier.forEach(function(id){EDGES.forEach(function(e){if(e.s===id&&!keep[e.t]){keep[e.t]=1;next.push(e.t);}if(e.t===id&&!keep[e.s]){keep[e.s]=1;next.push(e.s);}});});frontier=next;}
+  cy.nodes().forEach(function(n){n.style('display',keep[n.data('id')]?'element':'none');});
+  cy.edges().forEach(function(e){e.style('display',(keep[e.data('source')]&&keep[e.data('target')])?'element':'none');});
+  cy.layout({name:'cose',fit:true,padding:60,animate:true}).run();
+  document.getElementById('hint-bar').style.display='';document.getElementById('hint-bar').textContent='Traversal from '+nl(start)+' (depth '+depth+') — '+Object.keys(keep).length+' components';
+}
+function clearTraverse(){inFocus=false;if(cy){cy.elements().style('display','element');applyHiddenTypes();cy.layout({name:'cose',fit:true,padding:50,animate:true}).run();}document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
+
+/* ─── LAYOUT / FILTER ───────────────────────────────────────── */
+function applyLayout(name){
+  if(name==='tree-td'){cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:cy.$('#org1'),spacingFactor:1.7,animate:true}).run();return;}
+  if(name==='tree-lr'){var l=cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:cy.$('#org1'),spacingFactor:1.7,animate:false});l.run();cy.nodes().forEach(function(n){var p=n.position();n.position({x:p.y*1.4,y:p.x*0.75});});cy.fit(50);return;}
+  if(name==='concentric'){var order=Object.keys(TC);cy.layout({name:'concentric',fit:true,padding:50,animate:true,minNodeSpacing:28,concentric:function(n){return order.length-order.indexOf(n.data('type'));}}).run();return;}
+  if(name==='circle'){cy.layout({name:'circle',fit:true,padding:50,animate:true}).run();return;}
+  if(name==='grid'){cy.layout({name:'grid',fit:true,padding:50,animate:true,avoidOverlap:true}).run();return;}
+  cy.layout({name:'cose',fit:true,padding:50,nodeRepulsion:500000,idealEdgeLength:120,animate:true,gravity:80,numIter:800}).run();
+}
+function applyHiddenTypes(){if(!cy)return;cy.nodes().forEach(function(n){n.style('display',hiddenTypes[n.data('type')]?'none':'element');});cy.edges().forEach(function(e){var hs=cy.$('#'+e.data('source')).style('display')==='none',ht=cy.$('#'+e.data('target')).style('display')==='none';e.style('display',(hs||ht)?'none':'element');});}
+function toggleType(t){hiddenTypes[t]=!hiddenTypes[t];if(currentView==='graph')applyHiddenTypes();else setView(currentView);}
+function showAll(){inFocus=false;selNodeId=null;hiddenTypes={};activeTag=null;SEARCH='';document.getElementById('search').value='';Array.prototype.forEach.call(document.querySelectorAll('.leg-row'),function(r){r.classList.remove('off');});buildTagLegend();if(cy){cy.elements().removeClass('hi dim dim-n').style('display','element');cy.fit(50);}hideDetail();if(currentView!=='graph')setView(currentView);document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
+
+/* ─── LEGENDS ───────────────────────────────────────────────── */
+function buildLegend(){
+  var counts=typesInUse(),tDiv=document.getElementById('type-legend');tDiv.innerHTML='';
+  Object.keys(TC).concat(Object.keys(counts).filter(function(k){return !TC[k];})).forEach(function(type){
+    var cnt=counts[type]||0;if(!cnt)return;var cfg=tcfg(type);
+    var d=document.createElement('div');d.className='leg-row';
+    d.innerHTML='<div class="ldot'+(cfg.s==='ellipse'?' oval':'')+'" style="background:'+cfg.c+'"></div><span class="lname">'+escH(type)+'</span><span class="lcnt">'+cnt+'</span>';
+    d.onclick=function(){d.classList.toggle('off');toggleType(type);};tDiv.appendChild(d);
+  });
+  var rDiv=document.getElementById('ref-legend');rDiv.innerHTML='';var used={};EDGES.forEach(function(e){used[e.r]=true;});
+  Object.keys(RC).concat(Object.keys(used).filter(function(k){return !RC[k];})).forEach(function(ref){if(!used[ref])return;var d=document.createElement('div');d.className='ref-row';d.innerHTML='<div class="ref-sw" style="background:'+rcol(ref)+'"></div><span class="ref-nm">'+escH(ref)+'</span>';rDiv.appendChild(d);});
+  var anType=document.getElementById('an-type');anType.innerHTML='';Object.keys(TC).forEach(function(type){var o=document.createElement('option');o.value=type;o.textContent=type;anType.appendChild(o);});
+  var tv=document.getElementById('tv-start');tv.innerHTML='<option value="">— start component —</option>';NODES.slice().sort(function(a,b){return a.label<b.label?-1:1;}).forEach(function(n){var o=document.createElement('option');o.value=n.id;o.textContent='['+n.type+'] '+n.label;tv.appendChild(o);});
+  buildTagLegend();
+}
+function buildTagLegend(){
+  var map={};NODES.forEach(function(n){tagsOf(n).forEach(function(t){map[t]=(map[t]||0)+1;});});var keys=Object.keys(map).sort();
+  var el=document.getElementById('tag-legend');
+  if(!keys.length){el.innerHTML='<div class="hint">No tags yet. Add via a component\'s Edit panel.</div>';return;}
+  el.innerHTML=keys.map(function(t){return '<div class="leg-row'+(activeTag===t?'':' ')+'" onclick="filterTag(\''+escH(t)+'\')" style="'+(activeTag===t?'background:#EEEDFE':'')+'"><span class="rp-tag" style="margin:0">'+escH(t)+'</span><span class="lcnt" style="margin-left:auto">'+map[t]+'</span></div>';}).join('');
+}
+function filterTag(t){activeTag=(activeTag===t)?null:t;buildTagLegend();if(currentView==='graph'){cy.nodes().forEach(function(n){var ok=!activeTag||tagsOf(nById(n.data('id'))).indexOf(activeTag)>=0;n.style('opacity',ok?1:0.12);});}else setView(currentView);}
+
+/* ─── ADD / EDIT NODE ───────────────────────────────────────── */
+var editingId=null;
+function addCustomRow(k,v){var d=document.createElement('div');d.className='cf-row';d.innerHTML='<input placeholder="Field name" value="'+escH(k||'')+'"><input placeholder="Value" value="'+escH(v||'')+'"><button class="btn" onclick="this.parentNode.remove()">✕</button>';document.getElementById('an-custom').appendChild(d);}
+function openAddModal(){
+  editingId=null;
+  document.getElementById('an-modal-title').textContent='Add new component';document.getElementById('an-modal-ico').textContent='＋';
+  document.getElementById('an-connect-wrap').style.display='';
+  var parentSel=document.getElementById('an-parent');parentSel.innerHTML='<option value="">— No connection —</option>';
+  NODES.forEach(function(n){var o=document.createElement('option');o.value=n.id;o.textContent='['+n.type+'] '+n.label;parentSel.appendChild(o);});
+  if(selNodeId)parentSel.value=selNodeId;
+  var refSel=document.getElementById('an-ref');refSel.innerHTML='';Object.keys(RC).forEach(function(r){var o=document.createElement('option');o.value=r;o.textContent=r;refSel.appendChild(o);});
+  parentSel.onchange=function(){document.getElementById('an-ref-wrap').style.display=this.value?'':'none';};
+  document.getElementById('an-ref-wrap').style.display=selNodeId?'':'none';
+  ['an-name','an-desc','an-tags'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('an-type').disabled=false;document.getElementById('an-custom').innerHTML='';
+  document.getElementById('modal-add').classList.add('show');document.getElementById('an-name').focus();
+}
+function openEditModal(){
+  if(!selNodeId)return;var n=nById(selNodeId);if(!n)return;editingId=selNodeId;
+  document.getElementById('an-modal-title').textContent='Edit component';document.getElementById('an-modal-ico').textContent='✎';
+  document.getElementById('an-connect-wrap').style.display='none';
+  var at=document.getElementById('an-type');at.value=n.type;at.disabled=true;
+  document.getElementById('an-name').value=n.label;
+  document.getElementById('an-desc').value=(n.f&&n.f.Description)||'';
+  document.getElementById('an-phase').value=(n.f&&n.f['Lifecycle Phase'])||'Live';
+  document.getElementById('an-tags').value=tagsOf(n).join(', ');
+  document.getElementById('an-custom').innerHTML='';
+  Object.keys(n.f||{}).forEach(function(k){if(['Name','Description','Lifecycle Phase','Tags'].indexOf(k)>=0)return;addCustomRow(k,String(n.f[k]));});
+  document.getElementById('modal-add').classList.add('show');
+}
+function closeModal(){document.getElementById('modal-add').classList.remove('show');}
+function collectCustom(){var f={};Array.prototype.forEach.call(document.querySelectorAll('#an-custom .cf-row'),function(r){var i=r.querySelectorAll('input');if(i[0].value.trim())f[i[0].value.trim()]=i[1].value;});return f;}
+function saveNode(){
+  var type=document.getElementById('an-type').value,label=document.getElementById('an-name').value.trim();
+  if(!label){alert('Enter a name.');return;}
+  var desc=document.getElementById('an-desc').value.trim(),phase=document.getElementById('an-phase').value;
+  var tags=document.getElementById('an-tags').value.split(',').map(function(x){return x.trim();}).filter(Boolean);
+  var custom=collectCustom();
+  if(editingId){
+    var n=nById(editingId);n.label=label;n.f=n.f||{};n.f.Name=label;n.f.Description=desc;n.f['Lifecycle Phase']=phase;n.f.Tags=tags;Object.keys(custom).forEach(function(k){n.f[k]=custom[k];});
+    if(LIVE)apiSend('PATCH','/api/node/'+encodeURIComponent(editingId),{label:label,fields:Object.assign({Description:desc,'Lifecycle Phase':phase},custom),tags:tags}).catch(function(e){alert('Saved on screen but not to graph: '+e.message);});
+    closeModal();refreshAll();openDetail(editingId);return;
+  }
+  var id='n_'+Date.now();var fields=Object.assign({Description:desc,'Lifecycle Phase':phase,Tags:tags},custom);
+  var newNode={id:id,label:label,type:type,f:Object.assign({Name:label},fields)};NODES.push(newNode);
+  var parentId=document.getElementById('an-parent').value,refType=document.getElementById('an-ref').value;
+  if(parentId){EDGES.push({id:'e_'+Date.now(),s:parentId,t:id,r:refType});}
+  if(LIVE)apiSend('POST','/api/node',{id:id,type:type,label:label,description:desc,phase:phase,fields:fields,parentId:parentId||undefined,refType:parentId?refType:undefined}).catch(function(e){alert('Added on screen but not saved: '+e.message);});
+  closeModal();refreshAll();openDetail(id);
+}
+function deleteNode(){
+  if(!selNodeId)return;var n=nById(selNodeId);if(!confirm('Delete "'+(n?n.label:'')+'" and all its connections?'))return;
+  var id=selNodeId;NODES=NODES.filter(function(x){return x.id!==id;});EDGES=EDGES.filter(function(e){return e.s!==id&&e.t!==id;});
+  if(LIVE)apiSend('DELETE','/api/node/'+encodeURIComponent(id)).catch(function(e){alert('Removed on screen but not deleted: '+e.message);});
+  selNodeId=null;hideDetail();refreshAll();
+}
+function refreshAll(){var els=[];NODES.forEach(function(n){var t=tcfg(n.type);els.push({data:{id:n.id,label:n.label,type:n.type,nf:n.f,color:t.c,bc:t.b,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px'}});});EDGES.forEach(function(e){els.push({data:{id:e.id,source:e.s,target:e.t,ref:e.r,rc:rcol(e.r)}});});cy.json({elements:els});cy.on('tap','node',function(evt){onGraphTap(evt.target);});applyLayout(document.getElementById('layout-sel').value);buildLegend();if(currentView!=='graph')setView(currentView);}
+
+/* ─── METAMODEL EDITOR ──────────────────────────────────────── */
+var MM={componentTypes:[],referenceTypes:[],allowed:[]};
+function openMM(){apiGet('/api/metamodel').then(function(m){MM=m;renderMM();document.getElementById('modal-mm').classList.add('show');}).catch(function(){MM={componentTypes:Object.keys(TC).map(function(k){return {name:k,color:TC[k].c};}),referenceTypes:Object.keys(RC).map(function(k){return {name:k,color:RC[k]};}),allowed:[]};renderMM();document.getElementById('modal-mm').classList.add('show');});}
+function renderMM(){
+  document.getElementById('mm-ctypes').innerHTML=MM.componentTypes.map(function(t){return '<div class="mm-item"><span><span class="typedot" style="background:'+(t.color||'#888')+'"></span>'+escH(t.name)+'</span><span class="mm-x" onclick="mmDelCtype(\''+escH(t.name)+'\')">✕</span></div>';}).join('');
+  document.getElementById('mm-rtypes').innerHTML=MM.referenceTypes.map(function(t){return '<div class="mm-item"><span><span class="typedot" style="background:'+(t.color||'#888')+'"></span>'+escH(t.name)+'</span><span class="mm-x" onclick="mmDelRtype(\''+escH(t.name)+'\')">✕</span></div>';}).join('');
+  document.getElementById('mm-allowed').innerHTML=(MM.allowed||[]).map(function(a){return '<div class="mm-item"><span>'+escH(a.from)+' <b style="color:#534AB7">'+escH(a.ref)+'</b> → '+escH(a.to)+'</span><span class="mm-x" onclick="mmDelAllowed(\''+escH(a.from)+'\',\''+escH(a.ref)+'\',\''+escH(a.to)+'\')">✕</span></div>';}).join('');
+  function fill(sel,arr){sel.innerHTML='';arr.forEach(function(x){var o=document.createElement('option');o.value=x.name;o.textContent=x.name;sel.appendChild(o);});}
+  fill(document.getElementById('mm-al-from'),MM.componentTypes);fill(document.getElementById('mm-al-to'),MM.componentTypes);fill(document.getElementById('mm-al-ref'),MM.referenceTypes);
+}
+function mmAddCtype(){var name=document.getElementById('mm-ct-name').value.trim();if(!name)return;var color=document.getElementById('mm-ct-color').value;apiSend('POST','/api/metamodel/component-type',{name:name,color:color,tier:99}).then(function(){TC[name]={c:color,b:color,s:'roundrectangle',w:130,h:44,tier:99};openMM();document.getElementById('mm-ct-name').value='';}).catch(mmErr);}
+function mmDelCtype(n){if(!confirm('Remove component type '+n+'?'))return;apiSend('DELETE','/api/metamodel/component-type/'+encodeURIComponent(n)).then(openMM).catch(mmErr);}
+function mmAddRtype(){var name=document.getElementById('mm-rt-name').value.trim();if(!name)return;var color=document.getElementById('mm-rt-color').value;apiSend('POST','/api/metamodel/reference-type',{name:name,color:color}).then(function(){RC[name]=color;openMM();document.getElementById('mm-rt-name').value='';}).catch(mmErr);}
+function mmDelRtype(n){if(!confirm('Remove reference type '+n+'?'))return;apiSend('DELETE','/api/metamodel/reference-type/'+encodeURIComponent(n)).then(openMM).catch(mmErr);}
+function mmAddAllowed(){apiSend('POST','/api/metamodel/allowed',{from:document.getElementById('mm-al-from').value,ref:document.getElementById('mm-al-ref').value,to:document.getElementById('mm-al-to').value}).then(openMM).catch(mmErr);}
+function mmDelAllowed(f,r,t){apiSend('DELETE','/api/metamodel/allowed',{from:f,ref:r,to:t}).then(openMM).catch(mmErr);}
+function mmErr(e){alert('Metamodel change failed (need write API key?): '+e.message);}
 
 /* ─── INSIGHTS ──────────────────────────────────────────────── */
 function buildInsights(){
-  var bar=document.getElementById('ins-wrap');
+  var bar=document.getElementById('ins-wrap');bar.innerHTML='';
   var cards=[
-    {cls:'blue',icon:'⭐',title:'Zoho CRM: The crown jewel',
-     desc:'Flagship product with 250,000+ business customers. Mission Critical. Competes with Salesforce. Rated Invest (BV:4.9/TF:4.7). Dogfooded internally by 3+ Zoho divisions.'},
-    {cls:'purple',icon:'🔗',title:'Zoho One: 40+ integrated apps',
-     desc:'Zoho Flow + Zoho One API Gateway connect all products natively. No third-party integration middleware needed. This is a major TCO advantage vs. fragmented competition.'},
-    {cls:'red',icon:'🏠',title:'Chennai DC: 60%+ of production',
-     desc:'The majority of Zoho production workloads are in Chennai (India). Multi-region replication exists (US, EU, AU, UK) but primary risk concentration is in India.'},
-    {cls:'amber',icon:'⚡',title:'Zoho Campaigns: Tolerate → replace',
-     desc:'Rated Tolerate (BV:3.8/TF:3.2). Planned successor: Zoho SalesIQ (INVEST). AI-powered marketing automation needed to compete with HubSpot and Mailchimp.'},
-    {cls:'purple',icon:'🧑‍💼',title:'Key person: Sridhar Vembu',
-     desc:'Transitioned to Chief Scientist Jan 2025. Owns AI Research Group and Zia LLM. His departure from active product leadership creates an R&D direction dependency.'},
-    {cls:'green',icon:'🤖',title:'Zia LLM: 2025 — strategic bet',
-     desc:'Zoho launched its own large language model in 2025. Embedding across all 40+ Zoho One apps. Positions Zoho as an AI-first suite without third-party AI dependency.'},
-    {cls:'green',icon:'🏛️',title:'1.2M Govt accounts: Zoho Mail',
-     desc:'Indian central government migrated 1.2M accounts to Zoho Mail + Workplace (2025). Strong sovereign cloud positioning. New UK DC (April 2026) extends this model to Europe.'},
-    {cls:'blue',icon:'🏭',title:'Dogfooding culture',
-     desc:'Every Zoho division internally uses the products they build. CRM team uses Zoho CRM. Finance uses Zoho Books. HR uses Zoho People. Direct feedback loop drives faster product iteration.'},
+    {cls:'blue',icon:'⭐',title:'Zoho CRM: crown jewel',desc:'250,000+ customers. Mission Critical. Rated Invest (BV 4.9 / TF 4.7).'},
+    {cls:'purple',icon:'🔗',title:'Zoho One: 40+ apps',desc:'Zoho Flow + API Gateway connect all products natively — big TCO advantage.'},
+    {cls:'red',icon:'🏠',title:'Chennai DC concentration',desc:'Majority of production in Chennai. Multi-region replication exists (US/EU/AU/UK).'},
+    {cls:'amber',icon:'⚡',title:'Campaigns: Tolerate',desc:'Rated Tolerate (BV 3.8 / TF 3.2). Modernise or replace.'},
+    {cls:'green',icon:'🤖',title:'Zia LLM: strategic bet',desc:'Own LLM (2025) embedding AI across all products.'}
   ];
-  cards.forEach(function(c){
-    var d=document.createElement('div');d.className='ic '+c.cls;
-    d.innerHTML='<div class="ic-i">'+c.icon+'</div><div class="ic-b"><div class="ic-t">'+c.title+'</div><div class="ic-d">'+c.desc+'</div></div>';
-    bar.appendChild(d);
-  });
+  cards.forEach(function(c){var d=document.createElement('div');d.className='ic '+c.cls;d.innerHTML='<div class="ic-i">'+c.icon+'</div><div><div class="ic-t">'+c.title+'</div><div class="ic-d">'+c.desc+'</div></div>';bar.appendChild(d);});
 }
 
-/* ─── RATIONALIZATION (Ardoq-style TIME portfolio heatmap) ──── */
-var rationalizeOn=false;
-var QUAD={Invest:'#3B6D11',Tolerate:'#BA7517',Migrate:'#185FA5',Eliminate:'#C41019'};
-function computeQuadrant(f){
-  function num(v){var m=String(v||'').match(/-?\d+(\.\d+)?/);return m?parseFloat(m[0]):0;}
-  var bv=num(f['Business Value']),tf=num(f['Technical Fit']);
-  if(bv>=4&&tf>=4)return'Invest';
-  if(bv>=4&&tf<4)return'Tolerate';
-  if(bv<4&&tf>=4)return'Migrate';
-  return'Eliminate';
-}
+/* ─── RATIONALIZATION ───────────────────────────────────────── */
+var rationalizeOn=false,QUAD={Invest:'#3B6D11',Tolerate:'#BA7517',Migrate:'#185FA5',Eliminate:'#C41019'};
+function quad(f){var bv=num(f['Business Value'])||0,tf=num(f['Technical Fit'])||0;if(bv>=4&&tf>=4)return'Invest';if(bv>=4)return'Tolerate';if(tf>=4)return'Migrate';return'Eliminate';}
 function applyRationalization(){
-  rationalizeOn=!rationalizeOn;
-  var btn=document.getElementById('rationalize-btn');
-  if(!rationalizeOn){
-    cy.nodes().forEach(function(n){var t=TC[n.data('type')]||TC['Location'];n.style('background-color',t.c);n.style('border-color',t.b);});
-    btn.textContent='⚡ Rationalize apps';btn.classList.remove('green');
-    document.getElementById('hint-bar').style.display='';
-    return;
-  }
-  btn.textContent='✓ Portfolio view';btn.classList.add('green');
-  var apply=function(list){
-    var map={};list.forEach(function(a){map[a.id]=a.quadrant;});
-    cy.nodes().forEach(function(n){
-      if(n.data('type')!=='Application')return;
-      var q=map[n.data('id')]||computeQuadrant(n.data('nf')||{});
-      n.style('background-color',QUAD[q]||'#888780');n.style('border-color','#2c2c2a');
-    });
-    var hb=document.getElementById('hint-bar');hb.style.display='';
-    hb.textContent='TIME model — 🟢 Invest  🟡 Tolerate  🔵 Migrate  🔴 Eliminate';
-  };
-  if(LIVE){apiGet('/api/analytics/rationalization').then(apply).catch(function(){apply([]);});}
-  else{apply([]);}
+  if(currentView!=='graph'){document.getElementById('view-sel').value='graph';setView('graph');}
+  rationalizeOn=!rationalizeOn;var btn=document.getElementById('rationalize-btn');
+  if(!rationalizeOn){cy.nodes().forEach(function(n){var t=tcfg(n.data('type'));n.style('background-color',t.c);});btn.classList.remove('on');document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';return;}
+  btn.classList.add('on');
+  cy.nodes().forEach(function(n){if(n.data('type')!=='Application')return;n.style('background-color',QUAD[quad(n.data('nf')||{})]);});
+  document.getElementById('hint-bar').style.display='';document.getElementById('hint-bar').textContent='TIME model — 🟢 Invest  🟡 Tolerate  🔵 Migrate  🔴 Eliminate';
 }
 
-/* ─── DATA LOAD (API first, offline fallback) ───────────────── */
+/* ─── DATA LOAD + MAIN ──────────────────────────────────────── */
 function loadGraphData(){
-  return apiGet('/api/graph').then(function(g){
-    if(g&&g.nodes&&g.nodes.length){
-      NODES=g.nodes; EDGES=g.edges; LIVE=true;
-      var hb=document.getElementById('hint-bar');
-      hb.textContent='● Live — Neo4j graph ('+NODES.length+' components, '+EDGES.length+' references)';
-    }
-  }).catch(function(){
-    LIVE=false;
-    var hb=document.getElementById('hint-bar');
-    hb.textContent='○ Offline demo data — start the API to go live';
-  });
+  return apiGet('/api/graph').then(function(g){if(g&&g.nodes&&g.nodes.length){NODES=g.nodes;EDGES=g.edges;LIVE=true;}}).catch(function(){LIVE=false;});
 }
-
-/* ─── MAIN ──────────────────────────────────────────────────── */
 window.addEventListener('load',function(){
   loadGraphData().then(function(){
-  try{
-    buildLegend();initCy();buildInsights();
-    document.getElementById('search').addEventListener('input',function(){doSearch(this.value);});
-    document.getElementById('layout-sel').addEventListener('change',function(){applyLayout(this.value);});
-    document.getElementById('show-all-btn').addEventListener('click',showAll);
-    document.getElementById('exit-focus-btn').addEventListener('click',exitFocus);
-    document.getElementById('focus-btn').addEventListener('click',doFocus);
-    document.getElementById('add-node-btn').addEventListener('click',openAddModal);
-    document.getElementById('relayout-btn').addEventListener('click',resetLayout);
-    document.getElementById('rp-focus-btn').addEventListener('click',doFocus);
-    document.getElementById('rp-del-btn').addEventListener('click',deleteNode);
-    document.getElementById('btn-modal-cancel').addEventListener('click',closeModal);
-    document.getElementById('btn-modal-add').addEventListener('click',addNode);
-    document.getElementById('modal-add').addEventListener('click',function(e){if(e.target===this)closeModal();});
-    document.getElementById('rationalize-btn').addEventListener('click',applyRationalization);
-  }catch(err){
-    document.getElementById('cy').innerHTML='<div style="padding:30px;color:#993C1D;font-size:13px;font-family:sans-serif">⚠ Init error: '+err.message+'<br><pre style="font-size:10px;margin-top:8px">'+err.stack+'</pre></div>';
-    console.error(err);
-  }
+    try{
+      buildLegend();initCy();buildInsights();
+      document.getElementById('hint-bar').textContent=LIVE?('● Live — '+NODES.length+' components, '+EDGES.length+' references'):'○ Offline — start the API to load the graph';
+      document.getElementById('search').addEventListener('input',function(){SEARCH=this.value;if(currentView==='graph'){cy.elements().removeClass('dim dim-n');if(SEARCH){cy.nodes().forEach(function(n){if(!matchesSearch(nById(n.data('id'))))n.addClass('dim-n');});cy.edges().addClass('dim');}}else setView(currentView);});
+      document.getElementById('view-sel').addEventListener('change',function(){setView(this.value);});
+      document.getElementById('layout-sel').addEventListener('change',function(){applyLayout(this.value);});
+      document.getElementById('show-all-btn').addEventListener('click',showAll);
+      document.getElementById('add-node-btn').addEventListener('click',openAddModal);
+      document.getElementById('metamodel-btn').addEventListener('click',openMM);
+      document.getElementById('rationalize-btn').addEventListener('click',applyRationalization);
+      document.getElementById('rp-focus-btn').addEventListener('click',doFocus);
+      document.getElementById('rp-edit-btn').addEventListener('click',openEditModal);
+      document.getElementById('rp-del-btn').addEventListener('click',deleteNode);
+      document.getElementById('an-add-field').addEventListener('click',function(){addCustomRow('','');});
+      document.getElementById('btn-modal-cancel').addEventListener('click',closeModal);
+      document.getElementById('btn-modal-add').addEventListener('click',saveNode);
+      document.getElementById('modal-add').addEventListener('click',function(e){if(e.target===this)closeModal();});
+      document.getElementById('btn-mm-close').addEventListener('click',function(){document.getElementById('modal-mm').classList.remove('show');});
+      document.getElementById('modal-mm').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
+      document.getElementById('mm-ct-add').addEventListener('click',mmAddCtype);
+      document.getElementById('mm-rt-add').addEventListener('click',mmAddRtype);
+      document.getElementById('mm-al-add').addEventListener('click',mmAddAllowed);
+      document.getElementById('tv-apply').addEventListener('click',traverse);
+      document.getElementById('tv-clear').addEventListener('click',clearTraverse);
+    }catch(err){document.getElementById('cy').innerHTML='<div style="padding:30px;color:#993C1D;font-family:sans-serif">⚠ Init error: '+err.message+'<br><pre style="font-size:10px">'+err.stack+'</pre></div>';console.error(err);}
   });
 });
 </script>
