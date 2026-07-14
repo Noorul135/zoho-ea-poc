@@ -104,9 +104,15 @@ table.dt tr:hover td{background:#f8f7f5}
 .cf-row input{flex:1}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid #f1efe8}
 .modal-actions button{padding:8px 16px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid}
-.mm-list{max-height:170px;overflow:auto;border:1px solid #ece9e0;border-radius:6px;padding:6px;margin-bottom:8px}
-.mm-item{display:flex;align-items:center;justify-content:space-between;padding:3px 4px;font-size:11px}
-.mm-x{cursor:pointer;color:#C41019;font-weight:700;padding:0 6px}
+.modal-box.wide{width:660px}
+.mm-list{max-height:150px;overflow:auto;border:1px solid #ece9e0;border-radius:8px;padding:6px;margin-bottom:8px;background:#faf9f6}
+.mm-item{display:flex;align-items:center;justify-content:space-between;padding:5px 7px;font-size:11px;border-radius:5px}
+.mm-item:hover{background:#f1efe8}
+.mm-x{cursor:pointer;color:#C41019;font-weight:700;padding:0 6px;border-radius:4px}
+.mm-x:hover{background:#F5C4B3}
+#modal-mm .sb-hd{font-size:11px;color:#2c2c2a;margin:12px 0 6px;letter-spacing:0}
+.cf-row select,.cf-row input{padding:7px 9px;border:1px solid #d3d1c7;border-radius:6px;font-size:12px;background:#f8f7f5;outline:none}
+.cf-row select:focus,.cf-row input:focus{border-color:#E8212A;background:#fff}
 .hint{font-size:10px;color:#888780;margin-top:3px;line-height:1.5}
 svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 </style>
@@ -119,6 +125,7 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
     Zoho EA <span class="logo-sub">Enterprise Intelligence Graph — Zoho Corporation 2026</span>
   </div>
   <input id="search" type="text" placeholder="Search…" autocomplete="off">
+  <select id="ws-sel" class="sel" title="Workspace"><option value="">All workspaces</option></select>
   <select id="view-sel" class="sel" title="View">
     <optgroup label="Graph">
       <option value="graph">Block / Graph</option>
@@ -136,6 +143,7 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
       <option value="relationships">Relationships</option>
     </optgroup>
     <optgroup label="Analytics">
+      <option value="rationalization">Rationalization (TIME)</option>
       <option value="capability-map">Capability Map</option>
       <option value="treemap">Treemap</option>
       <option value="bubble">Bubble Chart</option>
@@ -144,6 +152,7 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
     </optgroup>
   </select>
   <select id="layout-sel" class="sel">
+    <option value="clusters" selected>Clusters by type</option>
     <option value="cose">Force directed</option>
     <option value="tree-td">Tree — top down</option>
     <option value="tree-lr">Tree — left to right</option>
@@ -232,8 +241,8 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 
 <!-- Metamodel editor -->
 <div class="modal-overlay" id="modal-mm">
-  <div class="modal-box">
-    <div class="modal-title"><span>⚙</span> Metamodel editor</div>
+  <div class="modal-box wide">
+    <div class="modal-title"><span>⚙</span> Metamodel editor <span class="hint" style="font-weight:400;margin-left:6px">Define the schema: component types, reference types &amp; allowed connections</span></div>
     <div class="sb-hd" style="margin-left:0">Component types</div>
     <div class="mm-list" id="mm-ctypes"></div>
     <div class="cf-row"><input id="mm-ct-name" placeholder="New component type name"><input id="mm-ct-color" type="color" value="#185FA5" style="width:44px;padding:2px"><button class="btn" id="mm-ct-add">Add</button></div>
@@ -374,7 +383,7 @@ function buildNarrative(id){
 }
 
 /* ─── VIEW ROUTER ───────────────────────────────────────────── */
-var VIEWS={graph:renderGraph,'dependency-map':vDependencyMap,tree:vTree,swimlanes:vSwimlanes,wheel:vWheel,pages:vPages,table:vTable,'reference-table':vRefTable,matrix:vMatrix,'dependency-matrix':vDepMatrix,relationships:vRelationships,'capability-map':vCapabilityMap,treemap:vTreemap,bubble:vBubble,spider:vSpider,tagscape:vTagscape};
+var VIEWS={graph:renderGraph,'dependency-map':vDependencyMap,tree:vTree,swimlanes:vSwimlanes,wheel:vWheel,pages:vPages,table:vTable,'reference-table':vRefTable,matrix:vMatrix,'dependency-matrix':vDepMatrix,relationships:vRelationships,rationalization:vRationalization,'capability-map':vCapabilityMap,treemap:vTreemap,bubble:vBubble,spider:vSpider,tagscape:vTagscape};
 function setView(name){
   currentView=name;
   var isGraph=name==='graph';
@@ -609,6 +618,24 @@ function vTagscape(){
   vp(h);
 }
 
+/* Rationalization board (TIME model) — clear, explained */
+function vRationalization(){
+  var apps=visibleNodes().filter(function(n){return n.type==='Application';});
+  var buckets={Invest:[],Tolerate:[],Migrate:[],Eliminate:[]};
+  apps.forEach(function(n){buckets[quad(n.f||{})].push(n);});
+  var desc={Invest:'High value + good fit → keep investing.',Tolerate:'High value but weak fit → plan modernisation.',Migrate:'Low value, good fit → move the function elsewhere.',Eliminate:'Low value + weak fit → retire.'};
+  var h=head('Rationalization — TIME model','Every application scored on Business Value (BV) vs Technical Fit (TF), then placed in one of four quadrants. '+apps.length+' applications.');
+  h+='<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr))">';
+  ['Invest','Tolerate','Migrate','Eliminate'].forEach(function(q){
+    var list=buckets[q];
+    h+='<div class="card" style="border-top:4px solid '+QUAD[q]+'"><div style="font-weight:700;font-size:13px;color:'+QUAD[q]+'">'+q+' <span class="hint" style="font-weight:400">('+list.length+')</span></div><div class="hint" style="margin-bottom:6px">'+desc[q]+'</div>';
+    if(!list.length)h+='<span class="hint">— none —</span>';
+    list.forEach(function(n){h+='<div style="margin:3px 0"><span class="chip" style="background:'+tcfg('Application').c+'" onclick="openDetail(\''+n.id+'\')"><span class="cdot"></span>'+escH(n.label)+'</span> <span class="hint">BV '+(num(n.f['Business Value'])||'?')+' / TF '+(num(n.f['Technical Fit'])||'?')+'</span></div>';});
+    h+='</div>';
+  });
+  h+='</div>';vp(h);
+}
+
 /* Dependency Wheel (SVG chord-ish) */
 function vWheel(){
   var ns=visibleNodes();if(ns.length>80)ns=ns.slice(0,80);
@@ -625,7 +652,16 @@ function vWheel(){
 }
 
 /* ─── FOCUS / TRAVERSAL (graph only) ────────────────────────── */
-function doFocus(){if(!selNodeId||currentView!=='graph')return;inFocus=true;var sn=cy.$('#'+selNodeId);var nb=sn.closedNeighborhood();cy.elements().not(nb).style('display','none');nb.style('display','element');cy.layout({name:'cose',fit:true,padding:70,nodeRepulsion:620000,idealEdgeLength:170,animate:true}).run();}
+function doFocus(){
+  if(!selNodeId||currentView!=='graph')return;inFocus=true;
+  var sn=cy.$('#'+selNodeId);var nb=sn.closedNeighborhood();
+  cy.elements().not(nb).style('display','none');nb.style('display','element');
+  cy.elements().removeClass('hi dim dim-n');sn.connectedEdges().addClass('hi');
+  /* radial: selected node centered, neighbours aligned in a ring around it */
+  cy.layout({name:'breadthfirst',fit:true,padding:80,circle:true,roots:sn,spacingFactor:1.2,animate:true,animationDuration:600}).run();
+  document.getElementById('hint-bar').style.display='';
+  document.getElementById('hint-bar').textContent='Neighborhood of '+nl(selNodeId)+' — press Show all to reset';
+}
 function traverse(){
   var start=document.getElementById('tv-start').value;if(!start){alert('Pick a start component.');return;}
   setView('graph');document.getElementById('view-sel').value='graph';
@@ -640,7 +676,26 @@ function traverse(){
 function clearTraverse(){inFocus=false;if(cy){cy.elements().style('display','element');applyHiddenTypes();cy.layout({name:'cose',fit:true,padding:50,animate:true}).run();}document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
 
 /* ─── LAYOUT / FILTER ───────────────────────────────────────── */
+function clusterLayout(){
+  /* Ardoq-style: each component TYPE forms its own bubble cluster,
+     clusters placed evenly on a big ring, nodes in a small ring inside. */
+  var vis=cy.nodes().filter(function(n){return n.style('display')!=='none';});
+  var byType={};vis.forEach(function(n){var t=n.data('type');(byType[t]=byType[t]||[]).push(n);});
+  var types=Object.keys(byType).sort(function(a,b){return tcfg(a).tier-tcfg(b).tier;});
+  var CN=types.length||1;var bigR=Math.max(360,CN*115);var pos={};
+  types.forEach(function(t,ti){
+    var ang=-Math.PI/2+ti*2*Math.PI/CN;
+    var ccx=bigR*Math.cos(ang),ccy=bigR*Math.sin(ang);
+    var group=byType[t],gn=group.length,smallR=Math.max(30,gn*15);
+    group.forEach(function(n,gi){
+      if(gn===1)pos[n.id()]={x:ccx,y:ccy};
+      else{var a2=gi*2*Math.PI/gn;pos[n.id()]={x:ccx+smallR*Math.cos(a2),y:ccy+smallR*Math.sin(a2)};}
+    });
+  });
+  cy.layout({name:'preset',positions:pos,fit:true,padding:70,animate:true,animationDuration:600}).run();
+}
 function applyLayout(name){
+  if(name==='clusters'){clusterLayout();return;}
   if(name==='tree-td'){cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:cy.$('#org1'),spacingFactor:1.7,animate:true}).run();return;}
   if(name==='tree-lr'){var l=cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:cy.$('#org1'),spacingFactor:1.7,animate:false});l.run();cy.nodes().forEach(function(n){var p=n.position();n.position({x:p.y*1.4,y:p.x*0.75});});cy.fit(50);return;}
   if(name==='concentric'){var order=Object.keys(TC);cy.layout({name:'concentric',fit:true,padding:50,animate:true,minNodeSpacing:28,concentric:function(n){return order.length-order.indexOf(n.data('type'));}}).run();return;}
@@ -765,26 +820,35 @@ function buildInsights(){
 }
 
 /* ─── RATIONALIZATION ───────────────────────────────────────── */
-var rationalizeOn=false,QUAD={Invest:'#3B6D11',Tolerate:'#BA7517',Migrate:'#185FA5',Eliminate:'#C41019'};
+var QUAD={Invest:'#3B6D11',Tolerate:'#BA7517',Migrate:'#185FA5',Eliminate:'#C41019'};
 function quad(f){var bv=num(f['Business Value'])||0,tf=num(f['Technical Fit'])||0;if(bv>=4&&tf>=4)return'Invest';if(bv>=4)return'Tolerate';if(tf>=4)return'Migrate';return'Eliminate';}
-function applyRationalization(){
-  if(currentView!=='graph'){document.getElementById('view-sel').value='graph';setView('graph');}
-  rationalizeOn=!rationalizeOn;var btn=document.getElementById('rationalize-btn');
-  if(!rationalizeOn){cy.nodes().forEach(function(n){var t=tcfg(n.data('type'));n.style('background-color',t.c);});btn.classList.remove('on');document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';return;}
-  btn.classList.add('on');
-  cy.nodes().forEach(function(n){if(n.data('type')!=='Application')return;n.style('background-color',QUAD[quad(n.data('nf')||{})]);});
-  document.getElementById('hint-bar').style.display='';document.getElementById('hint-bar').textContent='TIME model — 🟢 Invest  🟡 Tolerate  🔵 Migrate  🔴 Eliminate';
-}
+function applyRationalization(){document.getElementById('view-sel').value='rationalization';setView('rationalization');}
 
-/* ─── DATA LOAD + MAIN ──────────────────────────────────────── */
-function loadGraphData(){
-  return apiGet('/api/graph').then(function(g){if(g&&g.nodes&&g.nodes.length){NODES=g.nodes;EDGES=g.edges;LIVE=true;}}).catch(function(){LIVE=false;});
+/* ─── WORKSPACES + DATA LOAD + MAIN ─────────────────────────── */
+var currentWS='';
+function urlWorkspace(){var m=location.search.match(/[?&]workspace=([^&]+)/);return m?decodeURIComponent(m[1]):'';}
+function loadGraphData(ws){
+  currentWS=ws||'';
+  var p='/api/graph'+(currentWS?('?workspace='+encodeURIComponent(currentWS)):'');
+  return apiGet(p).then(function(g){NODES=(g&&g.nodes)||[];EDGES=(g&&g.edges)||[];LIVE=true;}).catch(function(){LIVE=false;});
+}
+function loadWorkspaces(){
+  return apiGet('/api/workspaces').then(function(list){
+    var sel=document.getElementById('ws-sel');sel.innerHTML='<option value="">All workspaces</option>';
+    (list||[]).forEach(function(w){var o=document.createElement('option');o.value=w.workspace;o.textContent=w.workspace+' ('+w.components+')';sel.appendChild(o);});
+    sel.value=urlWorkspace();
+  }).catch(function(){});
+}
+function switchWorkspace(ws){
+  loadGraphData(ws).then(function(){refreshAll();document.getElementById('hint-bar').textContent='● '+(ws||'All workspaces')+' — '+NODES.length+' components, '+EDGES.length+' references';});
 }
 window.addEventListener('load',function(){
-  loadGraphData().then(function(){
+  loadGraphData(urlWorkspace()).then(function(){
     try{
-      buildLegend();initCy();buildInsights();
-      document.getElementById('hint-bar').textContent=LIVE?('● Live — '+NODES.length+' components, '+EDGES.length+' references'):'○ Offline — start the API to load the graph';
+      buildLegend();initCy();buildInsights();loadWorkspaces();
+      applyLayout(document.getElementById('layout-sel').value);
+      document.getElementById('ws-sel').addEventListener('change',function(){switchWorkspace(this.value);});
+      document.getElementById('hint-bar').textContent=LIVE?('● '+(currentWS||'All workspaces')+' — '+NODES.length+' components, '+EDGES.length+' references'):'○ Offline — start the API to load the graph';
       document.getElementById('search').addEventListener('input',function(){SEARCH=this.value;if(currentView==='graph'){cy.elements().removeClass('dim dim-n');if(SEARCH){cy.nodes().forEach(function(n){if(!matchesSearch(nById(n.data('id'))))n.addClass('dim-n');});cy.edges().addClass('dim');}}else setView(currentView);});
       document.getElementById('view-sel').addEventListener('change',function(){setView(this.value);});
       document.getElementById('layout-sel').addEventListener('change',function(){applyLayout(this.value);});
