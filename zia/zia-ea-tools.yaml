@@ -1,0 +1,183 @@
+openapi: 3.0.0
+info:
+  title: Zoho EA Intelligence Graph API
+  version: "1.0.0"
+  description: >
+    Tools for the Zoho Enterprise Architecture agent. These operate on the
+    Neo4j "Enterprise Intelligence Graph" (the system of record) through the
+    Render-hosted API. Reads are open; writes require the x-api-key header.
+servers:
+  # Replace with your Render URL after first deploy, e.g.
+  # https://zoho-ea-poc.onrender.com
+  - url: https://YOUR-RENDER-APP.onrender.com
+paths:
+
+  /api/metamodel:
+    get:
+      summary: Get the EA metamodel
+      description: >
+        Returns the allowed component types, reference types, and which
+        component type may connect to which (the schema of the graph). Call
+        this first so you only ever create valid components and references.
+      operationId: getMetamodel
+      responses:
+        '200': { description: Metamodel returned }
+      security:
+        - ApiKeyAuth: []
+
+  /api/graph:
+    get:
+      summary: Get the full graph
+      description: Returns every component (node) and reference (edge) in the graph.
+      operationId: getGraphOverview
+      responses:
+        '200': { description: Nodes and edges returned }
+      security:
+        - ApiKeyAuth: []
+
+  /api/search:
+    get:
+      summary: Search components by name/type
+      description: Case-insensitive search across component name, label and type.
+      operationId: searchComponents
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: The text to search for (e.g. "Zoho CRM", "Person", "Server").
+          schema: { type: string }
+      responses:
+        '200': { description: Matching components returned }
+      security:
+        - ApiKeyAuth: []
+
+  /api/node/{id}:
+    get:
+      summary: Get 360-degree view of a component
+      description: >
+        Returns a single component's fields plus all its incoming and outgoing
+        references with the connected component's id, label and type. Use this
+        to answer "tell me everything about X".
+      operationId: getComponent360
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The component id (e.g. app1, p2, srv1).
+          schema: { type: string }
+          x-zia-agent-param-type: system
+      responses:
+        '200': { description: Component 360 returned }
+        '404': { description: Component not found }
+      security:
+        - ApiKeyAuth: []
+    delete:
+      summary: Delete a component
+      description: Deletes a component and all of its references. Irreversible.
+      operationId: deleteComponent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The component id to delete.
+          schema: { type: string }
+          x-zia-agent-param-type: system
+      responses:
+        '200': { description: Deleted }
+      security:
+        - ApiKeyAuth: []
+
+  /api/node:
+    post:
+      summary: Create a component (optionally connected)
+      description: >
+        Creates a new component. Optionally connects it to an existing
+        component by passing parentId + refType. Validate the type and refType
+        against getMetamodel first.
+      operationId: createComponent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, label]
+              properties:
+                type:
+                  type: string
+                  description: Component type, e.g. Application, Person, Server.
+                label:
+                  type: string
+                  description: Display name, e.g. "Zoho Sign".
+                description:
+                  type: string
+                  description: Short description.
+                phase:
+                  type: string
+                  description: Lifecycle phase (Live, Implementing, Phasing Out, Retired).
+                parentId:
+                  type: string
+                  description: Optional id of an existing component to connect to.
+                refType:
+                  type: string
+                  description: Reference type for the connection, e.g. "Is Realized By".
+                fields:
+                  type: object
+                  additionalProperties: true
+                  description: Optional extra fields (any key/value pairs).
+      responses:
+        '201': { description: Component created }
+        '400': { description: Missing type or label }
+      security:
+        - ApiKeyAuth: []
+
+  /api/edge:
+    post:
+      summary: Create a reference between two components
+      description: Creates a reference (edge) from component s to component t of type r.
+      operationId: createReference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [s, t, r]
+              properties:
+                s: { type: string, description: Source component id. }
+                t: { type: string, description: Target component id. }
+                r: { type: string, description: 'Reference type, e.g. "Owns".' }
+      responses:
+        '201': { description: Reference created }
+      security:
+        - ApiKeyAuth: []
+
+  /api/analytics/rationalization:
+    get:
+      summary: Run application rationalization (TIME model)
+      description: >
+        Returns every Application bucketed into Invest / Tolerate / Migrate /
+        Eliminate based on Business Value x Technical Fit. Use for portfolio
+        and cost-reduction questions.
+      operationId: runRationalization
+      responses:
+        '200': { description: Rationalization result returned }
+      security:
+        - ApiKeyAuth: []
+
+  /api/analytics/capability-coverage:
+    get:
+      summary: Capability coverage heatmap
+      description: Returns each Business Capability with the count of Applications realizing it.
+      operationId: getCapabilityCoverage
+      responses:
+        '200': { description: Coverage returned }
+      security:
+        - ApiKeyAuth: []
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
