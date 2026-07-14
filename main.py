@@ -9,11 +9,16 @@
 # Env vars (see .env.example):
 #   NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD, API_KEY, GITHUB_TOKEN (optional)
 # =====================================================================
-import os, json, time, re
+import os, json, time, re, sys, logging, traceback
 from fastapi import FastAPI, Request, Header, HTTPException
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from neo4j import GraphDatabase
+
+# ---- logging (streams to Render Logs; flush immediately) ------------
+logging.basicConfig(level=logging.INFO, stream=sys.stdout,
+                    format="%(asctime)s %(levelname)s %(name)s %(message)s")
+log = logging.getLogger("zoho-ea")
 
 # ---- config ---------------------------------------------------------
 NEO4J_URI = os.getenv("NEO4J_URI")
@@ -23,6 +28,21 @@ API_KEY = os.getenv("API_KEY", "")
 
 app = FastAPI(title="Zoho EA POC")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+@app.on_event("startup")
+def _startup():
+    log.info("Zoho EA API starting — NEO4J_URI set=%s, API_KEY set=%s",
+             bool(NEO4J_URI), bool(API_KEY))
+    if not NEO4J_URI or not NEO4J_PASSWORD:
+        log.error("NEO4J_URI / NEO4J_PASSWORD are NOT set — DB calls will fail. "
+                  "Set them in Render -> Environment.")
+
+# Log full tracebacks for any unhandled error so they show up in Render Logs.
+@app.exception_handler(Exception)
+async def _unhandled(request: Request, exc: Exception):
+    log.error("Unhandled error on %s %s\n%s", request.method, request.url.path,
+              traceback.format_exc())
+    return JSONResponse(status_code=500, content={"error": str(exc)})
 
 _driver = None
 def driver():
@@ -206,7 +226,17 @@ async def github_sync_endpoint(request: Request, x_api_key: str = Header(default
 # ---- dashboard with runtime config injection -----------------------
 @app.get("/", response_class=HTMLResponse)
 def dashboard():
-    with open(os.path.join(os.path.dirname(__file__), "public", "index.html"), encoding="utf-8") as fh:
+    path = os.path.join(os.path.dirname(__file__), "public", "index.html")
+    if not os.path.exists(path):
+        log.error("Dashboard file missing: %s — commit the public/ folder to the repo.", path)
+        return HTMLResponse(status_code=200, content=(
+            "<h1>Zoho EA API is running ✅</h1>"
+            "<p>But <code>public/index.html</code> was not found on the server. "
+            "Commit the <code>public/</code> folder to your GitHub repo and redeploy.</p>"
+            "<p>The API works now — try "
+            "<a href='/api/health'>/api/health</a> and "
+            "<a href='/api/metamodel'>/api/metamodel</a>.</p>"))
+    with open(path, encoding="utf-8") as fh:
         html = fh.read()
     html = html.replace("__API_BASE__", "").replace("__API_KEY__", API_KEY)
     return HTMLResponse(content=html)
