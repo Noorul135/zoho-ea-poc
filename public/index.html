@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Zoho Corporation — Enterprise Architecture</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#2c2c2a}
+#app{display:flex;flex-direction:column;height:100vh}
+#topbar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fff;border-bottom:1px solid #d3d1c7;flex-shrink:0;flex-wrap:wrap}
+.logo{font-size:14px;font-weight:700;color:#E8212A;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.logo-sub{font-size:11px;font-weight:400;color:#888780;border-left:1px solid #d3d1c7;padding-left:8px}
+#search{flex:1;max-width:240px;padding:6px 10px;border:1px solid #d3d1c7;border-radius:6px;font-size:12px;background:#f8f7f5;outline:none;color:#2c2c2a}
+#search:focus{border-color:#E8212A;background:#fff}
+#layout-sel{padding:6px 8px;border:1px solid #d3d1c7;border-radius:6px;font-size:11px;background:#fff;cursor:pointer;outline:none;color:#2c2c2a}
+.btn{padding:5px 11px;border:1px solid #d3d1c7;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;background:#fff;color:#444441;white-space:nowrap;transition:background .12s}
+.btn:hover{background:#f1efe8}
+.btn.green{background:#E8212A;color:#fff;border-color:#C41019}
+.btn.green:hover{background:#C41019}
+.btn.red{color:#993C1D;border-color:#993C1D;background:#FAECE7}
+.btn.red:hover{background:#F5C4B3}
+#ctx-pill{display:none;align-items:center;gap:5px;padding:4px 10px;background:#fff3f3;border:1px solid #F5C4B3;border-radius:20px;font-size:11px;color:#C41019;font-weight:500}
+#ctx-name{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#main{display:flex;flex:1;overflow:hidden;min-height:0}
+#sidebar{width:170px;flex-shrink:0;background:#fff;border-right:1px solid #d3d1c7;overflow-y:auto;padding:8px 6px}
+.sb-hd{font-size:9px;font-weight:700;color:#888780;text-transform:uppercase;letter-spacing:.08em;margin:4px 4px 5px}
+.leg-row{display:flex;align-items:center;gap:6px;padding:3px 5px;border-radius:5px;cursor:pointer;user-select:none}
+.leg-row:hover{background:#f1efe8}
+.leg-row.off{opacity:.25}
+.ldot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.ldot.oval{border-radius:50%}
+.lname{color:#444441;flex:1;font-size:10.5px}
+.lcnt{color:#888780;font-size:10px}
+.sb-sep{height:1px;background:#f1efe8;margin:7px 4px}
+.ref-row{display:flex;align-items:center;gap:7px;padding:2.5px 5px}
+.ref-sw{width:20px;height:2px;border-radius:1px;flex-shrink:0}
+.ref-nm{font-size:10px;color:#888780}
+#canvas-wrap{flex:1;position:relative;display:flex;flex-direction:column;min-width:0}
+#cy{flex:1;background:#fafaf8;background-image:radial-gradient(circle,#e0ded8 1px,transparent 1px);background-size:22px 22px}
+#hint-bar{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(44,44,42,.78);color:#fff;padding:6px 16px;border-radius:20px;font-size:11px;pointer-events:none;white-space:nowrap}
+#rpanel{width:300px;flex-shrink:0;display:flex;flex-direction:column;background:#fff;border-left:1px solid #d3d1c7;min-height:0;overflow:hidden}
+#rp-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px 18px;text-align:center;gap:10px}
+.rpe-ico{font-size:36px}
+.rpe-t{font-size:13px;color:#888780;font-weight:500}
+.rpe-s{font-size:11px;color:#b4b2a9;line-height:1.6;margin-top:4px}
+#rp-content{display:none;flex-direction:column;overflow:hidden;height:100%}
+#rpc-hd{padding:10px 14px 8px;border-bottom:1px solid #f1efe8;flex-shrink:0;display:flex;align-items:flex-start;gap:8px}
+#rpc-hd-text{flex:1;min-width:0}
+#rp-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-bottom:4px}
+#rp-name{font-size:14px;font-weight:700;color:#2c2c2a;line-height:1.3}
+#rpc-scroll{flex:1;overflow-y:auto}
+.rp-narr{margin:10px 14px 2px;padding:10px 12px;background:#f4f3f0;border-radius:8px;border-left:3px solid #E8212A;font-size:11px;color:#444441;line-height:1.65}
+.rp-focus-btn{display:block;margin:8px 14px 2px;padding:7px;text-align:center;background:#fff3f3;color:#C41019;border:1px solid #F5C4B3;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer}
+.rp-focus-btn:hover{background:#fde8e8}
+.rp-del-btn{display:block;margin:4px 14px 8px;padding:7px;text-align:center;background:#fff;color:#993C1D;border:1px solid #F5C4B3;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer}
+.rp-del-btn:hover{background:#FAECE7}
+.rp-sec{padding:8px 14px 4px;border-bottom:1px solid #f4f3f0}
+.rp-sec:last-child{border-bottom:none;padding-bottom:14px}
+.rp-sec-hd{font-size:9px;font-weight:700;color:#888780;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.frow{display:flex;justify-content:space-between;gap:6px;padding:2px 0}
+.fk{font-size:10px;color:#888780;flex-shrink:0;max-width:44%}
+.fv{font-size:10px;color:#2c2c2a;text-align:right;word-break:break-word;line-height:1.4}
+.fv.calc{color:#854F0B}
+.fv.good{color:#3B6D11;font-weight:600}
+.fv.warn{color:#993C1D;font-weight:600}
+.rref{display:flex;align-items:flex-start;gap:7px;padding:6px 14px;border-bottom:1px solid #f4f3f0;cursor:pointer;transition:background .1s}
+.rref:last-child{border-bottom:none}
+.rref:hover{background:#f8f7f5}
+.rr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.rr-body{flex:1;min-width:0}
+.rr-type{font-size:9px;font-weight:700;color:#888780;margin-bottom:1px}
+.rr-tgt{font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rr-dir{font-size:9px;padding:1px 5px;border-radius:20px;flex-shrink:0;margin-top:2px}
+.rr-dir.out{background:#fff3f3;color:#C41019}
+.rr-dir.in{background:#EAF3DE;color:#3B6D11}
+#ins-wrap{flex-shrink:0;background:#fff;border-top:1px solid #d3d1c7;height:88px;display:flex;align-items:center;gap:8px;padding:0 12px;overflow-x:auto}
+#ins-wrap::-webkit-scrollbar{height:3px}
+#ins-wrap::-webkit-scrollbar-thumb{background:#d3d1c7;border-radius:2px}
+.ic{flex-shrink:0;width:230px;height:68px;border:1px solid;border-radius:8px;padding:7px 10px;display:flex;gap:8px;overflow:hidden}
+.ic.blue{background:#E6F1FB;border-color:#85B7EB}
+.ic.amber{background:#FAEEDA;border-color:#EF9F27}
+.ic.red{background:#FAECE7;border-color:#F0997B}
+.ic.green{background:#EAF3DE;border-color:#97C459}
+.ic.purple{background:#EEEDFE;border-color:#AFA9EC}
+.ic-i{font-size:17px;flex-shrink:0;line-height:1.3}
+.ic-b .ic-t{font-size:10.5px;font-weight:600;color:#2c2c2a;margin-bottom:2px}
+.ic-b .ic-d{font-size:9.5px;color:#5F5E5A;line-height:1.45}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:999;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:12px;padding:24px;width:420px;max-width:95vw;max-height:90vh;overflow-y:auto;border:1px solid #d3d1c7}
+.modal-title{font-size:16px;font-weight:700;color:#2c2c2a;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.modal-title span{font-size:20px}
+.modal-field{margin-bottom:14px}
+.modal-field label{display:block;font-size:11px;font-weight:600;color:#888780;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.modal-field input,.modal-field select,.modal-field textarea{width:100%;padding:8px 10px;border:1px solid #d3d1c7;border-radius:6px;font-size:12px;color:#2c2c2a;background:#f8f7f5;outline:none;font-family:inherit}
+.modal-field input:focus,.modal-field select:focus{border-color:#E8212A;background:#fff}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:16px;border-top:1px solid #f1efe8}
+.modal-actions button{padding:8px 18px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid}
+#btn-modal-add{background:#E8212A;color:#fff;border-color:#C41019}
+#btn-modal-add:hover{background:#C41019}
+#btn-modal-cancel{background:#fff;color:#444441;border-color:#d3d1c7}
+#btn-modal-cancel:hover{background:#f1efe8}
+.modal-hint{font-size:10px;color:#888780;margin-top:4px;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="topbar">
+  <div class="logo">
+    <svg width="20" height="20" viewBox="0 0 40 40"><rect width="40" height="40" rx="6" fill="#E8212A"/><text x="20" y="28" text-anchor="middle" fill="white" font-size="22" font-family="Arial" font-weight="bold">Z</text></svg>
+    Zoho EA
+    <span class="logo-sub">Enterprise Architecture Graph — Zoho Corporation 2026</span>
+  </div>
+  <input id="search" type="text" placeholder="Search…" autocomplete="off">
+  <select id="layout-sel">
+    <option value="cose">Force directed</option>
+    <option value="tree-td">Tree — top down</option>
+    <option value="tree-lr">Tree — left to right</option>
+    <option value="concentric">Concentric (by tier)</option>
+    <option value="circle">Circle</option>
+    <option value="grid">Grid</option>
+  </select>
+  <button class="btn" id="show-all-btn">Show all</button>
+  <div id="ctx-pill">
+    <span id="ctx-name"></span>
+    <button class="btn" style="padding:2px 7px;font-size:10px;margin-left:2px;background:transparent;border:none;cursor:pointer;color:#C41019" id="exit-focus-btn">✕</button>
+  </div>
+  <button class="btn" id="focus-btn" style="display:none">Focus</button>
+  <button class="btn green" id="add-node-btn">+ Add node</button>
+  <button class="btn" id="relayout-btn">Re-layout</button>
+  <button class="btn red" id="rationalize-btn">⚡ Rationalize apps</button>
+</div>
+<div id="main">
+  <div id="sidebar">
+    <div class="sb-hd">Component types</div>
+    <div id="type-legend"></div>
+    <div class="sb-sep"></div>
+    <div class="sb-hd">Reference types</div>
+    <div id="ref-legend"></div>
+  </div>
+  <div id="canvas-wrap">
+    <div id="cy"></div>
+    <div id="hint-bar">Click any node to explore · Scroll to zoom · Drag to pan</div>
+  </div>
+  <div id="rpanel">
+    <div id="rp-empty">
+      <div class="rpe-ico">🔍</div>
+      <div class="rpe-t">Select a component</div>
+      <div class="rpe-s">Click any node in the graph to see its fields, relationships, and contextual analysis.</div>
+    </div>
+    <div id="rp-content">
+      <div id="rpc-hd">
+        <div id="rpc-hd-text">
+          <div id="rp-badge"></div>
+          <div id="rp-name"></div>
+        </div>
+      </div>
+      <div id="rpc-scroll">
+        <div class="rp-narr" id="rp-narr"></div>
+        <div class="rp-focus-btn" id="rp-focus-btn">Show neighborhood only →</div>
+        <div class="rp-del-btn" id="rp-del-btn">🗑 Delete this component</div>
+        <div id="rp-fields"></div>
+        <div id="rp-refs"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="ins-wrap"></div>
+</div>
+
+<!-- Add Node Modal -->
+<div class="modal-overlay" id="modal-add">
+  <div class="modal-box">
+    <div class="modal-title"><span>＋</span> Add new component</div>
+    <div class="modal-field">
+      <label>Component type *</label>
+      <select id="an-type"></select>
+    </div>
+    <div class="modal-field">
+      <label>Name *</label>
+      <input id="an-name" type="text" placeholder="e.g. Zoho Sign, Marketing Division…">
+    </div>
+    <div class="modal-field">
+      <label>Description</label>
+      <input id="an-desc" type="text" placeholder="Brief description">
+    </div>
+    <div class="modal-field">
+      <label>Lifecycle phase</label>
+      <select id="an-phase">
+        <option>Live</option>
+        <option>Implementing</option>
+        <option>Phasing Out</option>
+        <option>Retired</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Connect to existing node (optional)</label>
+      <select id="an-parent"><option value="">— No connection —</option></select>
+      <div class="modal-hint">Select a parent/related node to automatically create a reference.</div>
+    </div>
+    <div class="modal-field" id="an-ref-wrap" style="display:none">
+      <label>Reference type</label>
+      <select id="an-ref"></select>
+    </div>
+    <div class="modal-actions">
+      <button id="btn-modal-cancel">Cancel</button>
+      <button id="btn-modal-add">Add component</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+<script>
+/* ─── API LAYER (Neo4j via Render backend) ──────────────────────
+   __API_BASE__ and __API_KEY__ are replaced at runtime by server.js.
+   If the file is opened directly (offline), they stay literal and the
+   dashboard falls back to the built-in NODES/EDGES below. */
+var API_BASE=('__API_BASE__'.indexOf('__API')===0)?'':'__API_BASE__';
+var API_KEY=('__API_KEY__'.indexOf('__API')===0)?'':'__API_KEY__';
+var LIVE=false; /* set true once we successfully load from the API */
+function apiHeaders(){var h={'Content-Type':'application/json'};if(API_KEY)h['x-api-key']=API_KEY;return h;}
+function apiGet(p){return fetch(API_BASE+p,{headers:apiHeaders()}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();});}
+function apiSend(method,p,body){return fetch(API_BASE+p,{method:method,headers:apiHeaders(),body:body?JSON.stringify(body):undefined}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();});}
+
+/* ─── CONFIG ────────────────────────────────────────────────── */
+var TC={
+  'Organization':        {c:'#E8212A',b:'#C41019',tc:'#fff',s:'roundrectangle',w:152,h:52},
+  'Org Unit':            {c:'#185FA5',b:'#0C447C',tc:'#fff',s:'roundrectangle',w:134,h:44},
+  'Person':              {c:'#3B6D11',b:'#27500A',tc:'#fff',s:'ellipse',        w:120,h:48},
+  'Business Capability': {c:'#993C1D',b:'#712B13',tc:'#fff',s:'roundrectangle',w:144,h:46},
+  'Application':         {c:'#085041',b:'#04342C',tc:'#fff',s:'roundrectangle',w:134,h:46},
+  'App Module':          {c:'#1D9E75',b:'#0F6E56',tc:'#fff',s:'roundrectangle',w:130,h:42},
+  'Interface':           {c:'#854F0B',b:'#633806',tc:'#fff',s:'roundrectangle',w:128,h:42},
+  'Data Store':          {c:'#BA7517',b:'#854F0B',tc:'#fff',s:'roundrectangle',w:128,h:42},
+  'Server':              {c:'#444441',b:'#2C2C2A',tc:'#fff',s:'roundrectangle',w:130,h:44},
+  'Tech Service':        {c:'#378ADD',b:'#185FA5',tc:'#fff',s:'roundrectangle',w:132,h:42},
+  'Tech Product':        {c:'#888780',b:'#5F5E5A',tc:'#fff',s:'roundrectangle',w:122,h:42},
+  'Location':            {c:'#993556',b:'#72243E',tc:'#fff',s:'roundrectangle',w:122,h:40},
+};
+var RC={
+  'Owns':            '#3B6D11',
+  'Is Expert In':    '#1D9E75',
+  'Belongs To':      '#888780',
+  'Reports To':      '#5F5E5A',
+  'Consumes':        '#185FA5',
+  'Is Realized By':  '#993C1D',
+  'Is Supported By': '#444441',
+  'Connects To':     '#085041',
+  'Has Successor':   '#BA7517',
+  'Deploys To':      '#534AB7',
+  'Is Located At':   '#993556',
+  'Child Of':        '#b4b2a9',
+  'Module Of':       '#97C459',
+};
+
+/* ─── ZOHO DATA ─────────────────────────────────────────────── */
+var NODES=[
+  /* Organisation */
+  {id:'org1',label:'Zoho Corporation',type:'Organization',
+   f:{Name:'Zoho Corporation',Founded:'1996 (as AdventNet)',Headquarters:'Chennai, India','US HQ':'Austin, Texas','Employees':'17,856 (2025)',Revenue:'~USD 1B+ (private)',CEO:'Shailesh Kumar Davey',Model:'100% bootstrapped, private'}},
+
+  /* Org Units — Engineering */
+  {id:'ou1',label:'CRM & Sales Products',type:'Org Unit',
+   f:{Name:'CRM & Sales Products Group',Description:'Builds Zoho CRM, SalesIQ, Bigin, Campaigns, Social',Location:'Chennai, India'}},
+  {id:'ou2',label:'Collaboration Products',type:'Org Unit',
+   f:{Name:'Collaboration Products Group',Description:'Builds Zoho Cliq, WorkDrive, Mail, Projects, Meeting',Location:'Chennai, India'}},
+  {id:'ou3',label:'Finance Products',type:'Org Unit',
+   f:{Name:'Finance Products Group',Description:'Builds Zoho Books, Expense, Invoice, Payroll, ERP',Location:'Chennai, India'}},
+  {id:'ou4',label:'Analytics & Platform',type:'Org Unit',
+   f:{Name:'Analytics & Platform Group',Description:'Builds Zoho Analytics, Creator, Flow, Catalyst',Location:'Chennai, India'}},
+  {id:'ou5',label:'HR & IT Products',type:'Org Unit',
+   f:{Name:'HR & IT Products Group',Description:'Builds Zoho People, Recruit, Desk, ServiceDesk Plus',Location:'Chennai + Tenkasi, India'}},
+  {id:'ou6',label:'AI Research (Zia)',type:'Org Unit',
+   f:{Name:'Zia AI Research Group',Description:'Develops Zia LLM and AI capabilities across all Zoho products',Location:'Chennai R&D Campus'}},
+
+  /* Org Units — Business */
+  {id:'ou7',label:'Global Sales & Revenue',type:'Org Unit',
+   f:{Name:'Global Sales & Revenue',Description:'Global sales, partnerships, channel management',Location:'Multiple — Austin, Chennai, Dublin, Dubai'}},
+  {id:'ou8',label:'Customer Success',type:'Org Unit',
+   f:{Name:'Customer Success & Support',Description:'Customer onboarding, health, retention, global support',Location:'Chennai, Austin, London'}},
+  {id:'ou9',label:'People Operations',type:'Org Unit',
+   f:{Name:'People Operations (HR)',Description:'Internal HR, talent acquisition, learning and payroll',Location:'Chennai HQ'}},
+  {id:'ou10',label:'Finance & Corporate Ops',type:'Org Unit',
+   f:{Name:'Finance & Corporate Operations',Description:'Internal finance, legal, compliance, procurement',Location:'Chennai HQ'}},
+  {id:'ou11',label:'IT Infrastructure',type:'Org Unit',
+   f:{Name:'IT Infrastructure & Security',Description:'Data centre operations, network, cybersecurity, compliance',Location:'Chennai, Austin, Amsterdam, Sydney, London'}},
+
+  /* Persons */
+  {id:'p1',label:'Shailesh Kumar Davey',type:'Person',
+   f:{Name:'Shailesh Kumar Davey',Role:'Group CEO (since Jan 2025)','Contact Email':'ceo@zoho.com',Status:'Co-founder, succeeded Sridhar Vembu as CEO'}},
+  {id:'p2',label:'Sridhar Vembu',type:'Person',
+   f:{Name:'Sridhar Vembu',Role:'Chief Scientist (formerly CEO)','Contact Email':'sridhar@zoho.com',Status:'Co-founder. Transitioned from CEO to R&D focus Jan 2025'}},
+  {id:'p3',label:'Vamsi Krishna',type:'Person',
+   f:{Name:'Vamsi Krishna',Role:'CEO (Operations)','Contact Email':'vamsi@zoho.com',Status:'Oversees day-to-day global operations'}},
+  {id:'p4',label:'Luke Xia',type:'Person',
+   f:{Name:'Luke Xia',Role:'Chief Operating Officer','Contact Email':'luke.xia@zoho.com',Status:'Oversees global operations and delivery'}},
+  {id:'p5',label:'Sridhar Iyengar',type:'Person',
+   f:{Name:'Sridhar Iyengar',Role:'VP & Head of Europe','Contact Email':'sridhar.iyengar@zoho.com',Status:'Leads European expansion, EMEA operations'}},
+  {id:'p6',label:'Bharath Sridhar',type:'Person',
+   f:{Name:'Bharath Sridhar',Role:'CTO, Labs (VP R&D)','Contact Email':'bharath@zoho.com',Status:'Leads Zoho Labs — Zia AI and experimental engineering'}},
+
+  /* Business Capabilities */
+  {id:'bc1',label:'Customer Relationship Mgmt',type:'Business Capability',
+   f:{Name:'Customer Relationship Management',Maturity:'5 — Measured','Market Diff':'5 — Market-disruptive','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'8 (calc)',Note:'Core market differentiator. Zoho CRM competes directly with Salesforce.'}},
+  {id:'bc2',label:'Marketing Automation',type:'Business Capability',
+   f:{Name:'Marketing Automation & Lead Generation',Maturity:'4 — Managed','Market Diff':'4 — Market-leading','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'6 (calc)'}},
+  {id:'bc3',label:'Financial Management',type:'Business Capability',
+   f:{Name:'Financial Management & Accounting',Maturity:'4 — Managed','Market Diff':'3 — Market-competitive','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'5 (calc)'}},
+  {id:'bc4',label:'Human Capital Management',type:'Business Capability',
+   f:{Name:'Human Capital Management',Maturity:'3 — Defined','Market Diff':'3 — Market-competitive','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'4 (calc)'}},
+  {id:'bc5',label:'IT Service Management',type:'Business Capability',
+   f:{Name:'IT Service Management (ITSM)',Maturity:'4 — Managed','Market Diff':'4 — Market-leading','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'4 (calc)'}},
+  {id:'bc6',label:'Product Engineering & R&D',type:'Business Capability',
+   f:{Name:'Product Engineering & R&D',Maturity:'5 — Measured','Market Diff':'5 — Market-disruptive','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'12 (calc)',Note:'Zoho builds 100% of its products in-house. No third-party acquisitions.'}},
+  {id:'bc7',label:'Customer Success & Support',type:'Business Capability',
+   f:{Name:'Customer Success & Support',Maturity:'4 — Managed','Market Diff':'3 — Market-competitive','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'5 (calc)'}},
+  {id:'bc8',label:'Business Intelligence & BI',type:'Business Capability',
+   f:{Name:'Business Intelligence & Analytics',Maturity:'4 — Managed','Market Diff':'4 — Market-leading','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'4 (calc)'}},
+  {id:'bc9',label:'Platform Integration',type:'Business Capability',
+   f:{Name:'Platform Integration & Automation',Maturity:'4 — Managed','Market Diff':'4 — Market-leading','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'6 (calc)'}},
+  {id:'bc10',label:'Collaboration & Productivity',type:'Business Capability',
+   f:{Name:'Collaboration & Productivity',Maturity:'4 — Managed','Market Diff':'3 — Market-competitive','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'7 (calc)',Note:'Zoho Workplace deployed for 1.2M Indian govt employees (2025).'}},
+  {id:'bc11',label:'AI & Machine Learning',type:'Business Capability',
+   f:{Name:'AI & Machine Learning (Zia)',Maturity:'3 — Defined','Market Diff':'4 — Market-leading','Lifecycle Phase':'Live','Component Level':'1 (calc)','Complexity':'3 (calc)',Note:'Zia LLM launched 2025. Embedded across all Zoho One products.'}},
+
+  /* Applications — CRM & Sales */
+  {id:'app1',label:'Zoho CRM',type:'Application',
+   f:{Name:'Zoho CRM','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Mission Critical','Strategic Rating':'Invest (calc)','Business Value':'4.9 (calc)','Technical Fit':'4.7 (calc)','Criticality':'5 — Mission Critical','Ownership State':'Managed (calc)',Customers:'250,000+ businesses worldwide',Note:'Flagship product. Competes with Salesforce CRM.'}},
+  {id:'app2',label:'Zoho SalesIQ',type:'Application',
+   f:{Name:'Zoho SalesIQ','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.3 (calc)','Technical Fit':'4.1 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Live chat, bot builder, visitor intelligence.'}},
+  {id:'app3',label:'Zoho Campaigns',type:'Application',
+   f:{Name:'Zoho Campaigns','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Operational','Strategic Rating':'Tolerate (calc)','Business Value':'3.8 (calc)','Technical Fit':'3.2 (calc)','Criticality':'3 — Business Operational','Ownership State':'Managed (calc)',Note:'Email marketing. UI refresh planned. Competitor: Mailchimp, HubSpot.'}},
+  {id:'app4',label:'Zoho Social',type:'Application',
+   f:{Name:'Zoho Social','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Operational','Strategic Rating':'Invest (calc)','Business Value':'4.0 (calc)','Technical Fit':'4.0 (calc)','Criticality':'3 — Business Operational','Ownership State':'Managed (calc)'}},
+
+  /* Applications — Collaboration */
+  {id:'app5',label:'Zoho Cliq',type:'Application',
+   f:{Name:'Zoho Cliq','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.5 (calc)','Technical Fit':'4.3 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Team messaging. Internal primary comms tool across all Zoho divisions.'}},
+  {id:'app6',label:'Zoho WorkDrive',type:'Application',
+   f:{Name:'Zoho WorkDrive','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.4 (calc)','Technical Fit':'4.2 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Cloud document storage. Feb 2026 security incident noted (WorkDrive backdoor).'}},
+  {id:'app7',label:'Zoho Mail',type:'Application',
+   f:{Name:'Zoho Mail','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Mission Critical','Strategic Rating':'Invest (calc)','Business Value':'4.6 (calc)','Technical Fit':'4.4 (calc)','Criticality':'5 — Mission Critical','Ownership State':'Managed (calc)',Note:'1.2M Indian central government accounts migrated to Zoho Mail (2025).'}},
+  {id:'app8',label:'Zoho Projects',type:'Application',
+   f:{Name:'Zoho Projects','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Operational','Strategic Rating':'Invest (calc)','Business Value':'4.2 (calc)','Technical Fit':'4.0 (calc)','Criticality':'3 — Business Operational','Ownership State':'Managed (calc)'}},
+
+  /* Applications — Finance */
+  {id:'app9',label:'Zoho Books',type:'Application',
+   f:{Name:'Zoho Books','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.6 (calc)','Technical Fit':'4.4 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Cloud accounting. Used internally for Zoho corporate finance.'}},
+  {id:'app10',label:'Zoho Expense',type:'Application',
+   f:{Name:'Zoho Expense','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Operational','Strategic Rating':'Invest (calc)','Business Value':'4.1 (calc)','Technical Fit':'4.0 (calc)','Criticality':'3 — Business Operational','Ownership State':'Managed (calc)'}},
+  {id:'app11',label:'Zoho ERP',type:'Application',
+   f:{Name:'Zoho ERP','App Type':'SaaS — Own Product','Lifecycle Phase':'Implementing','Service Level':'TBD — Not Yet Live','Strategic Rating':'Invest (planned)','Business Value':'4.8 (projected)','Technical Fit':'3.5 (early build)','Criticality':'TBD','Ownership State':'Nominated (calc)',Note:'Launched Jan 2026. Built in Kumbakonam, Tamil Nadu. ERP for mid-market.'}},
+
+  /* Applications — HR */
+  {id:'app12',label:'Zoho People',type:'Application',
+   f:{Name:'Zoho People','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.3 (calc)','Technical Fit':'4.2 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'HRMS. Used internally to manage Zoho\'s own 17,856 employees.'}},
+  {id:'app13',label:'Zoho Recruit',type:'Application',
+   f:{Name:'Zoho Recruit','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Operational','Strategic Rating':'Invest (calc)','Business Value':'4.0 (calc)','Technical Fit':'3.9 (calc)','Criticality':'3 — Business Operational','Ownership State':'Managed (calc)'}},
+
+  /* Applications — IT & Platform */
+  {id:'app14',label:'Zoho Desk',type:'Application',
+   f:{Name:'Zoho Desk','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Mission Critical','Strategic Rating':'Invest (calc)','Business Value':'4.7 (calc)','Technical Fit':'4.5 (calc)','Criticality':'5 — Mission Critical','Ownership State':'Managed (calc)',Note:'Helpdesk. Built in Tenkasi office. Used for all customer support.'}},
+  {id:'app15',label:'Zoho Analytics',type:'Application',
+   f:{Name:'Zoho Analytics','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.8 (calc)','Technical Fit':'4.5 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'BI platform. Connects natively to all 40+ Zoho One apps.'}},
+  {id:'app16',label:'Zoho Creator',type:'Application',
+   f:{Name:'Zoho Creator','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.6 (calc)','Technical Fit':'4.7 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Low-code platform. Powers custom internal apps and customer-facing apps.'}},
+  {id:'app17',label:'Zoho Flow',type:'Application',
+   f:{Name:'Zoho Flow','App Type':'SaaS — Own Product','Lifecycle Phase':'Live','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.7 (calc)','Technical Fit':'4.5 (calc)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Integration automation. 700+ connectors. Zoho One integration backbone.'}},
+  {id:'app18',label:'Zia LLM',type:'Application',
+   f:{Name:'Zia — Zoho AI Platform','App Type':'SaaS — Own Build','Lifecycle Phase':'Implementing','Service Level':'Business Critical','Strategic Rating':'Invest (calc)','Business Value':'4.9 (projected)','Technical Fit':'3.8 (early)','Criticality':'4 — Business Critical','Ownership State':'Managed (calc)',Note:'Zoho large language model launched 2025. Embedding AI across all products.'}},
+
+  /* App Module */
+  {id:'am1',label:'Zoho CRM — Deals Pipeline',type:'App Module',
+   f:{Name:'Deals Pipeline Module','Lifecycle Phase':'Live',Description:'Core sales pipeline management within Zoho CRM',Parent:'Zoho CRM'}},
+
+  /* Interface */
+  {id:'if1',label:'Zoho One API Gateway',type:'Interface',
+   f:{Name:'Zoho One Unified API Gateway',Protocol:'REST/GraphQL','Request Type':'Read/Write','Lifecycle Phase':'Live',Description:'Central API gateway connecting all Zoho One products'}},
+
+  /* Data Store */
+  {id:'ds1',label:'Zoho Analytics Data Lake',type:'Data Store',
+   f:{Name:'Zoho Analytics Data Lake','Lifecycle Phase':'Live',Description:'Centralised data warehouse feeding all BI reports across Zoho One suite'}},
+
+  /* Infrastructure */
+  {id:'srv1',label:'Zoho DC — Chennai (Primary)',type:'Server',
+   f:{Name:'Zoho Data Centre — Chennai','Server Hosting':'Physical + VM','Server Type':'Primary Production DC','Network Zone':'Private','Deploy Env':'Production','Lifecycle Phase':'Live',Note:'Main DC. Hosts majority of production workloads.'}},
+  {id:'srv2',label:'Zoho DC — US East (Austin)',type:'Server',
+   f:{Name:'Zoho Data Centre — Austin, Texas','Server Hosting':'Physical + VM','Server Type':'Regional Production DC','Network Zone':'Private','Deploy Env':'Production','Lifecycle Phase':'Live'}},
+  {id:'srv3',label:'Zoho DC — EU (Amsterdam)',type:'Server',
+   f:{Name:'Zoho Data Centre — Amsterdam, Netherlands','Server Hosting':'Physical + VM','Server Type':'EU Regional DC','Network Zone':'Private','Deploy Env':'Production','Lifecycle Phase':'Live',Note:'EU data residency for GDPR compliance.'}},
+  {id:'srv4',label:'Zoho DC — AU (Sydney)',type:'Server',
+   f:{Name:'Zoho Data Centre — Sydney, Australia','Server Hosting':'Physical + VM','Server Type':'APAC Regional DC','Network Zone':'Private','Deploy Env':'Production','Lifecycle Phase':'Live'}},
+  {id:'srv5',label:'Zoho DC — UK (London)',type:'Server',
+   f:{Name:'Zoho Data Centre — London, UK','Server Hosting':'Physical + VM','Server Type':'UK Regional DC','Network Zone':'Private','Deploy Env':'Implementing','Lifecycle Phase':'Implementing',Note:'New UK DC announced April 2026. Digital sovereignty positioning.'}},
+
+  /* Tech Services */
+  {id:'ts1',label:'Cloudflare CDN',type:'Tech Service',
+   f:{Name:'Cloudflare CDN','Server Hosting':'Cloud — Global','Deploy Env':'Production','Lifecycle Phase':'Live',Description:'Global CDN for all Zoho web properties and app delivery'}},
+  {id:'ts2',label:'AWS S3 — Backup',type:'Tech Service',
+   f:{Name:'AWS S3 — Backup Storage','Server Hosting':'Cloud — AWS','Deploy Env':'Production','Lifecycle Phase':'Live',Description:'Amazon S3 used for off-site backup and archival storage'}},
+
+  /* Tech Products */
+  {id:'tp1',label:'Linux (Ubuntu LTS)',type:'Tech Product',
+   f:{Name:'Linux — Ubuntu LTS',Vendor:'Canonical',Version:'22.04 LTS','Lifecycle Phase':'Live',Description:'Base OS across all Zoho data centres'}},
+  {id:'tp2',label:'Kubernetes (k8s)',type:'Tech Product',
+   f:{Name:'Kubernetes',Vendor:'CNCF',Version:'1.28+','Lifecycle Phase':'Live',Description:'Container orchestration for microservices across Zoho products'}},
+  {id:'tp3',label:'PostgreSQL',type:'Tech Product',
+   f:{Name:'PostgreSQL',Vendor:'Open Source',Version:'15+','Lifecycle Phase':'Live',Description:'Primary relational database for multiple Zoho products'}},
+
+  /* Locations */
+  {id:'loc1',label:'Chennai, India (HQ)',type:'Location',
+   f:{Name:'Chennai, India — Global HQ',Address:'Estancia IT Park, Chennai, Tamil Nadu',Type:'Global Headquarters & Primary Engineering Campus'}},
+  {id:'loc2',label:'Austin, Texas, USA',type:'Location',
+   f:{Name:'Austin, Texas — US HQ',Address:'Del Valle, Austin, Texas (moved from Pleasanton CA in 2019)',Type:'US Headquarters'}},
+  {id:'loc3',label:'Amsterdam, Netherlands',type:'Location',
+   f:{Name:'Amsterdam, Netherlands',Address:'Amsterdam, Netherlands',Type:'EU Headquarters & EU DC — GDPR data residency'}},
+  {id:'loc4',label:'Sydney, Australia',type:'Location',
+   f:{Name:'Sydney, Australia',Address:'Sydney, New South Wales',Type:'APAC Regional Office & Data Centre'}},
+  {id:'loc5',label:'London, UK',type:'Location',
+   f:{Name:'London, United Kingdom',Address:'London, UK',Type:'UK Office & New Data Centre (April 2026)'}},
+];
+
+var EDGES=[
+  /* Person → Owns */
+  {id:'e1', s:'p1',t:'ou7', r:'Owns'},
+  {id:'e2', s:'p1',t:'app1',r:'Owns'},
+  {id:'e3', s:'p2',t:'ou6', r:'Owns'},
+  {id:'e4', s:'p2',t:'app18',r:'Owns'},
+  {id:'e5', s:'p3',t:'ou1', r:'Owns'},
+  {id:'e6', s:'p6',t:'ou4', r:'Owns'},
+  {id:'e7', s:'p6',t:'app15',r:'Owns'},
+  {id:'e8', s:'p6',t:'app16',r:'Owns'},
+  {id:'e9', s:'p4',t:'ou11',r:'Owns'},
+  {id:'e10',s:'p5',t:'ou8', r:'Owns'},
+  /* Person → Is Expert In */
+  {id:'e11',s:'p2',t:'bc1', r:'Is Expert In'},
+  {id:'e12',s:'p2',t:'bc6', r:'Is Expert In'},
+  {id:'e13',s:'p2',t:'bc11',r:'Is Expert In'},
+  {id:'e14',s:'p6',t:'bc8', r:'Is Expert In'},
+  {id:'e15',s:'p6',t:'bc9', r:'Is Expert In'},
+  {id:'e16',s:'p5',t:'bc10',r:'Is Expert In'},
+  {id:'e17',s:'p3',t:'bc1', r:'Is Expert In'},
+  /* Person → Reports To */
+  {id:'e18',s:'p2',t:'p1',r:'Reports To'},
+  {id:'e19',s:'p3',t:'p1',r:'Reports To'},
+  {id:'e20',s:'p4',t:'p1',r:'Reports To'},
+  {id:'e21',s:'p5',t:'p1',r:'Reports To'},
+  {id:'e22',s:'p6',t:'p3',r:'Reports To'},
+  /* Person → Belongs To */
+  {id:'e23',s:'p1',t:'ou7', r:'Belongs To'},
+  {id:'e24',s:'p2',t:'ou6', r:'Belongs To'},
+  {id:'e25',s:'p3',t:'ou1', r:'Belongs To'},
+  {id:'e26',s:'p4',t:'ou11',r:'Belongs To'},
+  {id:'e27',s:'p5',t:'ou8', r:'Belongs To'},
+  {id:'e28',s:'p6',t:'ou4', r:'Belongs To'},
+  /* Org Unit → Belongs To Organization */
+  {id:'e29',s:'ou1', t:'org1',r:'Belongs To'},
+  {id:'e30',s:'ou2', t:'org1',r:'Belongs To'},
+  {id:'e31',s:'ou3', t:'org1',r:'Belongs To'},
+  {id:'e32',s:'ou4', t:'org1',r:'Belongs To'},
+  {id:'e33',s:'ou5', t:'org1',r:'Belongs To'},
+  {id:'e34',s:'ou6', t:'org1',r:'Belongs To'},
+  {id:'e35',s:'ou7', t:'org1',r:'Belongs To'},
+  {id:'e36',s:'ou8', t:'org1',r:'Belongs To'},
+  {id:'e37',s:'ou9', t:'org1',r:'Belongs To'},
+  {id:'e38',s:'ou10',t:'org1',r:'Belongs To'},
+  {id:'e39',s:'ou11',t:'org1',r:'Belongs To'},
+  /* Org Unit → Consumes (dogfooding & internal use) */
+  {id:'e40',s:'ou7', t:'app1', r:'Consumes'},
+  {id:'e41',s:'ou7', t:'app2', r:'Consumes'},
+  {id:'e42',s:'ou7', t:'app3', r:'Consumes'},
+  {id:'e43',s:'ou10',t:'app9', r:'Consumes'},
+  {id:'e44',s:'ou10',t:'app10',r:'Consumes'},
+  {id:'e45',s:'ou9', t:'app12',r:'Consumes'},
+  {id:'e46',s:'ou9', t:'app13',r:'Consumes'},
+  {id:'e47',s:'ou8', t:'app14',r:'Consumes'},
+  {id:'e48',s:'ou8', t:'app5', r:'Consumes'},
+  {id:'e49',s:'ou1', t:'app1', r:'Consumes'},
+  {id:'e50',s:'ou2', t:'app5', r:'Consumes'},
+  {id:'e51',s:'ou2', t:'app6', r:'Consumes'},
+  {id:'e52',s:'ou4', t:'app15',r:'Consumes'},
+  {id:'e53',s:'ou11',t:'app17',r:'Consumes'},
+  {id:'e54',s:'ou11',t:'app16',r:'Consumes'},
+  /* Business Capability → Is Realized By */
+  {id:'e55',s:'bc1', t:'app1', r:'Is Realized By'},
+  {id:'e56',s:'bc1', t:'ou1',  r:'Is Realized By'},
+  {id:'e57',s:'bc2', t:'app3', r:'Is Realized By'},
+  {id:'e58',s:'bc2', t:'app2', r:'Is Realized By'},
+  {id:'e59',s:'bc2', t:'app4', r:'Is Realized By'},
+  {id:'e60',s:'bc3', t:'app9', r:'Is Realized By'},
+  {id:'e61',s:'bc3', t:'app10',r:'Is Realized By'},
+  {id:'e62',s:'bc3', t:'ou3',  r:'Is Realized By'},
+  {id:'e63',s:'bc4', t:'app12',r:'Is Realized By'},
+  {id:'e64',s:'bc4', t:'app13',r:'Is Realized By'},
+  {id:'e65',s:'bc4', t:'ou5',  r:'Is Realized By'},
+  {id:'e66',s:'bc5', t:'app14',r:'Is Realized By'},
+  {id:'e67',s:'bc5', t:'ou5',  r:'Is Realized By'},
+  {id:'e68',s:'bc6', t:'ou1',  r:'Is Realized By'},
+  {id:'e69',s:'bc6', t:'ou4',  r:'Is Realized By'},
+  {id:'e70',s:'bc7', t:'app14',r:'Is Realized By'},
+  {id:'e71',s:'bc7', t:'ou8',  r:'Is Realized By'},
+  {id:'e72',s:'bc8', t:'app15',r:'Is Realized By'},
+  {id:'e73',s:'bc8', t:'ou4',  r:'Is Realized By'},
+  {id:'e74',s:'bc9', t:'app16',r:'Is Realized By'},
+  {id:'e75',s:'bc9', t:'app17',r:'Is Realized By'},
+  {id:'e76',s:'bc10',t:'app5', r:'Is Realized By'},
+  {id:'e77',s:'bc10',t:'app7', r:'Is Realized By'},
+  {id:'e78',s:'bc10',t:'app6', r:'Is Realized By'},
+  {id:'e79',s:'bc10',t:'app8', r:'Is Realized By'},
+  {id:'e80',s:'bc10',t:'ou2',  r:'Is Realized By'},
+  {id:'e81',s:'bc11',t:'app18',r:'Is Realized By'},
+  {id:'e82',s:'bc11',t:'ou6',  r:'Is Realized By'},
+  /* App Module */
+  {id:'e83',s:'am1',t:'app1',r:'Module Of'},
+  /* Interface connections */
+  {id:'e84',s:'app17',t:'if1',r:'Connects To'},
+  {id:'e85',s:'if1',t:'app1',r:'Connects To'},
+  {id:'e86',s:'if1',t:'app15',r:'Connects To'},
+  {id:'e87',s:'if1',t:'app14',r:'Connects To'},
+  /* Data Store */
+  {id:'e88',s:'ds1',t:'app15',r:'Module Of'},
+  /* Application → Is Supported By */
+  {id:'e89',s:'app1', t:'srv1',r:'Is Supported By'},
+  {id:'e90',s:'app1', t:'srv2',r:'Is Supported By'},
+  {id:'e91',s:'app14',t:'srv1',r:'Is Supported By'},
+  {id:'e92',s:'app14',t:'srv2',r:'Is Supported By'},
+  {id:'e93',s:'app7', t:'srv1',r:'Is Supported By'},
+  {id:'e94',s:'app7', t:'srv3',r:'Is Supported By'},
+  {id:'e95',s:'app14',t:'srv3',r:'Is Supported By'},
+  {id:'e96',s:'app5', t:'srv1',r:'Is Supported By'},
+  {id:'e97',s:'app5', t:'srv2',r:'Is Supported By'},
+  {id:'e98',s:'app9', t:'srv1',r:'Is Supported By'},
+  {id:'e99',s:'app12',t:'srv2',r:'Is Supported By'},
+  {id:'e100',s:'app6',t:'srv2',r:'Is Supported By'},
+  {id:'e101',s:'app6',t:'ts1',r:'Is Supported By'},
+  {id:'e102',s:'ds1', t:'srv1',r:'Is Supported By'},
+  /* Server → Is Located At */
+  {id:'e103',s:'srv1',t:'loc1',r:'Is Located At'},
+  {id:'e104',s:'srv2',t:'loc2',r:'Is Located At'},
+  {id:'e105',s:'srv3',t:'loc3',r:'Is Located At'},
+  {id:'e106',s:'srv4',t:'loc4',r:'Is Located At'},
+  {id:'e107',s:'srv5',t:'loc5',r:'Is Located At'},
+  /* Tech Service → Is Located At */
+  {id:'e108',s:'ts2',t:'loc2',r:'Is Located At'},
+  /* Tech Product → Deploys To */
+  {id:'e109',s:'tp1',t:'srv1',r:'Deploys To'},
+  {id:'e110',s:'tp1',t:'srv2',r:'Deploys To'},
+  {id:'e111',s:'tp1',t:'srv3',r:'Deploys To'},
+  {id:'e112',s:'tp2',t:'srv1',r:'Deploys To'},
+  {id:'e113',s:'tp3',t:'srv1',r:'Deploys To'},
+  {id:'e114',s:'tp3',t:'ds1', r:'Deploys To'},
+  /* Has Successor */
+  {id:'e115',s:'app3',t:'app2',r:'Has Successor'},
+];
+
+/* ─── STATE ─────────────────────────────────────────────────── */
+var cy,selNode=null,inFocus=false,hiddenTypes={},selNodeId=null;
+
+/* ─── UTIL ──────────────────────────────────────────────────── */
+function nl(id){var n=NODES.find(function(x){return x.id===id;});return n?n.label:id;}
+function ntype(id){var n=NODES.find(function(x){return x.id===id;});return n?n.type:'';}
+function outE(id,ref){return EDGES.filter(function(e){return e.s===id&&(!ref||e.r===ref);}); }
+function inE(id,ref){return EDGES.filter(function(e){return e.t===id&&(!ref||e.r===ref);}); }
+
+/* ─── CYTOSCAPE ─────────────────────────────────────────────── */
+function initCy(){
+  var els=[];
+  NODES.forEach(function(n){
+    var t=TC[n.type]||TC['Location'];
+    els.push({data:{id:n.id,label:n.label,type:n.type,nf:n.f,
+      color:t.c,bc:t.b,tc:t.tc,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px'}});
+  });
+  EDGES.forEach(function(e){
+    els.push({data:{id:e.id,source:e.s,target:e.t,ref:e.r,rc:RC[e.r]||'#888780'}});
+  });
+  cy=cytoscape({
+    container:document.getElementById('cy'),
+    elements:els,
+    style:[
+      {selector:'node',style:{
+        'label':'data(label)','color':'data(tc)',
+        'background-color':'data(color)','border-color':'data(bc)','border-width':2,
+        'shape':'data(shape)','width':'data(nw)','height':'data(nh)',
+        'font-size':10,'font-family':'-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
+        'font-weight':'500','text-valign':'center','text-halign':'center',
+        'text-wrap':'wrap','text-max-width':'data(tmw)','cursor':'pointer',
+        'overlay-padding':'6px','transition-property':'opacity','transition-duration':'150ms',
+      }},
+      {selector:'node:selected',style:{
+        'border-width':4,'border-color':'#2c2c2a','overlay-color':'#000','overlay-opacity':0.05}},
+      {selector:'edge',style:{
+        'curve-style':'bezier','target-arrow-shape':'vee',
+        'target-arrow-color':'#c0beba','line-color':'#c0beba','width':1.5,
+        'label':'data(ref)','font-size':8,
+        'font-family':'-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
+        'color':'#888780','text-rotation':'autorotate',
+        'text-background-color':'#fafaf8','text-background-opacity':0.88,'text-background-padding':'2px',
+        'opacity':0.65,'transition-property':'opacity,line-color,width','transition-duration':'150ms',
+      }},
+      {selector:'edge[ref="Child Of"],edge[ref="Module Of"]',style:{
+        'line-style':'dashed','line-dash-pattern':[5,4],'width':1}},
+      {selector:'.hi',style:{
+        'line-color':'data(rc)','target-arrow-color':'data(rc)','color':'data(rc)',
+        'opacity':1,'width':2.5,'font-size':9,'font-weight':'600',
+        'text-background-color':'#fff','text-background-padding':'3px'}},
+      {selector:'.dim',style:{'opacity':0.07}},
+      {selector:'.dim-n',style:{'opacity':0.1}},
+    ],
+    layout:{name:'cose',idealEdgeLength:120,nodeOverlap:20,fit:true,padding:50,
+      randomize:false,componentSpacing:120,nodeRepulsion:500000,edgeElasticity:100,
+      gravity:80,numIter:1200,initialTemp:250,coolingFactor:0.95,minTemp:1.0},
+    minZoom:0.08,maxZoom:4,wheelSensitivity:0.3,
+  });
+  cy.on('tap','node',function(evt){onNodeTap(evt.target);});
+  cy.on('tap',function(evt){if(evt.target===cy)onBgTap();});
+}
+
+/* ─── NODE EVENTS ───────────────────────────────────────────── */
+function onNodeTap(node){
+  selNode=node; selNodeId=node.data('id');
+  cy.elements().removeClass('hi dim dim-n');
+  var nb=node.closedNeighborhood();
+  cy.elements().not(nb).each(function(el){el.addClass(el.isNode()?'dim-n':'dim');});
+  node.connectedEdges().addClass('hi');
+  cy.$(':selected').unselect(); node.select();
+  showDetail(node);
+  document.getElementById('focus-btn').style.display='';
+  document.getElementById('hint-bar').style.display='none';
+}
+function onBgTap(){
+  if(inFocus)return;
+  selNode=null; selNodeId=null;
+  cy.elements().removeClass('hi dim dim-n');
+  cy.$(':selected').unselect();
+  hideDetail();
+  document.getElementById('focus-btn').style.display='none';
+  document.getElementById('hint-bar').style.display='';
+}
+
+/* ─── DETAIL PANEL ──────────────────────────────────────────── */
+function showDetail(node){
+  var d=node.data(), t=TC[d.type]||TC['Location'];
+  var badge=document.getElementById('rp-badge');
+  badge.textContent=d.type;
+  badge.style.cssText='background:'+d.color+'22;color:'+d.color+';border:1px solid '+d.color+'55;display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-bottom:4px';
+  document.getElementById('rp-name').textContent=d.label;
+  document.getElementById('rp-narr').textContent=buildNarrative(d.id);
+  var fh='<div class="rp-sec"><div class="rp-sec-hd">Fields</div>';
+  var fields=d.nf||{};
+  Object.keys(fields).forEach(function(k){
+    var v=String(fields[k]),calc=v.indexOf('(calc)')>-1||v.indexOf('(proj)')>-1;
+    var cls='fv'+(calc?' calc':'');
+    if(v==='Invest (calc)'||v==='5 — Measured'||v==='4 — Managed') cls+=' good';
+    if(v==='Tolerate (calc)'||v.indexOf('⚠')>-1) cls+=' warn';
+    fh+='<div class="frow"><span class="fk">'+escH(k)+'</span><span class="'+cls+'">'+escH(v)+'</span></div>';
+  });
+  fh+='</div>';
+  document.getElementById('rp-fields').innerHTML=fh;
+  var outEdges=cy.edges('[source="'+d.id+'"]');
+  var inEdges=cy.edges('[target="'+d.id+'"]');
+  var rh='';
+  if(outEdges.length){
+    rh+='<div class="rp-sec"><div class="rp-sec-hd">Outgoing ('+outEdges.length+')</div></div>';
+    outEdges.forEach(function(e){
+      var tgt=cy.$('#'+e.data('target'));
+      var tc2=TC[tgt.data('type')]||TC['Location'];
+      rh+='<div class="rref" onclick="jumpTo(\''+e.data('target')+'\')">'
+        +'<div class="rr-dot" style="background:'+e.data('rc')+'"></div>'
+        +'<div class="rr-body"><div class="rr-type">'+escH(e.data('ref'))+'</div>'
+        +'<div class="rr-tgt" style="color:'+tc2.c+'">'+escH(tgt.data('label'))+'</div></div>'
+        +'<div class="rr-dir out">out</div></div>';
+    });
+  }
+  if(inEdges.length){
+    rh+='<div class="rp-sec"><div class="rp-sec-hd">Incoming ('+inEdges.length+')</div></div>';
+    inEdges.forEach(function(e){
+      var src=cy.$('#'+e.data('source'));
+      var sc2=TC[src.data('type')]||TC['Location'];
+      rh+='<div class="rref" onclick="jumpTo(\''+e.data('source')+'\')">'
+        +'<div class="rr-dot" style="background:'+e.data('rc')+'"></div>'
+        +'<div class="rr-body"><div class="rr-type">'+escH(e.data('ref'))+'</div>'
+        +'<div class="rr-tgt" style="color:'+sc2.c+'">'+escH(src.data('label'))+'</div></div>'
+        +'<div class="rr-dir in">in</div></div>';
+    });
+  }
+  if(!outEdges.length&&!inEdges.length) rh='<div style="padding:12px 14px;font-size:11px;color:#888780;font-style:italic">No references found.</div>';
+  document.getElementById('rp-refs').innerHTML=rh;
+  document.getElementById('rp-empty').style.display='none';
+  document.getElementById('rp-content').style.display='flex';
+}
+function hideDetail(){
+  document.getElementById('rp-empty').style.display='';
+  document.getElementById('rp-content').style.display='none';
+}
+function jumpTo(id){
+  var n=cy.$('#'+id);
+  if(!n.length)return;
+  cy.animate({center:{eles:n},zoom:Math.max(cy.zoom(),1.1)},{duration:350});
+  setTimeout(function(){n.emit('tap');},400);
+}
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ─── FOCUS ─────────────────────────────────────────────────── */
+function doFocus(){
+  if(!selNode)return;
+  inFocus=true;
+  var nb=selNode.closedNeighborhood();
+  cy.elements().not(nb).style('display','none');
+  nb.style('display','element');
+  cy.elements().removeClass('hi dim dim-n');
+  selNode.connectedEdges().addClass('hi');
+  cy.layout({name:'cose',fit:true,padding:70,nodeRepulsion:620000,idealEdgeLength:170,animate:true,animationDuration:500,randomize:false}).run();
+  document.getElementById('ctx-pill').style.display='flex';
+  document.getElementById('ctx-name').textContent=selNode.data('label');
+  document.getElementById('focus-btn').style.display='none';
+}
+function exitFocus(){
+  inFocus=false;
+  cy.elements().style('display','element');
+  applyHiddenTypes();
+  document.getElementById('ctx-pill').style.display='none';
+  if(selNode){
+    cy.elements().removeClass('hi dim dim-n');
+    var nb=selNode.closedNeighborhood();
+    cy.elements().not(nb).each(function(el){el.addClass(el.isNode()?'dim-n':'dim');});
+    selNode.connectedEdges().addClass('hi');
+    document.getElementById('focus-btn').style.display='';
+  }
+  applyLayout(document.getElementById('layout-sel').value);
+}
+function showAll(){
+  inFocus=false; selNode=null; selNodeId=null;
+  cy.elements().removeClass('hi dim dim-n');
+  cy.elements().style('display','element');
+  applyHiddenTypes(); cy.$(':selected').unselect();
+  hideDetail();
+  document.getElementById('ctx-pill').style.display='none';
+  document.getElementById('focus-btn').style.display='none';
+  document.getElementById('hint-bar').style.display='';
+  cy.fit(50);
+}
+
+/* ─── ADD NODE ──────────────────────────────────────────────── */
+function openAddModal(){
+  var parentSel=document.getElementById('an-parent');
+  parentSel.innerHTML='<option value="">— No connection —</option>';
+  NODES.forEach(function(n){
+    var o=document.createElement('option');
+    o.value=n.id; o.textContent='['+n.type+'] '+n.label;
+    parentSel.appendChild(o);
+  });
+  if(selNodeId){
+    for(var i=0;i<parentSel.options.length;i++){
+      if(parentSel.options[i].value===selNodeId){parentSel.selectedIndex=i;break;}
+    }
+  }
+  var refSel=document.getElementById('an-ref');
+  refSel.innerHTML='';
+  Object.keys(RC).forEach(function(r){
+    var o=document.createElement('option');
+    o.value=r; o.textContent=r;
+    refSel.appendChild(o);
+  });
+  parentSel.onchange=function(){
+    document.getElementById('an-ref-wrap').style.display=this.value?'':'none';
+  };
+  document.getElementById('an-ref-wrap').style.display=selNodeId?'':'none';
+  document.getElementById('an-name').value='';
+  document.getElementById('an-desc').value='';
+  document.getElementById('modal-add').classList.add('show');
+  document.getElementById('an-name').focus();
+}
+function closeModal(){document.getElementById('modal-add').classList.remove('show');}
+
+function addNode(){
+  var type=document.getElementById('an-type').value;
+  var label=document.getElementById('an-name').value.trim();
+  var desc=document.getElementById('an-desc').value.trim();
+  var phase=document.getElementById('an-phase').value;
+  var parentId=document.getElementById('an-parent').value;
+  var refType=document.getElementById('an-ref').value;
+  if(!label){alert('Please enter a component name.');return;}
+  var id='n_'+Date.now();
+  var newNode={id:id,label:label,type:type,f:{Name:label,Description:desc||'','Lifecycle Phase':phase,'Added':'New component (user created)'}};
+  NODES.push(newNode);
+  var t=TC[type]||TC['Location'];
+  cy.add([{data:{id:id,label:label,type:type,nf:newNode.f,
+    color:t.c,bc:t.b,tc:t.tc,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px'}}]);
+  if(parentId){
+    var pNode=cy.$('#'+parentId);
+    var pp=pNode.position();
+    cy.$('#'+id).position({x:pp.x+120+Math.random()*40,y:pp.y+140+Math.random()*40});
+    var eid='e_'+Date.now();
+    EDGES.push({id:eid,s:parentId,t:id,r:refType});
+    cy.add([{data:{id:eid,source:parentId,target:id,ref:refType,rc:RC[refType]||'#888780'}}]);
+  } else {
+    var ext=cy.extent();
+    cy.$('#'+id).position({x:(ext.x1+ext.x2)/2+Math.random()*200-100,y:(ext.y1+ext.y2)/2+Math.random()*200-100});
+  }
+  /* Persist to Neo4j (system of record) when running live. */
+  if(LIVE){
+    apiSend('POST','/api/node',{id:id,type:type,label:label,description:desc,phase:phase,
+      parentId:parentId||undefined,refType:parentId?refType:undefined})
+      .catch(function(e){alert('Added on screen but NOT saved to the graph: '+e.message);});
+  }
+  closeModal();
+  cy.fit(30);
+  setTimeout(function(){var n=cy.$('#'+id);if(n.length)n.emit('tap');},400);
+}
+
+/* ─── DELETE NODE ───────────────────────────────────────────── */
+function deleteNode(){
+  if(!selNodeId)return;
+  var n=NODES.find(function(x){return x.id===selNodeId;});
+  var name=n?n.label:'this component';
+  if(!confirm('Delete "'+name+'" and all its connections?\nThis cannot be undone.'))return;
+  var id=selNodeId;
+  var idx=NODES.findIndex(function(x){return x.id===id;});
+  if(idx>-1)NODES.splice(idx,1);
+  EDGES=EDGES.filter(function(e){return e.s!==id&&e.t!==id;});
+  cy.$('#'+id).remove();
+  if(LIVE){apiSend('DELETE','/api/node/'+encodeURIComponent(id)).catch(function(e){alert('Removed on screen but NOT deleted from the graph: '+e.message);});}
+  selNode=null; selNodeId=null;
+  hideDetail();
+  document.getElementById('focus-btn').style.display='none';
+}
+
+/* ─── LAYOUT ────────────────────────────────────────────────── */
+function applyLayout(name){
+  var base={name:'cose',fit:true,padding:50,nodeRepulsion:500000,idealEdgeLength:120,animate:true,animationDuration:600,randomize:false,componentSpacing:120,gravity:80,numIter:800};
+  if(name==='tree-td'){
+    cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:cy.$('#org1'),spacingFactor:1.7,animate:true,animationDuration:500}).run();return;
+  }
+  if(name==='tree-lr'){
+    var l=cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:cy.$('#org1'),spacingFactor:1.7,animate:false});
+    l.run();
+    cy.nodes().forEach(function(n){var p=n.position();n.position({x:p.y*1.4,y:p.x*0.75});});
+    cy.fit(50);return;
+  }
+  if(name==='concentric'){
+    var order=['Organization','Org Unit','Business Capability','Person','Application','App Module','Interface','Data Store','Server','Tech Service','Tech Product','Location'];
+    cy.layout({name:'concentric',fit:true,padding:50,animate:true,animationDuration:500,minNodeSpacing:28,
+      concentric:function(n){return order.length-order.indexOf(n.data('type'));}
+    }).run();return;
+  }
+  if(name==='circle'){cy.layout({name:'circle',fit:true,padding:50,animate:true,animationDuration:500}).run();return;}
+  if(name==='grid'){cy.layout({name:'grid',fit:true,padding:50,animate:true,animationDuration:500,avoidOverlap:true}).run();return;}
+  cy.layout(base).run();
+}
+function resetLayout(){applyLayout(document.getElementById('layout-sel').value);}
+
+/* ─── SEARCH + FILTER ───────────────────────────────────────── */
+function doSearch(q){
+  q=(q||'').trim().toLowerCase();
+  cy.elements().removeClass('dim dim-n');
+  if(!q)return;
+  cy.nodes().forEach(function(n){
+    if(n.data('label').toLowerCase().indexOf(q)<0&&n.data('type').toLowerCase().indexOf(q)<0)n.addClass('dim-n');
+  });
+  cy.edges().addClass('dim');
+}
+function toggleType(type){hiddenTypes[type]=!hiddenTypes[type];applyHiddenTypes();}
+function applyHiddenTypes(){
+  cy.nodes().forEach(function(n){n.style('display',hiddenTypes[n.data('type')]?'none':'element');});
+  cy.edges().forEach(function(e){
+    var hs=cy.$('#'+e.data('source')).style('display')==='none';
+    var ht=cy.$('#'+e.data('target')).style('display')==='none';
+    e.style('display',(hs||ht)?'none':'element');
+  });
+}
+
+/* ─── LEGEND ────────────────────────────────────────────────── */
+function buildLegend(){
+  var counts={};NODES.forEach(function(n){counts[n.type]=(counts[n.type]||0)+1;});
+  var tDiv=document.getElementById('type-legend');
+  Object.keys(TC).forEach(function(type){
+    var cfg=TC[type],cnt=counts[type]||0;if(!cnt)return;
+    var d=document.createElement('div');d.className='leg-row';
+    d.innerHTML='<div class="ldot'+(cfg.s==='ellipse'?' oval':'')+'" style="background:'+cfg.c+'"></div>'
+      +'<span class="lname">'+type+'</span><span class="lcnt">'+cnt+'</span>';
+    d.onclick=function(){d.classList.toggle('off');toggleType(type);};
+    tDiv.appendChild(d);
+  });
+  var rDiv=document.getElementById('ref-legend');
+  var used={};EDGES.forEach(function(e){used[e.r]=true;});
+  Object.keys(RC).forEach(function(ref){
+    if(!used[ref])return;
+    var d=document.createElement('div');d.className='ref-row';
+    d.innerHTML='<div class="ref-sw" style="background:'+RC[ref]+'"></div><span class="ref-nm">'+ref+'</span>';
+    rDiv.appendChild(d);
+  });
+  var anType=document.getElementById('an-type');
+  Object.keys(TC).forEach(function(type){
+    var o=document.createElement('option');o.value=type;o.textContent=type;anType.appendChild(o);
+  });
+}
+
+/* ─── NARRATIVE ─────────────────────────────────────────────── */
+function rDesc(r){var m={'Invest':'strong value + great fit — keep investing','Tolerate':'good value but poor fit — plan modernisation','Migrate':'low value, OK fit — migrate elsewhere','Eliminate':'retire this asset'};return m[r]||r;}
+function buildNarrative(nodeId){
+  var n=NODES.find(function(x){return x.id===nodeId;});if(!n)return '';
+  var out=EDGES.filter(function(e){return e.s===nodeId;}),inc=EDGES.filter(function(e){return e.t===nodeId;});
+  function gout(ref){return out.filter(function(e){return e.r===ref;}).map(function(e){return nl(e.t);});}
+  function gin(ref){return inc.filter(function(e){return e.r===ref;}).map(function(e){return nl(e.s);});}
+  switch(n.type){
+    case 'Organization':{
+      var units=inc.filter(function(e){return e.r==='Belongs To';}).map(function(e){return nl(e.s);});
+      return 'Zoho Corporation — founded 1996 as AdventNet. Bootstrapped, 100% privately owned. '+n.f.Employees+' employees. Headquarters in Chennai, India with 80+ country offices. Group CEO: '+n.f.CEO+'.';
+    }
+    case 'Org Unit':{
+      var owner=gin('Owns'),uses=gout('Consumes'),realizes=gin('Is Realized By'),parent=gout('Belongs To');
+      var parts=['Part of: '+(parent[0]||'Zoho Corporation')];
+      if(owner.length)parts.push('led by: '+owner.join(', '));
+      if(uses.length)parts.push('internally uses: '+uses.join(', '));
+      if(realizes.length)parts.push('realizes capabilities: '+realizes.join(', '));
+      return n.label+' — '+parts.join('. ')+'.';
+    }
+    case 'Person':{
+      var owns=gout('Owns'),expert=gout('Is Expert In'),rto=gout('Reports To'),manages=gin('Reports To'),dept=gout('Belongs To');
+      var parts=[n.f.Role];
+      if(dept.length)parts.push('in '+dept.join(', '));
+      if(owns.length)parts.push('owns/leads: '+owns.join(', '));
+      if(expert.length)parts.push('expert in: '+expert.join(', '));
+      if(rto.length)parts.push('reports to: '+rto.join(', '));
+      if(manages.length)parts.push('manages: '+manages.join(', '));
+      return n.label+' — '+parts.join('. ')+'. '+((n.f.Status||''));
+    }
+    case 'Business Capability':{
+      var appR=out.filter(function(e){return e.r==='Is Realized By'&&ntype(e.t)==='Application';}).map(function(e){return nl(e.t);});
+      var orgR=out.filter(function(e){return e.r==='Is Realized By'&&ntype(e.t)==='Org Unit';}).map(function(e){return nl(e.t);});
+      var parts=['Maturity: '+(n.f.Maturity||'?'),'Market diff: '+(n.f['Market Diff']||'?')];
+      if(appR.length)parts.push('delivered by apps: '+appR.join(', '));
+      if(orgR.length)parts.push('delivered by team: '+orgR.join(', '));
+      if(!appR.length&&!orgR.length)parts.push('⚠ No realization mapped');
+      if(n.f.Note)parts.push(n.f.Note);
+      return n.label+' — '+parts.join('. ')+'.';
+    }
+    case 'Application':{
+      var rating=(n.f['Strategic Rating']||'').replace(' (calc)','').replace(' (planned)','');
+      var bv=(n.f['Business Value']||'').replace(' (calc)','').replace(' (projected)','');
+      var tf=(n.f['Technical Fit']||'').replace(' (calc)','').replace(' (early)','');
+      var ownedBy=gin('Owns'),realizes2=gin('Is Realized By'),usedBy=gin('Consumes');
+      var infra=gout('Is Supported By'),succ=gout('Has Successor'),expertBy=gin('Is Expert In');
+      var parts=[];
+      if(rating)parts.push('Rated '+rating+' (BV:'+bv+'/TF:'+tf+') — '+rDesc(rating));
+      if(ownedBy.length)parts.push('owned by: '+ownedBy.join(', '));
+      if(realizes2.length)parts.push('realizes: '+realizes2.join(', '));
+      if(usedBy.length)parts.push('used internally by: '+usedBy.join(', ')+' teams');
+      if(infra.length)parts.push('hosted on: '+infra.join(', '));
+      if(succ.length)parts.push('📌 successor: '+succ.join(', '));
+      if(n.f.Note)parts.push(n.f.Note);
+      return n.label+' — '+(n.f['Service Level']||'')+' — '+parts.join('. ')+'.';
+    }
+    case 'Server':{
+      var apps=gin('Is Supported By'),loc=gout('Is Located At'),prods=gin('Deploys To');
+      return n.label+' — '+n.f['Server Type']+'.'
+        +(loc.length?' Location: '+loc.join(', ')+'.':(''  ))
+        +(apps.length?' Hosts: '+apps.join(', ')+'.':(''  ))
+        +(n.f.Note?' '+n.f.Note:'');
+    }
+    case 'Location':{
+      var srvs=inc.filter(function(e){return e.r==='Is Located At'&&ntype(e.s)==='Server';}).map(function(e){return nl(e.s);});
+      return n.f.Type+' at '+n.f.Address+'.'+(srvs.length?' Data centres here: '+srvs.join(', ')+'.':(''  ));
+    }
+    default:return n.label+' ('+n.type+'). '+((n.f.Description||''));
+  }
+}
+
+/* ─── INSIGHTS ──────────────────────────────────────────────── */
+function buildInsights(){
+  var bar=document.getElementById('ins-wrap');
+  var cards=[
+    {cls:'blue',icon:'⭐',title:'Zoho CRM: The crown jewel',
+     desc:'Flagship product with 250,000+ business customers. Mission Critical. Competes with Salesforce. Rated Invest (BV:4.9/TF:4.7). Dogfooded internally by 3+ Zoho divisions.'},
+    {cls:'purple',icon:'🔗',title:'Zoho One: 40+ integrated apps',
+     desc:'Zoho Flow + Zoho One API Gateway connect all products natively. No third-party integration middleware needed. This is a major TCO advantage vs. fragmented competition.'},
+    {cls:'red',icon:'🏠',title:'Chennai DC: 60%+ of production',
+     desc:'The majority of Zoho production workloads are in Chennai (India). Multi-region replication exists (US, EU, AU, UK) but primary risk concentration is in India.'},
+    {cls:'amber',icon:'⚡',title:'Zoho Campaigns: Tolerate → replace',
+     desc:'Rated Tolerate (BV:3.8/TF:3.2). Planned successor: Zoho SalesIQ (INVEST). AI-powered marketing automation needed to compete with HubSpot and Mailchimp.'},
+    {cls:'purple',icon:'🧑‍💼',title:'Key person: Sridhar Vembu',
+     desc:'Transitioned to Chief Scientist Jan 2025. Owns AI Research Group and Zia LLM. His departure from active product leadership creates an R&D direction dependency.'},
+    {cls:'green',icon:'🤖',title:'Zia LLM: 2025 — strategic bet',
+     desc:'Zoho launched its own large language model in 2025. Embedding across all 40+ Zoho One apps. Positions Zoho as an AI-first suite without third-party AI dependency.'},
+    {cls:'green',icon:'🏛️',title:'1.2M Govt accounts: Zoho Mail',
+     desc:'Indian central government migrated 1.2M accounts to Zoho Mail + Workplace (2025). Strong sovereign cloud positioning. New UK DC (April 2026) extends this model to Europe.'},
+    {cls:'blue',icon:'🏭',title:'Dogfooding culture',
+     desc:'Every Zoho division internally uses the products they build. CRM team uses Zoho CRM. Finance uses Zoho Books. HR uses Zoho People. Direct feedback loop drives faster product iteration.'},
+  ];
+  cards.forEach(function(c){
+    var d=document.createElement('div');d.className='ic '+c.cls;
+    d.innerHTML='<div class="ic-i">'+c.icon+'</div><div class="ic-b"><div class="ic-t">'+c.title+'</div><div class="ic-d">'+c.desc+'</div></div>';
+    bar.appendChild(d);
+  });
+}
+
+/* ─── RATIONALIZATION (Ardoq-style TIME portfolio heatmap) ──── */
+var rationalizeOn=false;
+var QUAD={Invest:'#3B6D11',Tolerate:'#BA7517',Migrate:'#185FA5',Eliminate:'#C41019'};
+function computeQuadrant(f){
+  function num(v){var m=String(v||'').match(/-?\d+(\.\d+)?/);return m?parseFloat(m[0]):0;}
+  var bv=num(f['Business Value']),tf=num(f['Technical Fit']);
+  if(bv>=4&&tf>=4)return'Invest';
+  if(bv>=4&&tf<4)return'Tolerate';
+  if(bv<4&&tf>=4)return'Migrate';
+  return'Eliminate';
+}
+function applyRationalization(){
+  rationalizeOn=!rationalizeOn;
+  var btn=document.getElementById('rationalize-btn');
+  if(!rationalizeOn){
+    cy.nodes().forEach(function(n){var t=TC[n.data('type')]||TC['Location'];n.style('background-color',t.c);n.style('border-color',t.b);});
+    btn.textContent='⚡ Rationalize apps';btn.classList.remove('green');
+    document.getElementById('hint-bar').style.display='';
+    return;
+  }
+  btn.textContent='✓ Portfolio view';btn.classList.add('green');
+  var apply=function(list){
+    var map={};list.forEach(function(a){map[a.id]=a.quadrant;});
+    cy.nodes().forEach(function(n){
+      if(n.data('type')!=='Application')return;
+      var q=map[n.data('id')]||computeQuadrant(n.data('nf')||{});
+      n.style('background-color',QUAD[q]||'#888780');n.style('border-color','#2c2c2a');
+    });
+    var hb=document.getElementById('hint-bar');hb.style.display='';
+    hb.textContent='TIME model — 🟢 Invest  🟡 Tolerate  🔵 Migrate  🔴 Eliminate';
+  };
+  if(LIVE){apiGet('/api/analytics/rationalization').then(apply).catch(function(){apply([]);});}
+  else{apply([]);}
+}
+
+/* ─── DATA LOAD (API first, offline fallback) ───────────────── */
+function loadGraphData(){
+  return apiGet('/api/graph').then(function(g){
+    if(g&&g.nodes&&g.nodes.length){
+      NODES=g.nodes; EDGES=g.edges; LIVE=true;
+      var hb=document.getElementById('hint-bar');
+      hb.textContent='● Live — Neo4j graph ('+NODES.length+' components, '+EDGES.length+' references)';
+    }
+  }).catch(function(){
+    LIVE=false;
+    var hb=document.getElementById('hint-bar');
+    hb.textContent='○ Offline demo data — start the API to go live';
+  });
+}
+
+/* ─── MAIN ──────────────────────────────────────────────────── */
+window.addEventListener('load',function(){
+  loadGraphData().then(function(){
+  try{
+    buildLegend();initCy();buildInsights();
+    document.getElementById('search').addEventListener('input',function(){doSearch(this.value);});
+    document.getElementById('layout-sel').addEventListener('change',function(){applyLayout(this.value);});
+    document.getElementById('show-all-btn').addEventListener('click',showAll);
+    document.getElementById('exit-focus-btn').addEventListener('click',exitFocus);
+    document.getElementById('focus-btn').addEventListener('click',doFocus);
+    document.getElementById('add-node-btn').addEventListener('click',openAddModal);
+    document.getElementById('relayout-btn').addEventListener('click',resetLayout);
+    document.getElementById('rp-focus-btn').addEventListener('click',doFocus);
+    document.getElementById('rp-del-btn').addEventListener('click',deleteNode);
+    document.getElementById('btn-modal-cancel').addEventListener('click',closeModal);
+    document.getElementById('btn-modal-add').addEventListener('click',addNode);
+    document.getElementById('modal-add').addEventListener('click',function(e){if(e.target===this)closeModal();});
+    document.getElementById('rationalize-btn').addEventListener('click',applyRationalization);
+  }catch(err){
+    document.getElementById('cy').innerHTML='<div style="padding:30px;color:#993C1D;font-size:13px;font-family:sans-serif">⚠ Init error: '+err.message+'<br><pre style="font-size:10px;margin-top:8px">'+err.stack+'</pre></div>';
+    console.error(err);
+  }
+  });
+});
+</script>
+</body>
+</html>
