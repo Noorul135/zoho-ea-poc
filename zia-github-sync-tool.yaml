@@ -7,7 +7,7 @@ info:
     Enterprise Intelligence Graph as EA objects (repos -> Applications,
     owners -> Persons, the org -> Org Unit, GitHub -> Tech Service).
 servers:
-  - url: https://YOUR-RENDER-APP.onrender.com
+  - url: https://zoho-ea-poc.onrender.com
 paths:
   /api/github/sync:
     post:
