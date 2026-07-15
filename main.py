@@ -83,6 +83,31 @@ def ref_to_rel(ref):
 def type_to_label(t):
     return re.sub(r"[^A-Za-z0-9]", "", t)
 
+# Canonical direction of each reference (fromType -> toType). Used to auto-orient
+# edges so the graph is always correct even if the agent sends them reversed.
+DIRECTION = {
+    "HAS_OBJECTIVE": ("Company", "Objective"), "MEASURED_BY": ("Objective", "KPI"),
+    "ENABLED_BY": ("Objective", "Capability"), "REALIZED_BY": ("Capability", "Process"),
+    "SUPPORTED_BY": ("Process", "Application"), "RUNS_ON": ("Application", "Technology"),
+    "PROVIDED_BY": ("Application", "Vendor"), "COMPLIES_WITH": ("Application", "Compliance"),
+    "INTEGRATES_VIA": ("Application", "Integration"), "SUPPORTS": ("Initiative", "Objective"),
+    "IMPACTED_BY": ("Capability", "Initiative"), "PART_OF": ("OrgUnit", "Company"),
+    "LEADS": ("Person", "OrgUnit"),
+}
+# References with a fixed source type but variable target type.
+FROM_TYPE = {"OWNS": "Person", "AFFECTS": "Risk", "MEMBER_OF": "Person",
+             "IS_EXPERT_IN": "Person", "MITIGATES": "Initiative"}
+
+def _role_rank(role):
+    r = (role or "").lower()
+    if "ceo" in r or "chief executive" in r or "founder" in r: return 6
+    if "president" in r and "vice" not in r: return 5
+    if "chief" in r or re.fullmatch(r"c[a-z]o", r.strip()): return 4  # CIO/CFO/CTO/COO
+    if "vp" in r or "vice president" in r: return 3
+    if "director" in r or "head" in r: return 2
+    if "manager" in r or "lead" in r: return 1
+    return 0
+
 def parse_node(props):
     try:
         f = json.loads(props.get("fields") or "{}")
@@ -492,6 +517,34 @@ def _build_graph(ws, comps, refs):
         for t in {r["type"] for r in rows if r["type"]}:
             run(f"MATCH (c:Component {{type:$t, workspace:$ws}}) SET c:{type_to_label(t)}", {"t": t, "ws": ws}, True)
 
+    # Build type/role maps for this workspace so we can auto-orient edges.
+    typeOf, roleOf = {}, {}
+    for r0 in run("MATCH (c:Component) WHERE coalesce(c.workspace,'Zoho Corporation')=$ws "
+                  "RETURN c.label AS label, c.id AS id, c.type AS type, c.fields AS fields", {"ws": ws}):
+        try:
+            role = (json.loads(r0["fields"] or "{}").get("Role") or "")
+        except Exception:
+            role = ""
+        for key in ((r0["label"] or "").lower(), (r0["id"] or "").lower()):
+            if key:
+                typeOf[key] = r0["type"]; roleOf[key] = role
+
+    def orient(ref_name, s, t):
+        ls, lt = str(s).lower(), str(t).lower()
+        ts, tt = typeOf.get(ls), typeOf.get(lt)
+        d = DIRECTION.get(ref_name)
+        if d and ts and tt:
+            F, T = d
+            if ts == T and tt == F:   # sent reversed
+                return t, s
+            return s, t
+        ft = FROM_TYPE.get(ref_name)
+        if ft and ts and tt and tt == ft and ts != ft:
+            return t, s               # natural source is on the target side
+        if ref_name == "REPORTS_TO" and _role_rank(roleOf.get(ls, "")) > _role_rank(roleOf.get(lt, "")):
+            return t, s               # senior person must be the target (manager)
+        return s, t
+
     made, unresolved = 0, []
     for e in refs:
         if not isinstance(e, dict):
@@ -500,6 +553,7 @@ def _build_graph(ws, comps, refs):
         if not (s and t and r):
             continue
         rel = ref_to_rel(r)
+        s, t = orient(rel, s, t)
         inferred = bool(e.get("inferred"))
         eid = "e_" + re.sub(r"[^a-zA-Z0-9]+", "-", f"{ws}-{s}-{rel}-{t}").lower()
         res = run(f"""MATCH (a:Component) WHERE (a.id=$s OR toLower(a.label)=toLower($s)) AND coalesce(a.workspace,'Zoho Corporation')=$ws
