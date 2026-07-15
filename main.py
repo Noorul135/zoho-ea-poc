@@ -409,6 +409,43 @@ def _as_list(v):
             return []
     return v if isinstance(v, list) else []
 
+def _normalize_payload(b):
+    """Accept ANY shape the agent might send and return (components, references):
+       - {"spec": "<json string>"}                          (recommended)
+       - {"components":[...], "references":[...]}            (nested, or JSON strings)
+       - parallel arrays {"label":[...],"type":[...]} nodes  and
+         {"s":[...],"t":[...],"r":[...]} references          (agent fallback shape)
+    """
+    if isinstance(b.get("spec"), str):
+        try:
+            b = {**b, **json.loads(b["spec"])}
+        except Exception:
+            pass
+    elif isinstance(b.get("spec"), dict):
+        b = {**b, **b["spec"]}
+    comps = _as_list(b.get("components"))
+    refs = _as_list(b.get("references"))
+    # parallel label/type arrays -> components (stubs where label==type are dropped later)
+    labels, types = b.get("label"), b.get("type")
+    descs, ids = b.get("description"), b.get("id")
+    if isinstance(labels, list) and isinstance(types, list) and not comps:
+        for i in range(min(len(labels), len(types))):
+            c = {"label": labels[i], "type": types[i]}
+            if isinstance(descs, list) and i < len(descs):
+                c["description"] = descs[i]
+            if isinstance(ids, list) and i < len(ids):
+                c["id"] = ids[i]
+            comps.append(c)
+    # parallel s/t/r arrays -> references (broadcast a single r across all pairs)
+    ss, tt, rr = b.get("s"), b.get("t"), b.get("r")
+    if isinstance(ss, list) and isinstance(tt, list) and isinstance(rr, list) and not refs:
+        n = min(len(ss), len(tt))
+        for i in range(n):
+            rel = rr[i] if i < len(rr) else (rr[0] if rr else None)
+            if rel:
+                refs.append({"s": ss[i], "t": tt[i], "r": rel})
+    return comps, refs
+
 def _build_graph(ws, comps, refs):
     def num(v):
         if v is None:
@@ -477,29 +514,23 @@ def _build_graph(ws, comps, refs):
             "referencesCreated": made, "unresolvedReferences": unresolved,
             "dashboardUrl": f"/?workspace={ws}"}
 
-# ---- bulk build (nested arrays) ------------------------------------
+# ---- bulk build — accepts ANY payload shape ------------------------
 @app.post("/api/graph/bulk")
 async def graph_bulk(request: Request, x_api_key: str = Header(default="")):
     require_key(x_api_key, request)
     b = await request.json()
     ws = b.get("workspace") or "default"
-    return _build_graph(ws, _as_list(b.get("components")), _as_list(b.get("references")))
+    comps, refs = _normalize_payload(b)
+    return _build_graph(ws, comps, refs)
 
-# ---- build from ONE JSON string (reliable for Zia agents) -----------
-# body: { "workspace": "...", "spec": "{\"components\":[...],\"references\":[...]}" }
+# ---- build from ONE JSON string (recommended) — also accepts any shape
 @app.post("/api/graph/build")
 async def graph_build(request: Request, x_api_key: str = Header(default="")):
     require_key(x_api_key, request)
     b = await request.json()
     ws = b.get("workspace") or "default"
-    spec = b.get("spec")
-    if isinstance(spec, str):
-        try:
-            spec = json.loads(spec)
-        except Exception as e:
-            raise HTTPException(status_code=400, detail=f"spec is not valid JSON: {e}")
-    spec = spec or {}
-    return _build_graph(ws, _as_list(spec.get("components")), _as_list(spec.get("references")))
+    comps, refs = _normalize_payload(b)
+    return _build_graph(ws, comps, refs)
 
 # ---- delete stub nodes (label == type) -----------------------------
 @app.api_route("/api/admin/cleanup-stubs", methods=["GET", "POST"])
