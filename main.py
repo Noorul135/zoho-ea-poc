@@ -204,10 +204,18 @@ async def create_edge(request: Request, x_api_key: str = Header(default="")):
         raise HTTPException(status_code=400, detail="s, t and r are required")
     eid = "e_" + str(int(time.time() * 1000))
     rel = ref_to_rel(b["r"])
-    run(f"MATCH (a:Component {{id:$s}}) MATCH (b:Component {{id:$t}}) "
-        f"MERGE (a)-[x:{rel} {{id:$eid}}]->(b) SET x.ref=$r",
-        {"s": b["s"], "t": b["t"], "eid": eid, "r": b["r"]}, True)
-    return JSONResponse(status_code=201, content={"id": eid, "s": b["s"], "t": b["t"], "r": b["r"]})
+    ws = b.get("workspace")
+    wsA = "AND coalesce(a.workspace,'Zoho Corporation')=$ws" if ws else ""
+    wsB = "AND coalesce(b.workspace,'Zoho Corporation')=$ws" if ws else ""
+    # match by id OR label (case-insensitive) so agents can pass either
+    res = run(f"""MATCH (a:Component) WHERE (a.id=$s OR toLower(a.label)=toLower($s)) {wsA}
+                  MATCH (b:Component) WHERE (b.id=$t OR toLower(b.label)=toLower($t)) {wsB}
+                  MERGE (a)-[x:{rel} {{id:$eid}}]->(b) SET x.ref=$r RETURN count(x) AS n""",
+              {"s": b["s"], "t": b["t"], "eid": eid, "r": b["r"], "ws": ws}, True)
+    made = res[0]["n"] if res else 0
+    if not made:
+        raise HTTPException(status_code=404, detail=f"Could not find source '{b['s']}' or target '{b['t']}' (check the exact name or workspace).")
+    return JSONResponse(status_code=201, content={"id": eid, "s": b["s"], "t": b["t"], "r": b["r"], "created": made})
 
 # ---- delete component ----------------------------------------------
 @app.delete("/api/node/{id}")
@@ -446,8 +454,8 @@ async def graph_bulk(request: Request, x_api_key: str = Header(default="")):
         rel = ref_to_rel(r)
         inferred = bool(e.get("inferred"))
         eid = "e_" + re.sub(r"[^a-zA-Z0-9]+", "-", f"{ws}-{s}-{rel}-{t}").lower()
-        res = run(f"""MATCH (a:Component) WHERE (a.id=$s OR a.label=$s) AND coalesce(a.workspace,'Zoho Corporation')=$ws
-                      MATCH (b:Component) WHERE (b.id=$t OR b.label=$t) AND coalesce(b.workspace,'Zoho Corporation')=$ws
+        res = run(f"""MATCH (a:Component) WHERE (a.id=$s OR toLower(a.label)=toLower($s)) AND coalesce(a.workspace,'Zoho Corporation')=$ws
+                      MATCH (b:Component) WHERE (b.id=$t OR toLower(b.label)=toLower($t)) AND coalesce(b.workspace,'Zoho Corporation')=$ws
                       MERGE (a)-[x:{rel} {{id:$eid}}]->(b) SET x.ref=$r, x.inferred=$inf RETURN count(x) AS n""",
                   {"s": s, "t": t, "eid": eid, "r": r, "ws": ws, "inf": inferred}, True)
         made += (res[0]["n"] if res else 0)
