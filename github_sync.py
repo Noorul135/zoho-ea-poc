@@ -6,7 +6,7 @@
 #   python github_sync.py <org-or-user> [maxRepos]
 # or via API: POST /api/github/sync {"org":"...","maxRepos":30}
 # =====================================================================
-import os, re, sys, requests
+import os, re, sys, json, requests
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
 
@@ -53,53 +53,77 @@ def _upsert_ref(s, src, tgt, ref):
           s=src, t=tgt, eid=eid, ref=ref)
 
 def sync_org(login, token=None, max_repos=30):
+    """Batched GitHub -> Neo4j ingest. Builds all rows first, then writes in a
+    handful of UNWIND queries so it stays well under the tool timeout."""
     token = token or os.getenv("GITHUB_TOKEN")
-    created = {"orgUnit": 0, "apps": 0, "persons": 0, "refs": 0}
-    driver = _driver()
-    with driver.session() as s:
-        _upsert_component(s, "gh_service", "GitHub", "Tech Service", {
-            "Name": "GitHub", "Server Hosting": "Cloud — GitHub", "Deploy Env": "Production",
-            "Lifecycle Phase": "Live", "Description": "Source code hosting & CI (github.com)"})
-        org_id = f"gh_org_{login}"
-        _upsert_component(s, org_id, f"GitHub: {login}", "Org Unit", {
-            "Name": f"{login} (GitHub organisation)",
-            "Description": f"Repositories synced from github.com/{login}", "Source": "GitHub sync"})
-        created["orgUnit"] += 1
-        orgs = s.run("MATCH (o:Organization) RETURN o.id AS id LIMIT 1").single()
-        if orgs:
-            _upsert_ref(s, org_id, orgs["id"], "Belongs To"); created["refs"] += 1
+    ws = f"GitHub: {login}"
+    repos = _fetch_repos(login, token, max_repos)
 
-        repos = _fetch_repos(login, token, max_repos)
-        seen = set()
-        for repo in repos:
-            app_id = f"gh_repo_{login}_{repo['name']}"
-            _upsert_component(s, app_id, repo["name"], "Application", {
-                "Name": repo["full_name"], "App Type": "GitHub Repository",
-                "Lifecycle Phase": "Retired" if repo.get("archived") else "Live",
-                "Service Level": "Public" if not repo.get("private") else "Internal",
-                "Language": repo.get("language") or "n/a",
-                "Stars": str(repo.get("stargazers_count", 0)),
-                "Forks": str(repo.get("forks_count", 0)),
-                "Open Issues": str(repo.get("open_issues_count", 0)),
-                "Default Branch": repo.get("default_branch", ""),
-                "URL": repo.get("html_url", ""), "Updated At": repo.get("updated_at", ""),
-                "Description": repo.get("description") or "",
-                "Note": "Ingested from GitHub via github_sync tool."})
-            created["apps"] += 1
-            _upsert_ref(s, org_id, app_id, "Consumes"); created["refs"] += 1
-            _upsert_ref(s, app_id, "gh_service", "Is Supported By"); created["refs"] += 1
-            owner = (repo.get("owner") or {}).get("login")
-            if owner:
-                pid = f"gh_person_{owner}"
-                if pid not in seen:
-                    _upsert_component(s, pid, owner, "Person", {
-                        "Name": owner, "Role": "GitHub owner/maintainer",
-                        "Contact Email": f"{owner}@users.noreply.github.com",
-                        "Status": "Imported from GitHub"})
-                    seen.add(pid); created["persons"] += 1
-                _upsert_ref(s, pid, app_id, "Owns"); created["refs"] += 1
+    def cf(cid, label, ctype, f):
+        return {"id": cid, "label": label, "type": ctype,
+                "fields": json.dumps(f, ensure_ascii=False)}
+
+    comps = [
+        cf("gh_service", "GitHub", "Tech Service",
+           {"Name": "GitHub", "Server Hosting": "Cloud — GitHub", "Lifecycle Phase": "Live",
+            "Description": "Source code hosting & CI (github.com)"}),
+        cf(f"gh_org_{login}", f"GitHub: {login}", "Org Unit",
+           {"Name": f"{login} (GitHub organisation)",
+            "Description": f"Repositories synced from github.com/{login}", "Source": "GitHub sync"}),
+    ]
+    org_id = f"gh_org_{login}"
+    refs, seen = [], set()
+    for repo in repos:
+        app_id = f"gh_repo_{login}_{repo['name']}"
+        comps.append(cf(app_id, repo["name"], "Application", {
+            "Name": repo["full_name"], "App Type": "GitHub Repository",
+            "Lifecycle Phase": "Retired" if repo.get("archived") else "Live",
+            "Service Level": "Public" if not repo.get("private") else "Internal",
+            "Language": repo.get("language") or "n/a",
+            "Stars": str(repo.get("stargazers_count", 0)),
+            "Forks": str(repo.get("forks_count", 0)),
+            "Open Issues": str(repo.get("open_issues_count", 0)),
+            "URL": repo.get("html_url", ""), "Updated At": repo.get("updated_at", ""),
+            "Description": repo.get("description") or "", "Note": "Ingested from GitHub."}))
+        refs.append({"s": org_id, "t": app_id, "ref": "Consumes"})
+        refs.append({"s": app_id, "t": "gh_service", "ref": "Is Supported By"})
+        owner = (repo.get("owner") or {}).get("login")
+        if owner:
+            pid = f"gh_person_{owner}"
+            if pid not in seen:
+                comps.append(cf(pid, owner, "Person",
+                               {"Name": owner, "Role": "GitHub owner/maintainer",
+                                "Contact Email": f"{owner}@users.noreply.github.com",
+                                "Status": "Imported from GitHub"}))
+                seen.add(pid)
+            refs.append({"s": pid, "t": app_id, "ref": "Owns"})
+
+    driver = _driver()
+    made = 0
+    with driver.session() as s:
+        # 1) all components in one query
+        s.run("""UNWIND $rows AS r MERGE (c:Component {id:r.id})
+                 SET c.label=r.label, c.type=r.type, c.name=r.label,
+                     c.workspace=$ws, c.fields=r.fields""", rows=comps, ws=ws)
+        # 2) type labels, one query per distinct type (scoped to this workspace)
+        for t in {c["type"] for c in comps}:
+            s.run(f"MATCH (c:Component {{type:$t, workspace:$ws}}) SET c:{type_to_label(t)}", t=t, ws=ws)
+        # 3) references, one query per reference type
+        by_ref = {}
+        for e in refs:
+            by_ref.setdefault(e["ref"], []).append(e)
+        for ref, group in by_ref.items():
+            rel = ref_to_rel(ref)
+            for g in group:
+                g["eid"] = f"gh_{g['s']}__{rel}__{g['t']}"
+            res = s.run(f"""UNWIND $rows AS r MATCH (a:Component {{id:r.s}}) MATCH (b:Component {{id:r.t}})
+                            MERGE (a)-[x:{rel} {{id:r.eid}}]->(b) SET x.ref=$ref RETURN count(x) AS n""",
+                        rows=group, ref=ref)
+            made += res.single()["n"]
     driver.close()
-    return {"login": login, "reposSynced": len(repos), "created": created}
+    return {"login": login, "workspace": ws, "reposSynced": len(repos),
+            "componentsUpserted": len(comps), "referencesCreated": made,
+            "dashboardUrl": f"/?workspace={ws}"}
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
