@@ -573,21 +573,35 @@ function vSwimlanes(){
   vp(h);
 }
 
-/* Component Tree: hierarchy from Organization via Belongs To / Is Realized By / Module Of */
+/* Component Tree: ontology-agnostic hierarchy from the top entity down */
+var TREE_DOWN_OUT={'HAS_OBJECTIVE':1,'MEASURED_BY':1,'ENABLED_BY':1,'REALIZED_BY':1,'SUPPORTED_BY':1,'OWNS':1,'RUNS_ON':1,'INTEGRATES_VIA':1,'PROVIDED_BY':1,'COMPLIES_WITH':1,'LEADS':1,'SELLS':1,'SERVES':1,'AFFECTS':1,'Is Realized By':1,'Consumes':1,'Is Supported By':1,'Connects To':1,'Deploys To':1,'Is Located At':1,'Module Of':1,'Owns':1,'Is Expert In':1};
+var TREE_UP_IN={'MEMBER_OF':1,'PART_OF':1,'REPORTS_TO':1,'Belongs To':1,'Reports To':1};
 function vTree(){
-  var roots=visibleNodes().filter(function(n){return n.type==='Organization';});
-  if(!roots.length)roots=visibleNodes().filter(function(n){return outE(n.id,'Belongs To').length===0&&n.type==='Org Unit';});
+  var ns=visibleNodes(),vis={};ns.forEach(function(n){vis[n.id]=1;});
+  function kids(id){
+    var out=[];
+    outE(id).forEach(function(e){if(vis[e.t]&&TREE_DOWN_OUT[e.r])out.push({id:e.t,ref:e.r});});
+    inE(id).forEach(function(e){if(vis[e.s]&&TREE_UP_IN[e.r])out.push({id:e.s,ref:e.r});});
+    return out;
+  }
+  // roots = Company/Organization; else any node that is never a child
+  var childIds={};ns.forEach(function(n){kids(n.id).forEach(function(k){childIds[k.id]=1;});});
+  var roots=ns.filter(function(n){return n.type==='Company'||n.type==='Organization';});
+  if(!roots.length)roots=ns.filter(function(n){return !childIds[n.id];});
+  if(!roots.length)roots=ns.slice(0,1);
   var seen={};
-  function kids(id){return inE(id).filter(function(e){return ['Belongs To','Is Realized By','Module Of','Reports To'].indexOf(e.r)>=0;}).map(function(e){return {id:e.s,ref:e.r};});}
   function node(id,depth){
-    if(seen[id]||depth>6)return '';seen[id]=1;var n=nById(id);if(!n)return '';
-    var kd=kids(id);
-    var h='<li style="margin:2px 0"><span class="chip" style="background:'+tcfg(n.type).c+'" onclick="openDetail(\''+id+'\')"><span class="cdot"></span>'+escH(n.label)+'</span>';
+    if(seen[id]||depth>8)return '';seen[id]=1;var n=nById(id);if(!n)return '';
+    var kd=kids(id).filter(function(k){return !seen[k.id];});
+    var h='<li style="margin:2px 0"><span class="chip" style="background:'+tcfg(n.type).c+'" onclick="openDetail(\''+id+'\')"><span class="cdot"></span>'+escH(n.label)+' <span style="opacity:.75;font-size:9px">· '+escH(n.type)+'</span></span>';
     if(kd.length){h+='<ul style="list-style:none;margin:2px 0 2px 18px;border-left:1px solid #e2e0d8;padding-left:10px">';kd.forEach(function(k){h+=node(k.id,depth+1);});h+='</ul>';}
     return h+'</li>';
   }
-  var h=head('Component Tree','Expandable hierarchy from the Organization down.');
+  var h=head('Component Tree','Expandable hierarchy from the top-level entity down.');
   h+='<ul style="list-style:none">';roots.forEach(function(r){h+=node(r.id,0);});h+='</ul>';
+  // any leftover nodes not reachable from a root, so nothing is hidden
+  var orphans=ns.filter(function(n){return !seen[n.id];});
+  if(orphans.length){h+='<div class="vp-sub" style="margin-top:14px">Not linked into the hierarchy ('+orphans.length+')</div><ul style="list-style:none">';orphans.forEach(function(n){h+=node(n.id,0);});h+='</ul>';}
   vp(h);
 }
 
