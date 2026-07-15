@@ -335,9 +335,15 @@ async def github_sync_endpoint(request: Request, x_api_key: str = Header(default
 # =====================================================================
 
 # ---- enrich a company from its public website ----------------------
+_BROWSER_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+               "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
 def _http_get(url):
     try:
-        r = requests.get(url, timeout=12, headers={"User-Agent": "Mozilla/5.0 zoho-ea-poc"})
+        r = requests.get(url, timeout=10, allow_redirects=True, headers={
+            "User-Agent": _BROWSER_UA,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+        })
         return r.text if r.status_code < 400 else ""
     except Exception:
         return ""
@@ -502,7 +508,9 @@ async def fetch_web_page(request: Request, x_api_key: str = Header(default="")):
         raise HTTPException(status_code=400, detail="Cannot fetch private/localhost URLs.")
     html = _http_get(url)
     if not html:
-        raise HTTPException(status_code=502, detail="Could not reach the URL (private, gated, or removed).")
+        # graceful 200 so the agent can proceed by asking the user instead
+        return {"url": url, "reachable": False,
+                "note": "The site blocked server-side fetching or is unreachable. Ask the user to describe the company instead."}
     data = _extract(html)
     data["url"] = url
     data["same_site_links"] = _same_site_links(html, url)
@@ -596,14 +604,16 @@ def install_ontology(request: Request, x_api_key: str = Header(default="")):
         ("OrgUnit", "PART_OF", "Company"), ("Company", "SELLS", "Product"),
         ("Company", "COMPETES_WITH", "Competitor"), ("Company", "SERVES", "Customer"),
     ]
-    for name, tier, cat, color in ctypes:
-        run("MERGE (t:MetaComponentType {name:$n}) SET t.tier=$tier, t.category=$c, t.shape='roundrectangle', t.color=$col",
-            {"n": name, "tier": tier, "c": cat, "col": color}, True)
-    for name, color in rtypes:
-        run("MERGE (r:MetaReferenceType {name:$n}) SET r.color=$c, r.relType=$n", {"n": name, "c": color}, True)
-    for f, r, t in allowed:
-        run("MATCH (a:MetaComponentType {name:$f}) MATCH (b:MetaComponentType {name:$t}) "
-            "MERGE (a)-[x:ALLOWS {ref:$r}]->(b)", {"f": f, "t": t, "r": r}, True)
+    # Batched into 3 round-trips (was ~70) so it stays well under the tool timeout.
+    run("""UNWIND $rows AS r MERGE (t:MetaComponentType {name:r.name})
+           SET t.tier=r.tier, t.category=r.cat, t.shape='roundrectangle', t.color=r.color""",
+        {"rows": [{"name": n, "tier": ti, "cat": c, "color": col} for n, ti, c, col in ctypes]}, True)
+    run("""UNWIND $rows AS r MERGE (m:MetaReferenceType {name:r.name})
+           SET m.color=r.color, m.relType=r.name""",
+        {"rows": [{"name": n, "color": c} for n, c in rtypes]}, True)
+    run("""UNWIND $rows AS r MATCH (a:MetaComponentType {name:r.f}) MATCH (b:MetaComponentType {name:r.t})
+           MERGE (a)-[x:ALLOWS {ref:r.r}]->(b)""",
+        {"rows": [{"f": f, "t": t, "r": r} for f, r, t in allowed]}, True)
     return {"installed": True, "componentTypes": len(ctypes), "referenceTypes": len(rtypes), "allowed": len(allowed)}
 
 # ---- one-click seed loader (POC convenience) -----------------------
