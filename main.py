@@ -397,39 +397,49 @@ async def onboard_enrich(request: Request, x_api_key: str = Header(default="")):
                 "note": "Could not fetch the site server-side. Ask the user to describe the company instead."}
     return {"url": url, "reachable": True, "pages": pages}
 
-# ---- bulk build the graph (agent constructs the whole EA model) -----
-@app.post("/api/graph/bulk")
-async def graph_bulk(request: Request, x_api_key: str = Header(default="")):
-    require_key(x_api_key, request)
-    b = await request.json()
-    ws = b.get("workspace") or "default"
-    comps = b.get("components") or []
-    refs = b.get("references") or []
+# ---- shared graph-build core (used by bulk + build) -----------------
+def _as_list(v):
+    """Accept a list, a JSON string, or None; always return a list."""
+    if v is None:
+        return []
+    if isinstance(v, str):
+        try:
+            v = json.loads(v)
+        except Exception:
+            return []
+    return v if isinstance(v, list) else []
 
+def _build_graph(ws, comps, refs):
     def num(v):
         if v is None:
             return None
         m = re.search(r"-?\d+(\.\d+)?", str(v))
         return float(m.group()) if m else None
 
-    rows = []
+    rows, skipped = [], 0
     for c in comps:
+        if not isinstance(c, dict):
+            skipped += 1; continue
+        label = (c.get("label") or "").strip()
+        ctype = (c.get("type") or "").strip()
+        # skip empty or placeholder stubs where label just repeats the type name
+        if not label or not ctype or label.lower() == ctype.lower():
+            skipped += 1; continue
         f = dict(c.get("fields") or {})
-        f.setdefault("Name", c.get("label"))
+        f.setdefault("Name", label)
         if c.get("description"):
             f["Description"] = c["description"]
         if c.get("phase"):
             f["Lifecycle Phase"] = c["phase"]
         if c.get("tags"):
             f["Tags"] = c["tags"]
-        # provenance (Cartograph): confidence, evidence, source_doc, as_of
         for pk in ("confidence", "evidence", "source_doc", "as_of"):
             if c.get(pk) is not None:
                 f[pk.replace("_", " ").title()] = c[pk]
         rows.append({
-            "id": c.get("id") or (ws.lower().replace(" ", "-") + "_" + re.sub(r"[^a-zA-Z0-9]+", "-", (c.get("label") or "n")).lower()),
-            "label": c.get("label"), "type": c.get("type"), "ws": ws,
-            "name": f.get("Name", c.get("label")), "desc": f.get("Description", ""),
+            "id": c.get("id") or (re.sub(r"[^a-z0-9]+", "-", ws.lower()) + "_" + re.sub(r"[^a-zA-Z0-9]+", "-", label).lower()),
+            "label": label, "type": ctype, "ws": ws,
+            "name": f.get("Name", label), "desc": f.get("Description", ""),
             "life": f.get("Lifecycle Phase", ""),
             "status": c.get("status") or "active", "layer": c.get("layer"),
             "sr": (re.sub(r"\s*\(.*?\)", "", str(f.get("Strategic Rating", ""))) or None),
@@ -445,9 +455,10 @@ async def graph_bulk(request: Request, x_api_key: str = Header(default="")):
         for t in {r["type"] for r in rows if r["type"]}:
             run(f"MATCH (c:Component {{type:$t, workspace:$ws}}) SET c:{type_to_label(t)}", {"t": t, "ws": ws}, True)
 
-    # references: accept ids OR labels (agent may pass labels); support inferred (dashed)
-    made = 0
+    made, unresolved = 0, []
     for e in refs:
+        if not isinstance(e, dict):
+            continue
         s, t, r = e.get("s"), e.get("t"), e.get("r")
         if not (s and t and r):
             continue
@@ -458,9 +469,50 @@ async def graph_bulk(request: Request, x_api_key: str = Header(default="")):
                       MATCH (b:Component) WHERE (b.id=$t OR toLower(b.label)=toLower($t)) AND coalesce(b.workspace,'Zoho Corporation')=$ws
                       MERGE (a)-[x:{rel} {{id:$eid}}]->(b) SET x.ref=$r, x.inferred=$inf RETURN count(x) AS n""",
                   {"s": s, "t": t, "eid": eid, "r": r, "ws": ws, "inf": inferred}, True)
-        made += (res[0]["n"] if res else 0)
-    return {"workspace": ws, "componentsUpserted": len(rows), "referencesCreated": made,
+        n = res[0]["n"] if res else 0
+        made += n
+        if not n:
+            unresolved.append(f"{s} -[{r}]-> {t}")
+    return {"workspace": ws, "componentsUpserted": len(rows), "componentsSkipped": skipped,
+            "referencesCreated": made, "unresolvedReferences": unresolved,
             "dashboardUrl": f"/?workspace={ws}"}
+
+# ---- bulk build (nested arrays) ------------------------------------
+@app.post("/api/graph/bulk")
+async def graph_bulk(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    b = await request.json()
+    ws = b.get("workspace") or "default"
+    return _build_graph(ws, _as_list(b.get("components")), _as_list(b.get("references")))
+
+# ---- build from ONE JSON string (reliable for Zia agents) -----------
+# body: { "workspace": "...", "spec": "{\"components\":[...],\"references\":[...]}" }
+@app.post("/api/graph/build")
+async def graph_build(request: Request, x_api_key: str = Header(default="")):
+    require_key(x_api_key, request)
+    b = await request.json()
+    ws = b.get("workspace") or "default"
+    spec = b.get("spec")
+    if isinstance(spec, str):
+        try:
+            spec = json.loads(spec)
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"spec is not valid JSON: {e}")
+    spec = spec or {}
+    return _build_graph(ws, _as_list(spec.get("components")), _as_list(spec.get("references")))
+
+# ---- delete stub nodes (label == type) -----------------------------
+@app.api_route("/api/admin/cleanup-stubs", methods=["GET", "POST"])
+def cleanup_stubs(request: Request, x_api_key: str = Header(default=""), workspace: str = None):
+    require_key(x_api_key, request)
+    if workspace:
+        rows = run("MATCH (c:Component) WHERE toLower(c.label)=toLower(c.type) "
+                   "AND coalesce(c.workspace,'Zoho Corporation')=$ws DETACH DELETE c RETURN count(c) AS n",
+                   {"ws": workspace}, True)
+    else:
+        rows = run("MATCH (c:Component) WHERE toLower(c.label)=toLower(c.type) "
+                   "DETACH DELETE c RETURN count(c) AS n", {}, True)
+    return {"deletedStubs": rows[0]["n"] if rows else 0}
 
 # ---- reset a workspace (fresh start) -------------------------------
 @app.post("/api/onboard/reset")
