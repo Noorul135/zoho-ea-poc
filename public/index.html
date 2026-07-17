@@ -114,6 +114,7 @@ table.dt tr:hover td{background:#f8f7f5}
 .cf-row select,.cf-row input{padding:7px 9px;border:1px solid #d3d1c7;border-radius:6px;font-size:12px;background:#f8f7f5;outline:none}
 .cf-row select:focus,.cf-row input:focus{border-color:#E8212A;background:#fff}
 .hint{font-size:10px;color:#888780;margin-top:3px;line-height:1.5}
+#zia-chat-container {position: fixed;right: 20px;bottom: 20px;z-index: 2147483647;}
 svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 </style>
 </head>
@@ -923,12 +924,14 @@ window.addEventListener('load',function(){
  <!-- Zia Agents ChatKit starts here -->
 <script src="https://agents.zoho.in/resources/addon-chat/assets/js/agents-chat-sdk.js"></script>
 
+<div id="zia-chat-container">
 <agents-chatkit
     ziaAgents='{
         "orgId": "60076413858",
         "entityId": "7034000000043592"
     }'>
 </agents-chatkit>
+</div>
 <!-- Zia Agents ChatKit ends here -->
 </body>
 </html>
