@@ -122,8 +122,8 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 <div id="app">
 <div id="topbar">
   <div class="logo">
-    <svg width="20" height="20" viewBox="0 0 40 40"><rect width="40" height="40" rx="6" fill="#E8212A"/><text x="20" y="28" text-anchor="middle" fill="white" font-size="22" font-family="Arial" font-weight="bold">Z</text></svg>
-    Zoho EA <span class="logo-sub">Enterprise Intelligence Graph — Zoho Corporation 2026</span>
+    <svg width="20" height="20" viewBox="0 0 40 40"><rect width="40" height="40" rx="6" fill="#E8212A"/><text x="20" y="28" text-anchor="middle" fill="white" font-size="22" font-family="Arial" font-weight="bold">EA</text></svg>
+    Nexus<span class="logo-sub">Enterprise Intelligence Graph</span>
   </div>
   <input id="search" type="text" placeholder="Search…" autocomplete="off">
   <select id="ws-sel" class="sel" title="Workspace"><option value="">All workspaces</option></select>
@@ -854,17 +854,7 @@ function mmDelAllowed(f,r,t){apiSend('DELETE','/api/metamodel/allowed',{from:f,r
 function mmErr(e){alert('Metamodel change failed (need write API key?): '+e.message);}
 
 /* ─── INSIGHTS ──────────────────────────────────────────────── */
-function buildInsights(){
-  var bar=document.getElementById('ins-wrap');bar.innerHTML='';
-  var cards=[
-    {cls:'blue',icon:'⭐',title:'Zoho CRM: crown jewel',desc:'250,000+ customers. Mission Critical. Rated Invest (BV 4.9 / TF 4.7).'},
-    {cls:'purple',icon:'🔗',title:'Zoho One: 40+ apps',desc:'Zoho Flow + API Gateway connect all products natively — big TCO advantage.'},
-    {cls:'red',icon:'🏠',title:'Chennai DC concentration',desc:'Majority of production in Chennai. Multi-region replication exists (US/EU/AU/UK).'},
-    {cls:'amber',icon:'⚡',title:'Campaigns: Tolerate',desc:'Rated Tolerate (BV 3.8 / TF 3.2). Modernise or replace.'},
-    {cls:'green',icon:'🤖',title:'Zia LLM: strategic bet',desc:'Own LLM (2025) embedding AI across all products.'}
-  ];
-  cards.forEach(function(c){var d=document.createElement('div');d.className='ic '+c.cls;d.innerHTML='<div class="ic-i">'+c.icon+'</div><div><div class="ic-t">'+c.title+'</div><div class="ic-d">'+c.desc+'</div></div>';bar.appendChild(d);});
-}
+function buildInsights(){}
 
 /* ─── RATIONALIZATION ───────────────────────────────────────── */
 var QUAD={Invest:'#3B6D11',Tolerate:'#BA7517',Migrate:'#185FA5',Eliminate:'#C41019'};
