@@ -152,7 +152,33 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
       <option value="tagscape">Tagscape</option>
     </optgroup>
   </select>
-  <select id="layout-sel" class="sel">
+  <select id="viewpoint-sel" class="sel" title="Viewpoint" style="max-width:220px">
+    <option value="">— No viewpoint (full graph) —</option>
+    <optgroup label="Hosting & Integration">
+      <option value="product-hosting">Product Hosting</option>
+      <option value="products-to-location">Products to Location</option>
+      <option value="application-integrations">Application Integrations</option>
+      <option value="app-integration-and-capability">Application Integration and Capability</option>
+      <option value="common-data-objects">Common Data Objects</option>
+    </optgroup>
+    <optgroup label="Business & Capability">
+      <option value="relationship-overview">Relationship Overview</option>
+      <option value="capability-realization">Capability Realization</option>
+      <option value="app-lifecycle-by-capability">Application Lifecycle by Capability</option>
+      <option value="capability-experts-network">Capability Experts Network</option>
+    </optgroup>
+    <optgroup label="Risk & Governance">
+      <option value="application-risk">Application Risk</option>
+      <option value="security-review">Architecture Domain Security Review</option>
+      <option value="risk-to-objectives">Risk to Objectives</option>
+    </optgroup>
+    <optgroup label="Strategy & People">
+      <option value="initiative-expert-network">Initiative Expert Network</option>
+      <option value="okrs-initiatives-impacts">OKRs, Initiatives and Impacts</option>
+      <option value="strategies-to-epics">Strategies to Epics</option>
+    </optgroup>
+  </select>
+    <select id="layout-sel" class="sel">
     <option value="clusters" selected>Clusters by type</option>
     <option value="cose">Force directed</option>
     <option value="tree-td">Tree — top down</option>
@@ -305,6 +331,11 @@ Object.assign(TC,{
   'Competitor':{c:'#9A6324',b:'#6E4718',s:'roundrectangle',w:126,h:42,tier:5},
   'Document':{c:'#b4b2a9',b:'#8f8d85',s:'roundrectangle',w:126,h:40,tier:11}
 });
+/* Viewpoint-only ontology additions (Objective/KPI/Initiative/Risk/Compliance already covered above) */
+Object.assign(TC,{
+  'Epic':{c:'#BA7517',b:'#854F0B',s:'roundrectangle',w:132,h:44,tier:11},
+  'Strategy':{c:'#3B6D11',b:'#27500A',s:'roundrectangle',w:132,h:44,tier:10}
+});
 Object.assign(RC,{
   'HAS_OBJECTIVE':'#7A1FA2','MEASURED_BY':'#0F9D9D','ENABLED_BY':'#993C1D','REALIZED_BY':'#B5651D',
   'SUPPORTED_BY':'#085041','OWNS':'#3B6D11','OWNED_BY':'#3B6D11','AFFECTS':'#C41019','DEPENDS_ON':'#854F0B',
@@ -313,8 +344,82 @@ Object.assign(RC,{
   'PART_OF':'#888780','GOVERNED_BY':'#5F5E5A','LOCATED_IN':'#993556','DERIVED_FROM':'#b4b2a9','MITIGATES':'#3B6D11',
   'COMPETES_WITH':'#9A6324','SERVES':'#378ADD','SELLS':'#1D9E75'
 });
+Object.assign(RC,{
+  'Enabled By':'#7A1FA2','Measured By':'#0F9D9D','Supports':'#534AB7','Impacted By':'#534AB7',
+  'Affects':'#C41019','Mitigates':'#3B6D11','Complies With':'#72243E','Delivers':'#BA7517','Leads':'#185FA5'
+});
 function tcfg(t){return TC[t]||{c:'#888780',b:'#5F5E5A',s:'roundrectangle',w:130,h:44,tier:11};}
 function rcol(r){return RC[r]||'#888780';}
+
+/* ─── VIEWPOINTS (Ardoq-Discover-style) ─────────────────────────
+   Each viewpoint is a curated "chain of triples" — a fixed set of
+   component types (and the references that naturally connect them,
+   per the metamodel) that answers one specific stakeholder question.
+   See: help.ardoq.com "Understanding Viewpoints" + "Viewpoint Patterns". */
+var VIEWPOINTS={
+  'product-hosting':{label:'Product Hosting',
+    desc:'How business capabilities are supported by applications, and which locations host the servers they run on.',
+    types:['Business Capability','Application','Server','Location'],view:'dependency-map'},
+  'relationship-overview':{label:'Relationship Overview',
+    desc:'A general-purpose view of every component and how it relates to everything else it touches.',
+    types:null,view:'graph'},
+  'application-risk':{label:'Application Risk',
+    desc:'Which risks affect which applications, and which initiatives are mitigating them.',
+    types:['Application','Risk','Initiative'],view:'dependency-map'},
+  'application-integrations':{label:'Application Integrations',
+    desc:'How applications connect to each other via interfaces.',
+    types:['Application','Interface'],view:'graph'},
+  'products-to-location':{label:'Products to Location',
+    desc:'Applications, the servers / tech products they deploy to, and the physical locations that host them.',
+    types:['Application','Tech Product','Server','Location'],view:'dependency-map'},
+  'app-lifecycle-by-capability':{label:'Application Lifecycle by Capability',
+    desc:'Applications grouped by the business capability they realize, with lifecycle phase and successors.',
+    types:['Business Capability','Application'],view:'tree'},
+  'security-review':{label:'Architecture Domain Security Review',
+    desc:'Which applications comply with which security / compliance domains, and risks affecting them.',
+    types:['Application','Compliance','Risk'],view:'graph'},
+  'initiative-expert-network':{label:'Initiative Expert Network',
+    desc:'Who leads or is an expert on each initiative, and which objectives those initiatives support.',
+    types:['Person','Initiative','Objective'],view:'graph'},
+  'risk-to-objectives':{label:'Risk to Objectives',
+    desc:'How risk exposure on capabilities and applications ultimately threatens company objectives.',
+    types:['Risk','Business Capability','Objective'],view:'dependency-map'},
+  'common-data-objects':{label:'Common Data Objects',
+    desc:'Shared data stores and which applications and org units consume or are built on them.',
+    types:['Data Store','Application','Org Unit'],view:'graph'},
+  'capability-realization':{label:'Capability Realization',
+    desc:'Which applications and org units realize each business capability.',
+    types:['Business Capability','Application','Org Unit'],view:'capability-map'},
+  'app-integration-and-capability':{label:'Application Integration and Capability',
+    desc:'Business capabilities, the applications that realize them, and how those applications integrate.',
+    types:['Business Capability','Application','Interface'],view:'graph'},
+  'okrs-initiatives-impacts':{label:'OKRs, Initiatives and Impacts',
+    desc:'Objectives, the KPIs that measure them, and the initiatives supporting them and impacting capabilities.',
+    types:['Objective','KPI','Initiative','Business Capability'],view:'swimlanes'},
+  'strategies-to-epics':{label:'Strategies to Epics',
+    desc:'Strategies broken down into epics, and the capabilities / applications those epics deliver.',
+    types:['Strategy','Epic','Business Capability','Application'],view:'tree'},
+  'capability-experts-network':{label:'Capability Experts Network',
+    desc:'Which people are recognized experts in which business capabilities.',
+    types:['Person','Business Capability'],view:'graph'}
+};
+function applyViewpoint(key){
+  var vwp=VIEWPOINTS[key];
+  hiddenTypes={};
+  if(vwp&&vwp.types){
+    var allow={};vwp.types.forEach(function(t){allow[t]=1;});
+    Object.keys(TC).concat(Object.keys(typesInUse())).forEach(function(t){if(!allow[t])hiddenTypes[t]=true;});
+  }
+  activeTag=null;SEARCH='';document.getElementById('search').value='';
+  buildLegend();
+  var view=(vwp&&vwp.view)||'graph';
+  document.getElementById('view-sel').value=view;setView(view);
+  if(cy)cy.fit(50);
+  var hb=document.getElementById('hint-bar');
+  if(vwp){hb.style.display='';hb.textContent='📌 '+vwp.label+' — '+vwp.desc;}
+  else{hb.textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
+}
+
 
 var NODES=[],EDGES=[];
 var cy,selNodeId=null,inFocus=false,hiddenTypes={},currentView='graph',SEARCH='',activeTag=null;
@@ -752,14 +857,14 @@ function applyLayout(name){
 }
 function applyHiddenTypes(){if(!cy)return;cy.nodes().forEach(function(n){n.style('display',hiddenTypes[n.data('type')]?'none':'element');});cy.edges().forEach(function(e){var hs=cy.$('#'+e.data('source')).style('display')==='none',ht=cy.$('#'+e.data('target')).style('display')==='none';e.style('display',(hs||ht)?'none':'element');});}
 function toggleType(t){hiddenTypes[t]=!hiddenTypes[t];if(currentView==='graph')applyHiddenTypes();else setView(currentView);}
-function showAll(){inFocus=false;selNodeId=null;hiddenTypes={};activeTag=null;SEARCH='';document.getElementById('search').value='';Array.prototype.forEach.call(document.querySelectorAll('.leg-row'),function(r){r.classList.remove('off');});buildTagLegend();if(cy){cy.elements().removeClass('hi dim dim-n').style('display','element');cy.fit(50);}hideDetail();if(currentView!=='graph')setView(currentView);document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
+function showAll(){inFocus=false;selNodeId=null;hiddenTypes={};activeTag=null;SEARCH='';document.getElementById('search').value='';document.getElementById('viewpoint-sel').value='';Array.prototype.forEach.call(document.querySelectorAll('.leg-row'),function(r){r.classList.remove('off');});buildTagLegend();if(cy){cy.elements().removeClass('hi dim dim-n').style('display','element');cy.fit(50);}hideDetail();if(currentView!=='graph')setView(currentView);document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
 
 /* ─── LEGENDS ───────────────────────────────────────────────── */
 function buildLegend(){
   var counts=typesInUse(),tDiv=document.getElementById('type-legend');tDiv.innerHTML='';
   Object.keys(TC).concat(Object.keys(counts).filter(function(k){return !TC[k];})).forEach(function(type){
     var cnt=counts[type]||0;if(!cnt)return;var cfg=tcfg(type);
-    var d=document.createElement('div');d.className='leg-row';
+    var d=document.createElement('div');d.className='leg-row'+(hiddenTypes[type]?' off':'');
     d.innerHTML='<div class="ldot'+(cfg.s==='ellipse'?' oval':'')+'" style="background:'+cfg.c+'"></div><span class="lname">'+escH(type)+'</span><span class="lcnt">'+cnt+'</span>';
     d.onclick=function(){d.classList.toggle('off');toggleType(type);};tDiv.appendChild(d);
   });
@@ -888,6 +993,7 @@ window.addEventListener('load',function(){
       document.getElementById('hint-bar').textContent=LIVE?('● '+(currentWS||'All workspaces')+' — '+NODES.length+' components, '+EDGES.length+' references'):'○ Offline — start the API to load the graph';
       document.getElementById('search').addEventListener('input',function(){SEARCH=this.value;if(currentView==='graph'){cy.elements().removeClass('dim dim-n');if(SEARCH){cy.nodes().forEach(function(n){if(!matchesSearch(nById(n.data('id'))))n.addClass('dim-n');});cy.edges().addClass('dim');}}else setView(currentView);});
       document.getElementById('view-sel').addEventListener('change',function(){setView(this.value);});
+      document.getElementById('viewpoint-sel').addEventListener('change',function(){applyViewpoint(this.value);});
       document.getElementById('layout-sel').addEventListener('change',function(){applyLayout(this.value);});
       document.getElementById('show-all-btn').addEventListener('click',showAll);
       document.getElementById('add-node-btn').addEventListener('click',openAddModal);
