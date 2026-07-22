@@ -813,6 +813,110 @@ def admin_seed(request: Request, x_api_key: str = Header(default="")):
     log.info("Seed complete: %s components, %s references", c, r)
     return {"seeded": True, "components": c, "references": r}
 
+# ---- enrich an existing (sparse) workspace with viewpoint data ------
+# Workspaces built live via the Zia onboarding chat (e.g. "ZappyWorks") often
+# only end up with a few component types (Person, Application, Company,
+# Objective, KPI) — enough for a couple of viewpoints but not most of them.
+# This adds Capability, Risk, Initiative, Compliance, Technology, Location,
+# OrgUnit, Epic and Strategy sample components, wired to whichever
+# Applications / Objectives / People already exist in that workspace (no
+# local install needed — just call this URL once, same pattern as /api/admin/seed).
+#   https://<app>/api/admin/enrich-workspace?workspace=ZappyWorks&x-api-key=YOUR_API_KEY
+@app.api_route("/api/admin/enrich-workspace", methods=["GET", "POST"])
+def enrich_workspace(request: Request, x_api_key: str = Header(default=""), workspace: str = None):
+    require_key(x_api_key, request)
+    ws = workspace or (request.query_params.get("workspace"))
+    if not ws:
+        raise HTTPException(status_code=400, detail="workspace query param is required, e.g. ?workspace=ZappyWorks")
+    wsid = re.sub(r"[^a-z0-9]+", "-", ws.lower()).strip("-")
+
+    def nid(label):
+        return f"enr-{wsid}-" + re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
+
+    def existing(type_):
+        rows = run("MATCH (c:Component) WHERE coalesce(c.workspace,'Zoho Corporation')=$ws AND c.type=$t "
+                   "RETURN c.id AS id, c.label AS label ORDER BY c.label", {"ws": ws, "t": type_})
+        return [{"id": r["id"], "label": r["label"]} for r in rows]
+
+    apps, objs, people = existing("Application"), existing("Objective"), existing("Person")
+    if not apps:
+        raise HTTPException(status_code=404, detail=f"No Application components found in workspace '{ws}' "
+                             f"(workspace names are case-sensitive — check the value in the dashboard's workspace selector).")
+
+    def upsert_node(label, type_, **fields):
+        f = {"Name": label, **fields}
+        run("""MERGE (c:Component {id:$id}) SET c.label=$label, c.type=$type, c.workspace=$ws,
+               c.name=$label, c.fields=$fields""",
+            {"id": nid(label), "label": label, "type": type_, "ws": ws, "fields": json.dumps(f, ensure_ascii=False)}, True)
+        run(f"MATCH (c:Component {{id:$id}}) SET c:{type_to_label(type_)}", {"id": nid(label)}, True)
+        return nid(label)
+
+    def link(s_id, ref, t_id):
+        rel = ref_to_rel(ref)
+        eid = f"e-{s_id}-{rel}-{t_id}"
+        run(f"""MATCH (a:Component {{id:$s}}) MATCH (b:Component {{id:$t}})
+                MERGE (a)-[x:{rel} {{id:$eid}}]->(b) SET x.ref=$ref""", {"s": s_id, "t": t_id, "eid": eid, "ref": ref}, True)
+
+    cap_names = ["Product Development", "Customer Engagement", "Revenue Operations", "Platform Reliability"]
+    cap_ids = [upsert_node(n, "Capability", Description=f"{n} capability for {ws}.") for n in cap_names]
+    for i, a in enumerate(apps):
+        link(cap_ids[i % len(cap_ids)], "Is Realized By", a["id"])
+    for i, o in enumerate(objs):
+        link(o["id"], "Enabled By", cap_ids[i % len(cap_ids)])
+
+    risk_defs = [("Key Person Dependency Risk", "High", "Medium"), ("Customer Data Security Risk", "Critical", "Low"),
+                 ("Platform Scalability Risk", "Medium", "High")]
+    risk_ids = []
+    for i, (name, sev, lik) in enumerate(risk_defs):
+        rid = upsert_node(name, "Risk", Severity=sev, Likelihood=lik)
+        risk_ids.append(rid)
+        link(rid, "Affects", apps[i % len(apps)]["id"])
+        link(rid, "Affects", cap_ids[i % len(cap_ids)])
+
+    init_defs = ["Customer Trust & Security Program", "Scale-Up Infrastructure Initiative", "Growth Acceleration Initiative"]
+    init_ids = []
+    for i, name in enumerate(init_defs):
+        iid = upsert_node(name, "Initiative", Status="In Progress")
+        init_ids.append(iid)
+        if objs:
+            link(iid, "Supports", objs[i % len(objs)]["id"])
+        link(cap_ids[i % len(cap_ids)], "Impacted By", iid)
+        link(iid, "Mitigates", risk_ids[i % len(risk_ids)])
+        if people:
+            link(people[i % len(people)]["id"], "Leads", iid)
+
+    comp_ids = [upsert_node(n, "Compliance", Region="Global") for n in ["SOC 2", "GDPR"]]
+    for i, a in enumerate(apps):
+        link(a["id"], "Complies With", comp_ids[i % len(comp_ids)])
+
+    tech_id = upsert_node(f"{ws} Cloud Platform", "Technology", Provider="AWS")
+    loc_ids = [upsert_node(n, "Location", Type="Data Center") for n in [f"{ws} Primary Region", f"{ws} DR Region"]]
+    for a in apps:
+        link(a["id"], "Is Supported By", tech_id)
+    link(tech_id, "Is Located At", loc_ids[0])
+
+    org_id = upsert_node(f"{ws} Product & Engineering", "OrgUnit", Description="Owns the product and platform.")
+    for a in apps:
+        link(org_id, "Consumes", a["id"])
+    for p in people:
+        link(p["id"], "Belongs To", org_id)
+
+    strat_id = upsert_node(f"{ws} Growth Strategy", "Strategy", Horizon="FY26-FY27")
+    epic_defs = ["Harden Security & Compliance", "Expand Platform Capacity"]
+    for i, name in enumerate(epic_defs):
+        eid = upsert_node(name, "Epic", Status="Planned")
+        link(strat_id, "Delivers", eid)
+        link(eid, "Delivers", cap_ids[i % len(cap_ids)])
+        link(eid, "Delivers", apps[i % len(apps)]["id"])
+
+    total = run("MATCH (c:Component) WHERE coalesce(c.workspace,'Zoho Corporation')=$ws RETURN count(c) AS n", {"ws": ws})[0]["n"]
+    log.info("Enriched workspace '%s': now %s components", ws, total)
+    return {"enriched": True, "workspace": ws, "totalComponents": total,
+            "added": {"capabilities": len(cap_ids), "risks": len(risk_ids), "initiatives": len(init_ids),
+                      "compliance": len(comp_ids), "technology": 1, "locations": len(loc_ids), "orgUnits": 1,
+                      "strategies": 1, "epics": len(epic_defs)},
+            "dashboardUrl": f"/?workspace={ws}"}
+
 # ---- dashboard with runtime config injection -----------------------
 @app.get("/", response_class=HTMLResponse)
 @app.get("/graph/view", response_class=HTMLResponse)
