@@ -175,6 +175,34 @@ paths:
       security:
         - ApiKeyAuth: []
 
+  /api/admin/enrich-workspace:
+    get:
+      summary: Add Viewpoint-ready sample data to a sparse workspace
+      description: >
+        Adds Capability, Risk, Initiative, Compliance, Technology, Location,
+        OrgUnit, Epic and Strategy components into an existing workspace,
+        wired to whichever Applications/Objectives/People already exist
+        there. Call this once right after building a brand-new company's
+        graph (e.g. after bulkBuildGraph/onboarding), so the dashboard's
+        Viewpoint dropdown (Product Hosting, Application Risk, Capability
+        Realization, OKRs/Initiatives, Strategies to Epics, etc.) has real,
+        non-empty data to show immediately instead of an empty diagram.
+        Safe to call more than once (it MERGEs, so it won't duplicate).
+      operationId: enrichWorkspaceViewpoints
+      parameters:
+        - name: workspace
+          in: query
+          required: true
+          description: >
+            The exact workspace name to enrich (case-sensitive — must match
+            the company name used when the workspace was created).
+          schema: { type: string }
+      responses:
+        '200': { description: Enrichment summary returned }
+        '404': { description: No Application components found in that workspace }
+      security:
+        - ApiKeyAuth: []
+
 components:
   securitySchemes:
     ApiKeyAuth:
