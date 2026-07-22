@@ -27,9 +27,13 @@ build, maintain, and answer questions about Zoho's Enterprise Intelligence
 Graph: a living digital twin of the organization stored in Neo4j. The graph
 contains Organizations, Org Units, People, Business Capabilities, Applications,
 App Modules, Interfaces, Data Stores, Servers, Tech Services, Tech Products and
-Locations, connected by references such as Owns, Belongs To, Consumes, Is
+Locations, PLUS Objective, KPI, Initiative, Risk, Compliance, Epic and Strategy
+components — connected by references such as Owns, Belongs To, Consumes, Is
 Realized By, Is Supported By, Connects To, Deploys To, Is Located At, Reports
-To, Is Expert In and Has Successor.
+To, Is Expert In, Has Successor, Enabled By, Measured By, Supports, Impacted By,
+Affects, Mitigates, Complies With, Delivers and Leads. Business Capability is
+the most important anchor type — most architectural questions ultimately trace
+back to "which capability does this support/threaten/realize?".
 
 RULES OF ENGAGEMENT
 1. The graph is the system of record. Never invent components or relationships —
@@ -60,10 +64,47 @@ RULES OF ENGAGEMENT
    Applications like any other.
 9. Be concise. Prefer short, structured answers. Cite component names, not ids,
    to the user.
+10. When a user's question matches one of the 15 predefined Viewpoints (see
+    "Viewpoints" section below), name the matching viewpoint and give them the
+    direct link instead of (or alongside) a text summary:
+    `{RENDER_URL}/?workspace=<Workspace Name>&viewpoint=<viewpoint-key>`
+    e.g. "Which risks affect our applications?" → Application Risk viewpoint →
+    `.../?workspace=Zoho%20Corporation&viewpoint=application-risk`.
+11. Right after building a brand-new company's graph (bulkBuildGraph /
+    onboarding), call enrichWorkspaceViewpoints for that workspace. New
+    onboarded workspaces only get Person/Application/Company/Objective/KPI by
+    default — without this call most Viewpoints (Product Hosting, Application
+    Risk, Capability Realization, OKRs/Initiatives, Strategies to Epics, etc.)
+    will render empty for that company, which looks broken to the user.
 
 TONE: precise, senior-architect, pragmatic. Never expose raw ids, API keys, or
 Cypher to the user unless they explicitly ask.
 ```
+
+### Viewpoints (what to recommend, and when)
+
+The dashboard has a **Viewpoint** dropdown — 15 predefined, curated diagrams,
+each answering one specific question (same concept as Ardoq Discover's
+Viewpoints). Use this table to match a user's question to the right one and
+hand them a direct link (see rule 10 above):
+
+| Viewpoint key | Answers |
+|---|---|
+| `product-hosting` | How business capabilities are supported by applications, and which locations host the servers they run on. |
+| `relationship-overview` | General-purpose view of everything and how it all relates. |
+| `application-risk` | Which risks affect which applications, and which initiatives mitigate them. |
+| `application-integrations` | How applications connect to each other via interfaces. |
+| `products-to-location` | Applications → servers/tech products → physical locations. |
+| `app-lifecycle-by-capability` | Applications grouped by the capability they realize, with lifecycle phase. |
+| `security-review` | Which applications comply with which security/compliance domains, and risks affecting them. |
+| `initiative-expert-network` | Who leads or is expert on each initiative, and which objectives it supports. |
+| `risk-to-objectives` | How risk on capabilities/applications threatens company objectives. |
+| `common-data-objects` | Shared data stores and which applications/org units consume them. |
+| `capability-realization` | Which applications and org units realize each business capability. |
+| `app-integration-and-capability` | Capabilities, the apps that realize them, and how those apps integrate. |
+| `okrs-initiatives-impacts` | Objectives, the KPIs measuring them, and initiatives supporting/impacting capabilities. |
+| `strategies-to-epics` | Strategies broken into epics, and the capabilities/applications those epics deliver. |
+| `capability-experts-network` | Which people are recognized experts in which business capabilities. |
 
 ### Knowledge base (optional but recommended)
 
@@ -206,6 +247,16 @@ Body parameters (shown on the test screen as name / type / value):
 - **Method / Path:** `GET /api/analytics/capability-coverage`
 - **Parameters:** *none*
 
+### Tool 11 — enrichWorkspaceViewpoints
+- **Tool name:** `enrichWorkspaceViewpoints`
+- **Description:** Adds Capability/Risk/Initiative/Compliance/Technology/Location/OrgUnit/Epic/Strategy sample data into an existing (often sparse) workspace, wired to whatever Applications/Objectives/People already exist there.
+- **Instruction:** Call once right after onboarding a new company (after bulkBuildGraph), so its Viewpoint dropdown isn't empty. Safe to re-call.
+- **Method / Path:** `GET /api/admin/enrich-workspace`
+
+| Parameter | In | Data Type | Required | Value (example) |
+|---|---|---|---|---|
+| `workspace` | query | String | Yes | `ZappyWorks` |
+
 ---
 
 ## 4. Tool group B — "GitHub Sync" (from `zia-github-sync-tool.yaml`)
@@ -238,3 +289,5 @@ Upload `zia-github-sync-tool.yaml` as a second tool group (same connection).
 4. *"Make Bharath Sridhar the owner of Zoho Sign."* → searchComponents(both) → createReference(`p6`,`<new id>`,`Owns`).
 5. *"Import repositories from the 'zoho' GitHub org."* → syncGitHub(`zoho`).
 6. *"Which capabilities have no supporting application?"* → getCapabilityCoverage → highlights zero-coverage rows.
+7. *"What risks affect Zoho CRM?"* → recognize this matches the Application Risk viewpoint → reply with a short summary plus the direct link: `.../?workspace=Zoho%20Corporation&viewpoint=application-risk`.
+8. *(after onboarding a brand-new company "Acme Inc" via bulkBuildGraph)* → immediately call enrichWorkspaceViewpoints(`workspace="Acme Inc"`) before handing the user the dashboard link, so every viewpoint already has real data.
