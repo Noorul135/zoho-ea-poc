@@ -45,11 +45,24 @@ filters the graph down to just those component types (and the references
 that naturally connect them) and switches to a fitting view style.
 
 - Config lives client-side in `public/index.html` → `VIEWPOINTS` object +
-  `applyViewpoint()`.
+  `applyViewpoint()`. Every viewpoint renders into the real Cytoscape
+  node-link canvas (not the text/card-based Dependency Map, Tree, Swimlanes
+  or Capability Map views — those never draw connecting lines, so a
+  viewpoint routed to one of them always looked empty/disconnected even with
+  good data). Each viewpoint also picks a fitting layout (`tree-td`, `cose`,
+  `concentric`, or `clusters`) — Business Capability is treated as the
+  highest-priority root for hierarchical layouts, since it's the anchor most
+  of these viewpoints are built around.
+- Deep link directly into a viewpoint with `?workspace=<ws>&viewpoint=<key>`,
+  e.g. `/?workspace=Zoho%20Corporation&viewpoint=application-risk`.
 - New component/reference types the viewpoints need (Objective, KPI,
   Initiative, Risk, Compliance, Epic, Strategy) are defined in
   **`cypher/03-viewpoints-metamodel.cypher`** — run it once in the Neo4j
   console, after `01-constraints.cypher` and `02-metamodel.cypher`.
+- The Zia agent config (`zia/ZIA-AGENT-CONFIG.md`, `zia/zia-ea-tools.yaml`,
+  `zia/EA-KNOWLEDGE-BASE.md`) now knows about all 15 viewpoints (so it can
+  recommend and link to the right one) and about `enrichWorkspaceViewpoints`,
+  which it should call right after onboarding any new company.
 - Sample instances of those new types (wired into the real Zoho Corporation
   graph — e.g. `Objective → Enabled By → Business Capability`,
   `Risk → Affects → Application`) were added to `data.json`. Re-run the seed
@@ -60,20 +73,41 @@ that naturally connect them) and switches to a fitting view style.
 Workspaces built live through the Zia onboarding chat (rather than the
 `data.json` seed) often only end up with a handful of component types
 (Person, Application, Company, Objective, KPI) — enough for a couple of
-viewpoints but not most of them. **`enrich_workspace.py`** adds the missing
-types (Capability, Risk, Initiative, Compliance, Technology, Location,
-OrgUnit, Epic, Strategy) into an already-live workspace, wired to whatever
-Applications/Objectives/People already exist there (it queries them at
-runtime — you don't need to know their exact labels):
+viewpoints but not most of them. Either option below adds the missing types
+(Capability, Risk, Initiative, Compliance, Technology, Location, OrgUnit,
+Epic, Strategy) into an already-live workspace, wired to whatever
+Applications/Objectives/People already exist there (no need to know their
+exact labels — both look them up at runtime).
+
+**Option 1 — no local setup (recommended).** Once this repo is deployed on
+Render, just open this URL once (replace with your own values):
 
 ```
+https://<your-app>.onrender.com/api/admin/enrich-workspace?workspace=ZappyWorks&x-api-key=YOUR_API_KEY
+```
+
+That's it — no install, no `.env`, nothing to run on your machine. It calls
+the new `/api/admin/enrich-workspace` route in `main.py`, which runs the same
+enrichment directly against your live Neo4j from the server. Swap `ZappyWorks`
+for any other workspace name (case-sensitive — must match the dashboard's
+workspace selector exactly), and your existing `API_KEY` is whatever you set
+in Render → Environment (the same one already used by `/api/admin/seed`).
+
+**Option 2 — run it locally**, if you'd rather not expose the admin route or
+want to inspect what it does first. From the root of this repo (the folder
+containing `requirements.txt`, `main.py`, `enrich_workspace.py` — i.e. wherever
+you unzipped/cloned this project):
+
+```
+pip install -r requirements.txt
+cp .env.example .env          # fill in your Aura NEO4J_URI / NEO4J_PASSWORD
 python enrich_workspace.py "ZappyWorks"
 python enrich_workspace.py "ZappyWorks" --wipe   # removes prior enrichment first, then re-adds
 ```
 
-Reload `…/?workspace=ZappyWorks` afterwards — Product Hosting, Application
-Risk, Capability Realization, OKRs/Initiatives, Strategies to Epics, etc.
-should now render real, non-empty graphs for that workspace too.
+Either way, reload `…/?workspace=ZappyWorks` afterwards — Product Hosting,
+Application Risk, Capability Realization, OKRs/Initiatives, Strategies to
+Epics, etc. should now render real, non-empty graphs for that workspace too.
 
 ## What's in this repo
 
