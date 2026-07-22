@@ -1,1548 +1,2171 @@
 {
- "nodes": [
-  {
-   "id": "org1",
-   "label": "Zoho Corporation",
-   "type": "Organization",
-   "f": {
-    "Name": "Zoho Corporation",
-    "Founded": "1996 (as AdventNet)",
-    "Headquarters": "Chennai, India",
-    "US HQ": "Austin, Texas",
-    "Employees": "17,856 (2025)",
-    "Revenue": "~USD 1B+ (private)",
-    "CEO": "Shailesh Kumar Davey",
-    "Model": "100% bootstrapped, private"
-   }
-  },
-  {
-   "id": "ou1",
-   "label": "CRM & Sales Products",
-   "type": "Org Unit",
-   "f": {
-    "Name": "CRM & Sales Products Group",
-    "Description": "Builds Zoho CRM, SalesIQ, Bigin, Campaigns, Social",
-    "Location": "Chennai, India"
-   }
-  },
-  {
-   "id": "ou2",
-   "label": "Collaboration Products",
-   "type": "Org Unit",
-   "f": {
-    "Name": "Collaboration Products Group",
-    "Description": "Builds Zoho Cliq, WorkDrive, Mail, Projects, Meeting",
-    "Location": "Chennai, India"
-   }
-  },
-  {
-   "id": "ou3",
-   "label": "Finance Products",
-   "type": "Org Unit",
-   "f": {
-    "Name": "Finance Products Group",
-    "Description": "Builds Zoho Books, Expense, Invoice, Payroll, ERP",
-    "Location": "Chennai, India"
-   }
-  },
-  {
-   "id": "ou4",
-   "label": "Analytics & Platform",
-   "type": "Org Unit",
-   "f": {
-    "Name": "Analytics & Platform Group",
-    "Description": "Builds Zoho Analytics, Creator, Flow, Catalyst",
-    "Location": "Chennai, India"
-   }
-  },
-  {
-   "id": "ou5",
-   "label": "HR & IT Products",
-   "type": "Org Unit",
-   "f": {
-    "Name": "HR & IT Products Group",
-    "Description": "Builds Zoho People, Recruit, Desk, ServiceDesk Plus",
-    "Location": "Chennai + Tenkasi, India"
-   }
-  },
-  {
-   "id": "ou6",
-   "label": "AI Research (Zia)",
-   "type": "Org Unit",
-   "f": {
-    "Name": "Zia AI Research Group",
-    "Description": "Develops Zia LLM and AI capabilities across all Zoho products",
-    "Location": "Chennai R&D Campus"
-   }
-  },
-  {
-   "id": "ou7",
-   "label": "Global Sales & Revenue",
-   "type": "Org Unit",
-   "f": {
-    "Name": "Global Sales & Revenue",
-    "Description": "Global sales, partnerships, channel management",
-    "Location": "Multiple — Austin, Chennai, Dublin, Dubai"
-   }
-  },
-  {
-   "id": "ou8",
-   "label": "Customer Success",
-   "type": "Org Unit",
-   "f": {
-    "Name": "Customer Success & Support",
-    "Description": "Customer onboarding, health, retention, global support",
-    "Location": "Chennai, Austin, London"
-   }
-  },
-  {
-   "id": "ou9",
-   "label": "People Operations",
-   "type": "Org Unit",
-   "f": {
-    "Name": "People Operations (HR)",
-    "Description": "Internal HR, talent acquisition, learning and payroll",
-    "Location": "Chennai HQ"
-   }
-  },
-  {
-   "id": "ou10",
-   "label": "Finance & Corporate Ops",
-   "type": "Org Unit",
-   "f": {
-    "Name": "Finance & Corporate Operations",
-    "Description": "Internal finance, legal, compliance, procurement",
-    "Location": "Chennai HQ"
-   }
-  },
-  {
-   "id": "ou11",
-   "label": "IT Infrastructure",
-   "type": "Org Unit",
-   "f": {
-    "Name": "IT Infrastructure & Security",
-    "Description": "Data centre operations, network, cybersecurity, compliance",
-    "Location": "Chennai, Austin, Amsterdam, Sydney, London"
-   }
-  },
-  {
-   "id": "p1",
-   "label": "Shailesh Kumar Davey",
-   "type": "Person",
-   "f": {
-    "Name": "Shailesh Kumar Davey",
-    "Role": "Group CEO (since Jan 2025)",
-    "Contact Email": "ceo@zoho.com",
-    "Status": "Co-founder, succeeded Sridhar Vembu as CEO"
-   }
-  },
-  {
-   "id": "p2",
-   "label": "Sridhar Vembu",
-   "type": "Person",
-   "f": {
-    "Name": "Sridhar Vembu",
-    "Role": "Chief Scientist (formerly CEO)",
-    "Contact Email": "sridhar@zoho.com",
-    "Status": "Co-founder. Transitioned from CEO to R&D focus Jan 2025"
-   }
-  },
-  {
-   "id": "p3",
-   "label": "Vamsi Krishna",
-   "type": "Person",
-   "f": {
-    "Name": "Vamsi Krishna",
-    "Role": "CEO (Operations)",
-    "Contact Email": "vamsi@zoho.com",
-    "Status": "Oversees day-to-day global operations"
-   }
-  },
-  {
-   "id": "p4",
-   "label": "Luke Xia",
-   "type": "Person",
-   "f": {
-    "Name": "Luke Xia",
-    "Role": "Chief Operating Officer",
-    "Contact Email": "luke.xia@zoho.com",
-    "Status": "Oversees global operations and delivery"
-   }
-  },
-  {
-   "id": "p5",
-   "label": "Sridhar Iyengar",
-   "type": "Person",
-   "f": {
-    "Name": "Sridhar Iyengar",
-    "Role": "VP & Head of Europe",
-    "Contact Email": "sridhar.iyengar@zoho.com",
-    "Status": "Leads European expansion, EMEA operations"
-   }
-  },
-  {
-   "id": "p6",
-   "label": "Bharath Sridhar",
-   "type": "Person",
-   "f": {
-    "Name": "Bharath Sridhar",
-    "Role": "CTO, Labs (VP R&D)",
-    "Contact Email": "bharath@zoho.com",
-    "Status": "Leads Zoho Labs — Zia AI and experimental engineering"
-   }
-  },
-  {
-   "id": "bc1",
-   "label": "Customer Relationship Mgmt",
-   "type": "Business Capability",
-   "f": {
-    "Name": "Customer Relationship Management",
-    "Maturity": "5 — Measured",
-    "Market Diff": "5 — Market-disruptive",
-    "Lifecycle Phase": "Live",
-    "Component Level": "1 (calc)",
-    "Complexity": "8 (calc)",
-    "Note": "Core market differentiator. Zoho CRM competes directly with Salesforce."
-   }
-  },
-  {
-   "id": "bc2",
-   "label": "Marketing Automation",
-   "type": "Business Capability",
-   "f": {
-    "Name": "Marketing Automation & Lead Generation",
-    "Maturity": "4 — Managed",
-    "Market Diff": "4 — Market-leading",
-    "Lifecycle Phase": "Live",
-    "Component Level": "1 (calc)",
-    "Complexity": "6 (calc)"
-   }
-  },
-  {
-   "id": "bc3",
-   "label": "Financial Management",
-   "type": "Business Capability",
-   "f": {
-    "Name": "Financial Management & Accounting",
-    "Maturity": "4 — Managed",
-    "Market Diff": "3 — Market-competitive",
-    "Lifecycle Phase": "Live",
-    "Component Level": "1 (calc)",
-    "Complexity": "5 (calc)"
-   }
-  },
-  {
-   "id": "bc4",
-   "label": "Human Capital Management",
-   "type": "Business Capability",
-   "f": {
-    "Name": "Human Capital Management",
-    "Maturity": "3 — Defined",
-    "Market Diff": "3 — Market-competitive",
-    "Lifecycle Phase": "Live",
-    "Component Level": "1 (calc)",
-    "Complexity": "4 (calc)"
-   }
-  },
-  {
-   "id": "bc5",
-   "label": "IT Service Management",
-   "type": "Business Capability",
-   "f": {
-    "Name": "IT Service Management (ITSM)",
-    "Maturity": "4 — Managed",
-    "Market Diff": "4 — Market-leading",
-    "Lifecycle Phase": "Live",
-    "Component Level": "1 (calc)",
-    "Complexity": "4 (calc)"
-   }
-  },
-  {
-   "id": "bc6",
-   "label": "Product Engineering & R&D",
-   "type": "Business Capability",
-   "f": {
-    "Name": "Product Engineering & R&D",
-    "Maturity": "5 — Measured",
-    "Market Diff": "5 — Market-disruptive",
-    "Lifecycle Phase": "Live",
-    "Component Level": "1 (calc)",
-    "Complexity": "12 (calc)",
-    "Note": "Zoho builds 100% of its products in-house. No third-party acquisitions."
-   }
-  },
-  {
-   "id": "bc7",
-   "label": "Customer Success & Support",
-   "type": "Business Capability",
-   "f": {
-    "Name": "Customer Success & Support",
-    "Maturity": "4 — Managed",
-    "Market Diff": "3 — Market-competitive",
-    "Lifecycle Phase": "Live",
-    "Component Level": "1 (calc)",
-    "Complexity": "5 (calc)"
-   }
-  },
-  {
-   "id": "bc8",
-   "label": "Business Intelligence & BI",
-   "type": "Business Capability",
-   "f": {
-    "Name": "Business Intelligence & Analytics",
-    "Maturity": "4 — Managed",
-    "Market Diff": "4 — Market-leading",
-    "Lifecycle Phase": "Live",
-    "Component Level": "1 (calc)",
-    "Complexity": "4 (calc)"
-   }
-  },
-  {
-   "id": "bc9",
-   "label": "Platform Integration",
-   "type": "Business Capability",
-   "f": {
-    "Name": "Platform Integration & Automation",
-    "Maturity": "4 — Managed",
-    "Market Diff": "4 — Market-leading",
-    "Lifecycle Phase": "Live",
-    "Component Level": "1 (calc)",
-    "Complexity": "6 (calc)"
-   }
-  },
-  {
-   "id": "bc10",
-   "label": "Collaboration & Productivity",
-   "type": "Business Capability",
-   "f": {
-    "Name": "Collaboration & Productivity",
-    "Maturity": "4 — Managed",
-    "Market Diff": "3 — Market-competitive",
-    "Lifecycle Phase": "Live",
-    "Component Level": "1 (calc)",
-    "Complexity": "7 (calc)",
-    "Note": "Zoho Workplace deployed for 1.2M Indian govt employees (2025)."
-   }
-  },
-  {
-   "id": "bc11",
-   "label": "AI & Machine Learning",
-   "type": "Business Capability",
-   "f": {
-    "Name": "AI & Machine Learning (Zia)",
-    "Maturity": "3 — Defined",
-    "Market Diff": "4 — Market-leading",
-    "Lifecycle Phase": "Live",
-    "Component Level": "1 (calc)",
-    "Complexity": "3 (calc)",
-    "Note": "Zia LLM launched 2025. Embedded across all Zoho One products."
-   }
-  },
-  {
-   "id": "app1",
-   "label": "Zoho CRM",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho CRM",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Mission Critical",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.9 (calc)",
-    "Technical Fit": "4.7 (calc)",
-    "Criticality": "5 — Mission Critical",
-    "Ownership State": "Managed (calc)",
-    "Customers": "250,000+ businesses worldwide",
-    "Note": "Flagship product. Competes with Salesforce CRM."
-   }
-  },
-  {
-   "id": "app2",
-   "label": "Zoho SalesIQ",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho SalesIQ",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Critical",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.3 (calc)",
-    "Technical Fit": "4.1 (calc)",
-    "Criticality": "4 — Business Critical",
-    "Ownership State": "Managed (calc)",
-    "Note": "Live chat, bot builder, visitor intelligence."
-   }
-  },
-  {
-   "id": "app3",
-   "label": "Zoho Campaigns",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho Campaigns",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Operational",
-    "Strategic Rating": "Tolerate (calc)",
-    "Business Value": "3.8 (calc)",
-    "Technical Fit": "3.2 (calc)",
-    "Criticality": "3 — Business Operational",
-    "Ownership State": "Managed (calc)",
-    "Note": "Email marketing. UI refresh planned. Competitor: Mailchimp, HubSpot."
-   }
-  },
-  {
-   "id": "app4",
-   "label": "Zoho Social",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho Social",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Operational",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.0 (calc)",
-    "Technical Fit": "4.0 (calc)",
-    "Criticality": "3 — Business Operational",
-    "Ownership State": "Managed (calc)"
-   }
-  },
-  {
-   "id": "app5",
-   "label": "Zoho Cliq",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho Cliq",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Critical",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.5 (calc)",
-    "Technical Fit": "4.3 (calc)",
-    "Criticality": "4 — Business Critical",
-    "Ownership State": "Managed (calc)",
-    "Note": "Team messaging. Internal primary comms tool across all Zoho divisions."
-   }
-  },
-  {
-   "id": "app6",
-   "label": "Zoho WorkDrive",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho WorkDrive",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Critical",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.4 (calc)",
-    "Technical Fit": "4.2 (calc)",
-    "Criticality": "4 — Business Critical",
-    "Ownership State": "Managed (calc)",
-    "Note": "Cloud document storage. Feb 2026 security incident noted (WorkDrive backdoor)."
-   }
-  },
-  {
-   "id": "app7",
-   "label": "Zoho Mail",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho Mail",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Mission Critical",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.6 (calc)",
-    "Technical Fit": "4.4 (calc)",
-    "Criticality": "5 — Mission Critical",
-    "Ownership State": "Managed (calc)",
-    "Note": "1.2M Indian central government accounts migrated to Zoho Mail (2025)."
-   }
-  },
-  {
-   "id": "app8",
-   "label": "Zoho Projects",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho Projects",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Operational",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.2 (calc)",
-    "Technical Fit": "4.0 (calc)",
-    "Criticality": "3 — Business Operational",
-    "Ownership State": "Managed (calc)"
-   }
-  },
-  {
-   "id": "app9",
-   "label": "Zoho Books",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho Books",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Critical",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.6 (calc)",
-    "Technical Fit": "4.4 (calc)",
-    "Criticality": "4 — Business Critical",
-    "Ownership State": "Managed (calc)",
-    "Note": "Cloud accounting. Used internally for Zoho corporate finance."
-   }
-  },
-  {
-   "id": "app10",
-   "label": "Zoho Expense",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho Expense",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Operational",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.1 (calc)",
-    "Technical Fit": "4.0 (calc)",
-    "Criticality": "3 — Business Operational",
-    "Ownership State": "Managed (calc)"
-   }
-  },
-  {
-   "id": "app11",
-   "label": "Zoho ERP",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho ERP",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Implementing",
-    "Service Level": "TBD — Not Yet Live",
-    "Strategic Rating": "Invest (planned)",
-    "Business Value": "4.8 (projected)",
-    "Technical Fit": "3.5 (early build)",
-    "Criticality": "TBD",
-    "Ownership State": "Nominated (calc)",
-    "Note": "Launched Jan 2026. Built in Kumbakonam, Tamil Nadu. ERP for mid-market."
-   }
-  },
-  {
-   "id": "app12",
-   "label": "Zoho People",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho People",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Critical",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.3 (calc)",
-    "Technical Fit": "4.2 (calc)",
-    "Criticality": "4 — Business Critical",
-    "Ownership State": "Managed (calc)",
-    "Note": "HRMS. Used internally to manage Zoho's own 17,856 employees."
-   }
-  },
-  {
-   "id": "app13",
-   "label": "Zoho Recruit",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho Recruit",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Operational",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.0 (calc)",
-    "Technical Fit": "3.9 (calc)",
-    "Criticality": "3 — Business Operational",
-    "Ownership State": "Managed (calc)"
-   }
-  },
-  {
-   "id": "app14",
-   "label": "Zoho Desk",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho Desk",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Mission Critical",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.7 (calc)",
-    "Technical Fit": "4.5 (calc)",
-    "Criticality": "5 — Mission Critical",
-    "Ownership State": "Managed (calc)",
-    "Note": "Helpdesk. Built in Tenkasi office. Used for all customer support."
-   }
-  },
-  {
-   "id": "app15",
-   "label": "Zoho Analytics",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho Analytics",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Critical",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.8 (calc)",
-    "Technical Fit": "4.5 (calc)",
-    "Criticality": "4 — Business Critical",
-    "Ownership State": "Managed (calc)",
-    "Note": "BI platform. Connects natively to all 40+ Zoho One apps."
-   }
-  },
-  {
-   "id": "app16",
-   "label": "Zoho Creator",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho Creator",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Critical",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.6 (calc)",
-    "Technical Fit": "4.7 (calc)",
-    "Criticality": "4 — Business Critical",
-    "Ownership State": "Managed (calc)",
-    "Note": "Low-code platform. Powers custom internal apps and customer-facing apps."
-   }
-  },
-  {
-   "id": "app17",
-   "label": "Zoho Flow",
-   "type": "Application",
-   "f": {
-    "Name": "Zoho Flow",
-    "App Type": "SaaS — Own Product",
-    "Lifecycle Phase": "Live",
-    "Service Level": "Business Critical",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.7 (calc)",
-    "Technical Fit": "4.5 (calc)",
-    "Criticality": "4 — Business Critical",
-    "Ownership State": "Managed (calc)",
-    "Note": "Integration automation. 700+ connectors. Zoho One integration backbone."
-   }
-  },
-  {
-   "id": "app18",
-   "label": "Zia LLM",
-   "type": "Application",
-   "f": {
-    "Name": "Zia — Zoho AI Platform",
-    "App Type": "SaaS — Own Build",
-    "Lifecycle Phase": "Implementing",
-    "Service Level": "Business Critical",
-    "Strategic Rating": "Invest (calc)",
-    "Business Value": "4.9 (projected)",
-    "Technical Fit": "3.8 (early)",
-    "Criticality": "4 — Business Critical",
-    "Ownership State": "Managed (calc)",
-    "Note": "Zoho large language model launched 2025. Embedding AI across all products."
-   }
-  },
-  {
-   "id": "am1",
-   "label": "Zoho CRM — Deals Pipeline",
-   "type": "App Module",
-   "f": {
-    "Name": "Deals Pipeline Module",
-    "Lifecycle Phase": "Live",
-    "Description": "Core sales pipeline management within Zoho CRM",
-    "Parent": "Zoho CRM"
-   }
-  },
-  {
-   "id": "if1",
-   "label": "Zoho One API Gateway",
-   "type": "Interface",
-   "f": {
-    "Name": "Zoho One Unified API Gateway",
-    "Protocol": "REST/GraphQL",
-    "Request Type": "Read/Write",
-    "Lifecycle Phase": "Live",
-    "Description": "Central API gateway connecting all Zoho One products"
-   }
-  },
-  {
-   "id": "ds1",
-   "label": "Zoho Analytics Data Lake",
-   "type": "Data Store",
-   "f": {
-    "Name": "Zoho Analytics Data Lake",
-    "Lifecycle Phase": "Live",
-    "Description": "Centralised data warehouse feeding all BI reports across Zoho One suite"
-   }
-  },
-  {
-   "id": "srv1",
-   "label": "Zoho DC — Chennai (Primary)",
-   "type": "Server",
-   "f": {
-    "Name": "Zoho Data Centre — Chennai",
-    "Server Hosting": "Physical + VM",
-    "Server Type": "Primary Production DC",
-    "Network Zone": "Private",
-    "Deploy Env": "Production",
-    "Lifecycle Phase": "Live",
-    "Note": "Main DC. Hosts majority of production workloads."
-   }
-  },
-  {
-   "id": "srv2",
-   "label": "Zoho DC — US East (Austin)",
-   "type": "Server",
-   "f": {
-    "Name": "Zoho Data Centre — Austin, Texas",
-    "Server Hosting": "Physical + VM",
-    "Server Type": "Regional Production DC",
-    "Network Zone": "Private",
-    "Deploy Env": "Production",
-    "Lifecycle Phase": "Live"
-   }
-  },
-  {
-   "id": "srv3",
-   "label": "Zoho DC — EU (Amsterdam)",
-   "type": "Server",
-   "f": {
-    "Name": "Zoho Data Centre — Amsterdam, Netherlands",
-    "Server Hosting": "Physical + VM",
-    "Server Type": "EU Regional DC",
-    "Network Zone": "Private",
-    "Deploy Env": "Production",
-    "Lifecycle Phase": "Live",
-    "Note": "EU data residency for GDPR compliance."
-   }
-  },
-  {
-   "id": "srv4",
-   "label": "Zoho DC — AU (Sydney)",
-   "type": "Server",
-   "f": {
-    "Name": "Zoho Data Centre — Sydney, Australia",
-    "Server Hosting": "Physical + VM",
-    "Server Type": "APAC Regional DC",
-    "Network Zone": "Private",
-    "Deploy Env": "Production",
-    "Lifecycle Phase": "Live"
-   }
-  },
-  {
-   "id": "srv5",
-   "label": "Zoho DC — UK (London)",
-   "type": "Server",
-   "f": {
-    "Name": "Zoho Data Centre — London, UK",
-    "Server Hosting": "Physical + VM",
-    "Server Type": "UK Regional DC",
-    "Network Zone": "Private",
-    "Deploy Env": "Implementing",
-    "Lifecycle Phase": "Implementing",
-    "Note": "New UK DC announced April 2026. Digital sovereignty positioning."
-   }
-  },
-  {
-   "id": "ts1",
-   "label": "Cloudflare CDN",
-   "type": "Tech Service",
-   "f": {
-    "Name": "Cloudflare CDN",
-    "Server Hosting": "Cloud — Global",
-    "Deploy Env": "Production",
-    "Lifecycle Phase": "Live",
-    "Description": "Global CDN for all Zoho web properties and app delivery"
-   }
-  },
-  {
-   "id": "ts2",
-   "label": "AWS S3 — Backup",
-   "type": "Tech Service",
-   "f": {
-    "Name": "AWS S3 — Backup Storage",
-    "Server Hosting": "Cloud — AWS",
-    "Deploy Env": "Production",
-    "Lifecycle Phase": "Live",
-    "Description": "Amazon S3 used for off-site backup and archival storage"
-   }
-  },
-  {
-   "id": "tp1",
-   "label": "Linux (Ubuntu LTS)",
-   "type": "Tech Product",
-   "f": {
-    "Name": "Linux — Ubuntu LTS",
-    "Vendor": "Canonical",
-    "Version": "22.04 LTS",
-    "Lifecycle Phase": "Live",
-    "Description": "Base OS across all Zoho data centres"
-   }
-  },
-  {
-   "id": "tp2",
-   "label": "Kubernetes (k8s)",
-   "type": "Tech Product",
-   "f": {
-    "Name": "Kubernetes",
-    "Vendor": "CNCF",
-    "Version": "1.28+",
-    "Lifecycle Phase": "Live",
-    "Description": "Container orchestration for microservices across Zoho products"
-   }
-  },
-  {
-   "id": "tp3",
-   "label": "PostgreSQL",
-   "type": "Tech Product",
-   "f": {
-    "Name": "PostgreSQL",
-    "Vendor": "Open Source",
-    "Version": "15+",
-    "Lifecycle Phase": "Live",
-    "Description": "Primary relational database for multiple Zoho products"
-   }
-  },
-  {
-   "id": "loc1",
-   "label": "Chennai, India (HQ)",
-   "type": "Location",
-   "f": {
-    "Name": "Chennai, India — Global HQ",
-    "Address": "Estancia IT Park, Chennai, Tamil Nadu",
-    "Type": "Global Headquarters & Primary Engineering Campus"
-   }
-  },
-  {
-   "id": "loc2",
-   "label": "Austin, Texas, USA",
-   "type": "Location",
-   "f": {
-    "Name": "Austin, Texas — US HQ",
-    "Address": "Del Valle, Austin, Texas (moved from Pleasanton CA in 2019)",
-    "Type": "US Headquarters"
-   }
-  },
-  {
-   "id": "loc3",
-   "label": "Amsterdam, Netherlands",
-   "type": "Location",
-   "f": {
-    "Name": "Amsterdam, Netherlands",
-    "Address": "Amsterdam, Netherlands",
-    "Type": "EU Headquarters & EU DC — GDPR data residency"
-   }
-  },
-  {
-   "id": "loc4",
-   "label": "Sydney, Australia",
-   "type": "Location",
-   "f": {
-    "Name": "Sydney, Australia",
-    "Address": "Sydney, New South Wales",
-    "Type": "APAC Regional Office & Data Centre"
-   }
-  },
-  {
-   "id": "loc5",
-   "label": "London, UK",
-   "type": "Location",
-   "f": {
-    "Name": "London, United Kingdom",
-    "Address": "London, UK",
-    "Type": "UK Office & New Data Centre (April 2026)"
-   }
-  }
- ],
- "edges": [
-  {
-   "id": "e1",
-   "s": "p1",
-   "t": "ou7",
-   "r": "Owns"
-  },
-  {
-   "id": "e2",
-   "s": "p1",
-   "t": "app1",
-   "r": "Owns"
-  },
-  {
-   "id": "e3",
-   "s": "p2",
-   "t": "ou6",
-   "r": "Owns"
-  },
-  {
-   "id": "e4",
-   "s": "p2",
-   "t": "app18",
-   "r": "Owns"
-  },
-  {
-   "id": "e5",
-   "s": "p3",
-   "t": "ou1",
-   "r": "Owns"
-  },
-  {
-   "id": "e6",
-   "s": "p6",
-   "t": "ou4",
-   "r": "Owns"
-  },
-  {
-   "id": "e7",
-   "s": "p6",
-   "t": "app15",
-   "r": "Owns"
-  },
-  {
-   "id": "e8",
-   "s": "p6",
-   "t": "app16",
-   "r": "Owns"
-  },
-  {
-   "id": "e9",
-   "s": "p4",
-   "t": "ou11",
-   "r": "Owns"
-  },
-  {
-   "id": "e10",
-   "s": "p5",
-   "t": "ou8",
-   "r": "Owns"
-  },
-  {
-   "id": "e11",
-   "s": "p2",
-   "t": "bc1",
-   "r": "Is Expert In"
-  },
-  {
-   "id": "e12",
-   "s": "p2",
-   "t": "bc6",
-   "r": "Is Expert In"
-  },
-  {
-   "id": "e13",
-   "s": "p2",
-   "t": "bc11",
-   "r": "Is Expert In"
-  },
-  {
-   "id": "e14",
-   "s": "p6",
-   "t": "bc8",
-   "r": "Is Expert In"
-  },
-  {
-   "id": "e15",
-   "s": "p6",
-   "t": "bc9",
-   "r": "Is Expert In"
-  },
-  {
-   "id": "e16",
-   "s": "p5",
-   "t": "bc10",
-   "r": "Is Expert In"
-  },
-  {
-   "id": "e17",
-   "s": "p3",
-   "t": "bc1",
-   "r": "Is Expert In"
-  },
-  {
-   "id": "e18",
-   "s": "p2",
-   "t": "p1",
-   "r": "Reports To"
-  },
-  {
-   "id": "e19",
-   "s": "p3",
-   "t": "p1",
-   "r": "Reports To"
-  },
-  {
-   "id": "e20",
-   "s": "p4",
-   "t": "p1",
-   "r": "Reports To"
-  },
-  {
-   "id": "e21",
-   "s": "p5",
-   "t": "p1",
-   "r": "Reports To"
-  },
-  {
-   "id": "e22",
-   "s": "p6",
-   "t": "p3",
-   "r": "Reports To"
-  },
-  {
-   "id": "e23",
-   "s": "p1",
-   "t": "ou7",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e24",
-   "s": "p2",
-   "t": "ou6",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e25",
-   "s": "p3",
-   "t": "ou1",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e26",
-   "s": "p4",
-   "t": "ou11",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e27",
-   "s": "p5",
-   "t": "ou8",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e28",
-   "s": "p6",
-   "t": "ou4",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e29",
-   "s": "ou1",
-   "t": "org1",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e30",
-   "s": "ou2",
-   "t": "org1",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e31",
-   "s": "ou3",
-   "t": "org1",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e32",
-   "s": "ou4",
-   "t": "org1",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e33",
-   "s": "ou5",
-   "t": "org1",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e34",
-   "s": "ou6",
-   "t": "org1",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e35",
-   "s": "ou7",
-   "t": "org1",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e36",
-   "s": "ou8",
-   "t": "org1",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e37",
-   "s": "ou9",
-   "t": "org1",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e38",
-   "s": "ou10",
-   "t": "org1",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e39",
-   "s": "ou11",
-   "t": "org1",
-   "r": "Belongs To"
-  },
-  {
-   "id": "e40",
-   "s": "ou7",
-   "t": "app1",
-   "r": "Consumes"
-  },
-  {
-   "id": "e41",
-   "s": "ou7",
-   "t": "app2",
-   "r": "Consumes"
-  },
-  {
-   "id": "e42",
-   "s": "ou7",
-   "t": "app3",
-   "r": "Consumes"
-  },
-  {
-   "id": "e43",
-   "s": "ou10",
-   "t": "app9",
-   "r": "Consumes"
-  },
-  {
-   "id": "e44",
-   "s": "ou10",
-   "t": "app10",
-   "r": "Consumes"
-  },
-  {
-   "id": "e45",
-   "s": "ou9",
-   "t": "app12",
-   "r": "Consumes"
-  },
-  {
-   "id": "e46",
-   "s": "ou9",
-   "t": "app13",
-   "r": "Consumes"
-  },
-  {
-   "id": "e47",
-   "s": "ou8",
-   "t": "app14",
-   "r": "Consumes"
-  },
-  {
-   "id": "e48",
-   "s": "ou8",
-   "t": "app5",
-   "r": "Consumes"
-  },
-  {
-   "id": "e49",
-   "s": "ou1",
-   "t": "app1",
-   "r": "Consumes"
-  },
-  {
-   "id": "e50",
-   "s": "ou2",
-   "t": "app5",
-   "r": "Consumes"
-  },
-  {
-   "id": "e51",
-   "s": "ou2",
-   "t": "app6",
-   "r": "Consumes"
-  },
-  {
-   "id": "e52",
-   "s": "ou4",
-   "t": "app15",
-   "r": "Consumes"
-  },
-  {
-   "id": "e53",
-   "s": "ou11",
-   "t": "app17",
-   "r": "Consumes"
-  },
-  {
-   "id": "e54",
-   "s": "ou11",
-   "t": "app16",
-   "r": "Consumes"
-  },
-  {
-   "id": "e55",
-   "s": "bc1",
-   "t": "app1",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e56",
-   "s": "bc1",
-   "t": "ou1",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e57",
-   "s": "bc2",
-   "t": "app3",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e58",
-   "s": "bc2",
-   "t": "app2",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e59",
-   "s": "bc2",
-   "t": "app4",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e60",
-   "s": "bc3",
-   "t": "app9",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e61",
-   "s": "bc3",
-   "t": "app10",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e62",
-   "s": "bc3",
-   "t": "ou3",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e63",
-   "s": "bc4",
-   "t": "app12",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e64",
-   "s": "bc4",
-   "t": "app13",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e65",
-   "s": "bc4",
-   "t": "ou5",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e66",
-   "s": "bc5",
-   "t": "app14",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e67",
-   "s": "bc5",
-   "t": "ou5",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e68",
-   "s": "bc6",
-   "t": "ou1",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e69",
-   "s": "bc6",
-   "t": "ou4",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e70",
-   "s": "bc7",
-   "t": "app14",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e71",
-   "s": "bc7",
-   "t": "ou8",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e72",
-   "s": "bc8",
-   "t": "app15",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e73",
-   "s": "bc8",
-   "t": "ou4",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e74",
-   "s": "bc9",
-   "t": "app16",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e75",
-   "s": "bc9",
-   "t": "app17",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e76",
-   "s": "bc10",
-   "t": "app5",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e77",
-   "s": "bc10",
-   "t": "app7",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e78",
-   "s": "bc10",
-   "t": "app6",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e79",
-   "s": "bc10",
-   "t": "app8",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e80",
-   "s": "bc10",
-   "t": "ou2",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e81",
-   "s": "bc11",
-   "t": "app18",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e82",
-   "s": "bc11",
-   "t": "ou6",
-   "r": "Is Realized By"
-  },
-  {
-   "id": "e83",
-   "s": "am1",
-   "t": "app1",
-   "r": "Module Of"
-  },
-  {
-   "id": "e84",
-   "s": "app17",
-   "t": "if1",
-   "r": "Connects To"
-  },
-  {
-   "id": "e85",
-   "s": "if1",
-   "t": "app1",
-   "r": "Connects To"
-  },
-  {
-   "id": "e86",
-   "s": "if1",
-   "t": "app15",
-   "r": "Connects To"
-  },
-  {
-   "id": "e87",
-   "s": "if1",
-   "t": "app14",
-   "r": "Connects To"
-  },
-  {
-   "id": "e88",
-   "s": "ds1",
-   "t": "app15",
-   "r": "Module Of"
-  },
-  {
-   "id": "e89",
-   "s": "app1",
-   "t": "srv1",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e90",
-   "s": "app1",
-   "t": "srv2",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e91",
-   "s": "app14",
-   "t": "srv1",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e92",
-   "s": "app14",
-   "t": "srv2",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e93",
-   "s": "app7",
-   "t": "srv1",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e94",
-   "s": "app7",
-   "t": "srv3",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e95",
-   "s": "app14",
-   "t": "srv3",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e96",
-   "s": "app5",
-   "t": "srv1",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e97",
-   "s": "app5",
-   "t": "srv2",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e98",
-   "s": "app9",
-   "t": "srv1",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e99",
-   "s": "app12",
-   "t": "srv2",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e100",
-   "s": "app6",
-   "t": "srv2",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e101",
-   "s": "app6",
-   "t": "ts1",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e102",
-   "s": "ds1",
-   "t": "srv1",
-   "r": "Is Supported By"
-  },
-  {
-   "id": "e103",
-   "s": "srv1",
-   "t": "loc1",
-   "r": "Is Located At"
-  },
-  {
-   "id": "e104",
-   "s": "srv2",
-   "t": "loc2",
-   "r": "Is Located At"
-  },
-  {
-   "id": "e105",
-   "s": "srv3",
-   "t": "loc3",
-   "r": "Is Located At"
-  },
-  {
-   "id": "e106",
-   "s": "srv4",
-   "t": "loc4",
-   "r": "Is Located At"
-  },
-  {
-   "id": "e107",
-   "s": "srv5",
-   "t": "loc5",
-   "r": "Is Located At"
-  },
-  {
-   "id": "e108",
-   "s": "ts2",
-   "t": "loc2",
-   "r": "Is Located At"
-  },
-  {
-   "id": "e109",
-   "s": "tp1",
-   "t": "srv1",
-   "r": "Deploys To"
-  },
-  {
-   "id": "e110",
-   "s": "tp1",
-   "t": "srv2",
-   "r": "Deploys To"
-  },
-  {
-   "id": "e111",
-   "s": "tp1",
-   "t": "srv3",
-   "r": "Deploys To"
-  },
-  {
-   "id": "e112",
-   "s": "tp2",
-   "t": "srv1",
-   "r": "Deploys To"
-  },
-  {
-   "id": "e113",
-   "s": "tp3",
-   "t": "srv1",
-   "r": "Deploys To"
-  },
-  {
-   "id": "e114",
-   "s": "tp3",
-   "t": "ds1",
-   "r": "Deploys To"
-  },
-  {
-   "id": "e115",
-   "s": "app3",
-   "t": "app2",
-   "r": "Has Successor"
-  }
- ]
+  "nodes": [
+    {
+      "id": "org1",
+      "label": "Zoho Corporation",
+      "type": "Organization",
+      "f": {
+        "Name": "Zoho Corporation",
+        "Founded": "1996 (as AdventNet)",
+        "Headquarters": "Chennai, India",
+        "US HQ": "Austin, Texas",
+        "Employees": "17,856 (2025)",
+        "Revenue": "~USD 1B+ (private)",
+        "CEO": "Shailesh Kumar Davey",
+        "Model": "100% bootstrapped, private"
+      }
+    },
+    {
+      "id": "ou1",
+      "label": "CRM & Sales Products",
+      "type": "Org Unit",
+      "f": {
+        "Name": "CRM & Sales Products Group",
+        "Description": "Builds Zoho CRM, SalesIQ, Bigin, Campaigns, Social",
+        "Location": "Chennai, India"
+      }
+    },
+    {
+      "id": "ou2",
+      "label": "Collaboration Products",
+      "type": "Org Unit",
+      "f": {
+        "Name": "Collaboration Products Group",
+        "Description": "Builds Zoho Cliq, WorkDrive, Mail, Projects, Meeting",
+        "Location": "Chennai, India"
+      }
+    },
+    {
+      "id": "ou3",
+      "label": "Finance Products",
+      "type": "Org Unit",
+      "f": {
+        "Name": "Finance Products Group",
+        "Description": "Builds Zoho Books, Expense, Invoice, Payroll, ERP",
+        "Location": "Chennai, India"
+      }
+    },
+    {
+      "id": "ou4",
+      "label": "Analytics & Platform",
+      "type": "Org Unit",
+      "f": {
+        "Name": "Analytics & Platform Group",
+        "Description": "Builds Zoho Analytics, Creator, Flow, Catalyst",
+        "Location": "Chennai, India"
+      }
+    },
+    {
+      "id": "ou5",
+      "label": "HR & IT Products",
+      "type": "Org Unit",
+      "f": {
+        "Name": "HR & IT Products Group",
+        "Description": "Builds Zoho People, Recruit, Desk, ServiceDesk Plus",
+        "Location": "Chennai + Tenkasi, India"
+      }
+    },
+    {
+      "id": "ou6",
+      "label": "AI Research (Zia)",
+      "type": "Org Unit",
+      "f": {
+        "Name": "Zia AI Research Group",
+        "Description": "Develops Zia LLM and AI capabilities across all Zoho products",
+        "Location": "Chennai R&D Campus"
+      }
+    },
+    {
+      "id": "ou7",
+      "label": "Global Sales & Revenue",
+      "type": "Org Unit",
+      "f": {
+        "Name": "Global Sales & Revenue",
+        "Description": "Global sales, partnerships, channel management",
+        "Location": "Multiple — Austin, Chennai, Dublin, Dubai"
+      }
+    },
+    {
+      "id": "ou8",
+      "label": "Customer Success",
+      "type": "Org Unit",
+      "f": {
+        "Name": "Customer Success & Support",
+        "Description": "Customer onboarding, health, retention, global support",
+        "Location": "Chennai, Austin, London"
+      }
+    },
+    {
+      "id": "ou9",
+      "label": "People Operations",
+      "type": "Org Unit",
+      "f": {
+        "Name": "People Operations (HR)",
+        "Description": "Internal HR, talent acquisition, learning and payroll",
+        "Location": "Chennai HQ"
+      }
+    },
+    {
+      "id": "ou10",
+      "label": "Finance & Corporate Ops",
+      "type": "Org Unit",
+      "f": {
+        "Name": "Finance & Corporate Operations",
+        "Description": "Internal finance, legal, compliance, procurement",
+        "Location": "Chennai HQ"
+      }
+    },
+    {
+      "id": "ou11",
+      "label": "IT Infrastructure",
+      "type": "Org Unit",
+      "f": {
+        "Name": "IT Infrastructure & Security",
+        "Description": "Data centre operations, network, cybersecurity, compliance",
+        "Location": "Chennai, Austin, Amsterdam, Sydney, London"
+      }
+    },
+    {
+      "id": "p1",
+      "label": "Shailesh Kumar Davey",
+      "type": "Person",
+      "f": {
+        "Name": "Shailesh Kumar Davey",
+        "Role": "Group CEO (since Jan 2025)",
+        "Contact Email": "ceo@zoho.com",
+        "Status": "Co-founder, succeeded Sridhar Vembu as CEO"
+      }
+    },
+    {
+      "id": "p2",
+      "label": "Sridhar Vembu",
+      "type": "Person",
+      "f": {
+        "Name": "Sridhar Vembu",
+        "Role": "Chief Scientist (formerly CEO)",
+        "Contact Email": "sridhar@zoho.com",
+        "Status": "Co-founder. Transitioned from CEO to R&D focus Jan 2025"
+      }
+    },
+    {
+      "id": "p3",
+      "label": "Vamsi Krishna",
+      "type": "Person",
+      "f": {
+        "Name": "Vamsi Krishna",
+        "Role": "CEO (Operations)",
+        "Contact Email": "vamsi@zoho.com",
+        "Status": "Oversees day-to-day global operations"
+      }
+    },
+    {
+      "id": "p4",
+      "label": "Luke Xia",
+      "type": "Person",
+      "f": {
+        "Name": "Luke Xia",
+        "Role": "Chief Operating Officer",
+        "Contact Email": "luke.xia@zoho.com",
+        "Status": "Oversees global operations and delivery"
+      }
+    },
+    {
+      "id": "p5",
+      "label": "Sridhar Iyengar",
+      "type": "Person",
+      "f": {
+        "Name": "Sridhar Iyengar",
+        "Role": "VP & Head of Europe",
+        "Contact Email": "sridhar.iyengar@zoho.com",
+        "Status": "Leads European expansion, EMEA operations"
+      }
+    },
+    {
+      "id": "p6",
+      "label": "Bharath Sridhar",
+      "type": "Person",
+      "f": {
+        "Name": "Bharath Sridhar",
+        "Role": "CTO, Labs (VP R&D)",
+        "Contact Email": "bharath@zoho.com",
+        "Status": "Leads Zoho Labs — Zia AI and experimental engineering"
+      }
+    },
+    {
+      "id": "bc1",
+      "label": "Customer Relationship Mgmt",
+      "type": "Business Capability",
+      "f": {
+        "Name": "Customer Relationship Management",
+        "Maturity": "5 — Measured",
+        "Market Diff": "5 — Market-disruptive",
+        "Lifecycle Phase": "Live",
+        "Component Level": "1 (calc)",
+        "Complexity": "8 (calc)",
+        "Note": "Core market differentiator. Zoho CRM competes directly with Salesforce."
+      }
+    },
+    {
+      "id": "bc2",
+      "label": "Marketing Automation",
+      "type": "Business Capability",
+      "f": {
+        "Name": "Marketing Automation & Lead Generation",
+        "Maturity": "4 — Managed",
+        "Market Diff": "4 — Market-leading",
+        "Lifecycle Phase": "Live",
+        "Component Level": "1 (calc)",
+        "Complexity": "6 (calc)"
+      }
+    },
+    {
+      "id": "bc3",
+      "label": "Financial Management",
+      "type": "Business Capability",
+      "f": {
+        "Name": "Financial Management & Accounting",
+        "Maturity": "4 — Managed",
+        "Market Diff": "3 — Market-competitive",
+        "Lifecycle Phase": "Live",
+        "Component Level": "1 (calc)",
+        "Complexity": "5 (calc)"
+      }
+    },
+    {
+      "id": "bc4",
+      "label": "Human Capital Management",
+      "type": "Business Capability",
+      "f": {
+        "Name": "Human Capital Management",
+        "Maturity": "3 — Defined",
+        "Market Diff": "3 — Market-competitive",
+        "Lifecycle Phase": "Live",
+        "Component Level": "1 (calc)",
+        "Complexity": "4 (calc)"
+      }
+    },
+    {
+      "id": "bc5",
+      "label": "IT Service Management",
+      "type": "Business Capability",
+      "f": {
+        "Name": "IT Service Management (ITSM)",
+        "Maturity": "4 — Managed",
+        "Market Diff": "4 — Market-leading",
+        "Lifecycle Phase": "Live",
+        "Component Level": "1 (calc)",
+        "Complexity": "4 (calc)"
+      }
+    },
+    {
+      "id": "bc6",
+      "label": "Product Engineering & R&D",
+      "type": "Business Capability",
+      "f": {
+        "Name": "Product Engineering & R&D",
+        "Maturity": "5 — Measured",
+        "Market Diff": "5 — Market-disruptive",
+        "Lifecycle Phase": "Live",
+        "Component Level": "1 (calc)",
+        "Complexity": "12 (calc)",
+        "Note": "Zoho builds 100% of its products in-house. No third-party acquisitions."
+      }
+    },
+    {
+      "id": "bc7",
+      "label": "Customer Success & Support",
+      "type": "Business Capability",
+      "f": {
+        "Name": "Customer Success & Support",
+        "Maturity": "4 — Managed",
+        "Market Diff": "3 — Market-competitive",
+        "Lifecycle Phase": "Live",
+        "Component Level": "1 (calc)",
+        "Complexity": "5 (calc)"
+      }
+    },
+    {
+      "id": "bc8",
+      "label": "Business Intelligence & BI",
+      "type": "Business Capability",
+      "f": {
+        "Name": "Business Intelligence & Analytics",
+        "Maturity": "4 — Managed",
+        "Market Diff": "4 — Market-leading",
+        "Lifecycle Phase": "Live",
+        "Component Level": "1 (calc)",
+        "Complexity": "4 (calc)"
+      }
+    },
+    {
+      "id": "bc9",
+      "label": "Platform Integration",
+      "type": "Business Capability",
+      "f": {
+        "Name": "Platform Integration & Automation",
+        "Maturity": "4 — Managed",
+        "Market Diff": "4 — Market-leading",
+        "Lifecycle Phase": "Live",
+        "Component Level": "1 (calc)",
+        "Complexity": "6 (calc)"
+      }
+    },
+    {
+      "id": "bc10",
+      "label": "Collaboration & Productivity",
+      "type": "Business Capability",
+      "f": {
+        "Name": "Collaboration & Productivity",
+        "Maturity": "4 — Managed",
+        "Market Diff": "3 — Market-competitive",
+        "Lifecycle Phase": "Live",
+        "Component Level": "1 (calc)",
+        "Complexity": "7 (calc)",
+        "Note": "Zoho Workplace deployed for 1.2M Indian govt employees (2025)."
+      }
+    },
+    {
+      "id": "bc11",
+      "label": "AI & Machine Learning",
+      "type": "Business Capability",
+      "f": {
+        "Name": "AI & Machine Learning (Zia)",
+        "Maturity": "3 — Defined",
+        "Market Diff": "4 — Market-leading",
+        "Lifecycle Phase": "Live",
+        "Component Level": "1 (calc)",
+        "Complexity": "3 (calc)",
+        "Note": "Zia LLM launched 2025. Embedded across all Zoho One products."
+      }
+    },
+    {
+      "id": "app1",
+      "label": "Zoho CRM",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho CRM",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Mission Critical",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.9 (calc)",
+        "Technical Fit": "4.7 (calc)",
+        "Criticality": "5 — Mission Critical",
+        "Ownership State": "Managed (calc)",
+        "Customers": "250,000+ businesses worldwide",
+        "Note": "Flagship product. Competes with Salesforce CRM."
+      }
+    },
+    {
+      "id": "app2",
+      "label": "Zoho SalesIQ",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho SalesIQ",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Critical",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.3 (calc)",
+        "Technical Fit": "4.1 (calc)",
+        "Criticality": "4 — Business Critical",
+        "Ownership State": "Managed (calc)",
+        "Note": "Live chat, bot builder, visitor intelligence."
+      }
+    },
+    {
+      "id": "app3",
+      "label": "Zoho Campaigns",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho Campaigns",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Operational",
+        "Strategic Rating": "Tolerate (calc)",
+        "Business Value": "3.8 (calc)",
+        "Technical Fit": "3.2 (calc)",
+        "Criticality": "3 — Business Operational",
+        "Ownership State": "Managed (calc)",
+        "Note": "Email marketing. UI refresh planned. Competitor: Mailchimp, HubSpot."
+      }
+    },
+    {
+      "id": "app4",
+      "label": "Zoho Social",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho Social",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Operational",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.0 (calc)",
+        "Technical Fit": "4.0 (calc)",
+        "Criticality": "3 — Business Operational",
+        "Ownership State": "Managed (calc)"
+      }
+    },
+    {
+      "id": "app5",
+      "label": "Zoho Cliq",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho Cliq",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Critical",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.5 (calc)",
+        "Technical Fit": "4.3 (calc)",
+        "Criticality": "4 — Business Critical",
+        "Ownership State": "Managed (calc)",
+        "Note": "Team messaging. Internal primary comms tool across all Zoho divisions."
+      }
+    },
+    {
+      "id": "app6",
+      "label": "Zoho WorkDrive",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho WorkDrive",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Critical",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.4 (calc)",
+        "Technical Fit": "4.2 (calc)",
+        "Criticality": "4 — Business Critical",
+        "Ownership State": "Managed (calc)",
+        "Note": "Cloud document storage. Feb 2026 security incident noted (WorkDrive backdoor)."
+      }
+    },
+    {
+      "id": "app7",
+      "label": "Zoho Mail",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho Mail",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Mission Critical",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.6 (calc)",
+        "Technical Fit": "4.4 (calc)",
+        "Criticality": "5 — Mission Critical",
+        "Ownership State": "Managed (calc)",
+        "Note": "1.2M Indian central government accounts migrated to Zoho Mail (2025)."
+      }
+    },
+    {
+      "id": "app8",
+      "label": "Zoho Projects",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho Projects",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Operational",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.2 (calc)",
+        "Technical Fit": "4.0 (calc)",
+        "Criticality": "3 — Business Operational",
+        "Ownership State": "Managed (calc)"
+      }
+    },
+    {
+      "id": "app9",
+      "label": "Zoho Books",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho Books",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Critical",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.6 (calc)",
+        "Technical Fit": "4.4 (calc)",
+        "Criticality": "4 — Business Critical",
+        "Ownership State": "Managed (calc)",
+        "Note": "Cloud accounting. Used internally for Zoho corporate finance."
+      }
+    },
+    {
+      "id": "app10",
+      "label": "Zoho Expense",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho Expense",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Operational",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.1 (calc)",
+        "Technical Fit": "4.0 (calc)",
+        "Criticality": "3 — Business Operational",
+        "Ownership State": "Managed (calc)"
+      }
+    },
+    {
+      "id": "app11",
+      "label": "Zoho ERP",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho ERP",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Implementing",
+        "Service Level": "TBD — Not Yet Live",
+        "Strategic Rating": "Invest (planned)",
+        "Business Value": "4.8 (projected)",
+        "Technical Fit": "3.5 (early build)",
+        "Criticality": "TBD",
+        "Ownership State": "Nominated (calc)",
+        "Note": "Launched Jan 2026. Built in Kumbakonam, Tamil Nadu. ERP for mid-market."
+      }
+    },
+    {
+      "id": "app12",
+      "label": "Zoho People",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho People",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Critical",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.3 (calc)",
+        "Technical Fit": "4.2 (calc)",
+        "Criticality": "4 — Business Critical",
+        "Ownership State": "Managed (calc)",
+        "Note": "HRMS. Used internally to manage Zoho's own 17,856 employees."
+      }
+    },
+    {
+      "id": "app13",
+      "label": "Zoho Recruit",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho Recruit",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Operational",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.0 (calc)",
+        "Technical Fit": "3.9 (calc)",
+        "Criticality": "3 — Business Operational",
+        "Ownership State": "Managed (calc)"
+      }
+    },
+    {
+      "id": "app14",
+      "label": "Zoho Desk",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho Desk",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Mission Critical",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.7 (calc)",
+        "Technical Fit": "4.5 (calc)",
+        "Criticality": "5 — Mission Critical",
+        "Ownership State": "Managed (calc)",
+        "Note": "Helpdesk. Built in Tenkasi office. Used for all customer support."
+      }
+    },
+    {
+      "id": "app15",
+      "label": "Zoho Analytics",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho Analytics",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Critical",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.8 (calc)",
+        "Technical Fit": "4.5 (calc)",
+        "Criticality": "4 — Business Critical",
+        "Ownership State": "Managed (calc)",
+        "Note": "BI platform. Connects natively to all 40+ Zoho One apps."
+      }
+    },
+    {
+      "id": "app16",
+      "label": "Zoho Creator",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho Creator",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Critical",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.6 (calc)",
+        "Technical Fit": "4.7 (calc)",
+        "Criticality": "4 — Business Critical",
+        "Ownership State": "Managed (calc)",
+        "Note": "Low-code platform. Powers custom internal apps and customer-facing apps."
+      }
+    },
+    {
+      "id": "app17",
+      "label": "Zoho Flow",
+      "type": "Application",
+      "f": {
+        "Name": "Zoho Flow",
+        "App Type": "SaaS — Own Product",
+        "Lifecycle Phase": "Live",
+        "Service Level": "Business Critical",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.7 (calc)",
+        "Technical Fit": "4.5 (calc)",
+        "Criticality": "4 — Business Critical",
+        "Ownership State": "Managed (calc)",
+        "Note": "Integration automation. 700+ connectors. Zoho One integration backbone."
+      }
+    },
+    {
+      "id": "app18",
+      "label": "Zia LLM",
+      "type": "Application",
+      "f": {
+        "Name": "Zia — Zoho AI Platform",
+        "App Type": "SaaS — Own Build",
+        "Lifecycle Phase": "Implementing",
+        "Service Level": "Business Critical",
+        "Strategic Rating": "Invest (calc)",
+        "Business Value": "4.9 (projected)",
+        "Technical Fit": "3.8 (early)",
+        "Criticality": "4 — Business Critical",
+        "Ownership State": "Managed (calc)",
+        "Note": "Zoho large language model launched 2025. Embedding AI across all products."
+      }
+    },
+    {
+      "id": "am1",
+      "label": "Zoho CRM — Deals Pipeline",
+      "type": "App Module",
+      "f": {
+        "Name": "Deals Pipeline Module",
+        "Lifecycle Phase": "Live",
+        "Description": "Core sales pipeline management within Zoho CRM",
+        "Parent": "Zoho CRM"
+      }
+    },
+    {
+      "id": "if1",
+      "label": "Zoho One API Gateway",
+      "type": "Interface",
+      "f": {
+        "Name": "Zoho One Unified API Gateway",
+        "Protocol": "REST/GraphQL",
+        "Request Type": "Read/Write",
+        "Lifecycle Phase": "Live",
+        "Description": "Central API gateway connecting all Zoho One products"
+      }
+    },
+    {
+      "id": "ds1",
+      "label": "Zoho Analytics Data Lake",
+      "type": "Data Store",
+      "f": {
+        "Name": "Zoho Analytics Data Lake",
+        "Lifecycle Phase": "Live",
+        "Description": "Centralised data warehouse feeding all BI reports across Zoho One suite"
+      }
+    },
+    {
+      "id": "srv1",
+      "label": "Zoho DC — Chennai (Primary)",
+      "type": "Server",
+      "f": {
+        "Name": "Zoho Data Centre — Chennai",
+        "Server Hosting": "Physical + VM",
+        "Server Type": "Primary Production DC",
+        "Network Zone": "Private",
+        "Deploy Env": "Production",
+        "Lifecycle Phase": "Live",
+        "Note": "Main DC. Hosts majority of production workloads."
+      }
+    },
+    {
+      "id": "srv2",
+      "label": "Zoho DC — US East (Austin)",
+      "type": "Server",
+      "f": {
+        "Name": "Zoho Data Centre — Austin, Texas",
+        "Server Hosting": "Physical + VM",
+        "Server Type": "Regional Production DC",
+        "Network Zone": "Private",
+        "Deploy Env": "Production",
+        "Lifecycle Phase": "Live"
+      }
+    },
+    {
+      "id": "srv3",
+      "label": "Zoho DC — EU (Amsterdam)",
+      "type": "Server",
+      "f": {
+        "Name": "Zoho Data Centre — Amsterdam, Netherlands",
+        "Server Hosting": "Physical + VM",
+        "Server Type": "EU Regional DC",
+        "Network Zone": "Private",
+        "Deploy Env": "Production",
+        "Lifecycle Phase": "Live",
+        "Note": "EU data residency for GDPR compliance."
+      }
+    },
+    {
+      "id": "srv4",
+      "label": "Zoho DC — AU (Sydney)",
+      "type": "Server",
+      "f": {
+        "Name": "Zoho Data Centre — Sydney, Australia",
+        "Server Hosting": "Physical + VM",
+        "Server Type": "APAC Regional DC",
+        "Network Zone": "Private",
+        "Deploy Env": "Production",
+        "Lifecycle Phase": "Live"
+      }
+    },
+    {
+      "id": "srv5",
+      "label": "Zoho DC — UK (London)",
+      "type": "Server",
+      "f": {
+        "Name": "Zoho Data Centre — London, UK",
+        "Server Hosting": "Physical + VM",
+        "Server Type": "UK Regional DC",
+        "Network Zone": "Private",
+        "Deploy Env": "Implementing",
+        "Lifecycle Phase": "Implementing",
+        "Note": "New UK DC announced April 2026. Digital sovereignty positioning."
+      }
+    },
+    {
+      "id": "ts1",
+      "label": "Cloudflare CDN",
+      "type": "Tech Service",
+      "f": {
+        "Name": "Cloudflare CDN",
+        "Server Hosting": "Cloud — Global",
+        "Deploy Env": "Production",
+        "Lifecycle Phase": "Live",
+        "Description": "Global CDN for all Zoho web properties and app delivery"
+      }
+    },
+    {
+      "id": "ts2",
+      "label": "AWS S3 — Backup",
+      "type": "Tech Service",
+      "f": {
+        "Name": "AWS S3 — Backup Storage",
+        "Server Hosting": "Cloud — AWS",
+        "Deploy Env": "Production",
+        "Lifecycle Phase": "Live",
+        "Description": "Amazon S3 used for off-site backup and archival storage"
+      }
+    },
+    {
+      "id": "tp1",
+      "label": "Linux (Ubuntu LTS)",
+      "type": "Tech Product",
+      "f": {
+        "Name": "Linux — Ubuntu LTS",
+        "Vendor": "Canonical",
+        "Version": "22.04 LTS",
+        "Lifecycle Phase": "Live",
+        "Description": "Base OS across all Zoho data centres"
+      }
+    },
+    {
+      "id": "tp2",
+      "label": "Kubernetes (k8s)",
+      "type": "Tech Product",
+      "f": {
+        "Name": "Kubernetes",
+        "Vendor": "CNCF",
+        "Version": "1.28+",
+        "Lifecycle Phase": "Live",
+        "Description": "Container orchestration for microservices across Zoho products"
+      }
+    },
+    {
+      "id": "tp3",
+      "label": "PostgreSQL",
+      "type": "Tech Product",
+      "f": {
+        "Name": "PostgreSQL",
+        "Vendor": "Open Source",
+        "Version": "15+",
+        "Lifecycle Phase": "Live",
+        "Description": "Primary relational database for multiple Zoho products"
+      }
+    },
+    {
+      "id": "loc1",
+      "label": "Chennai, India (HQ)",
+      "type": "Location",
+      "f": {
+        "Name": "Chennai, India — Global HQ",
+        "Address": "Estancia IT Park, Chennai, Tamil Nadu",
+        "Type": "Global Headquarters & Primary Engineering Campus"
+      }
+    },
+    {
+      "id": "loc2",
+      "label": "Austin, Texas, USA",
+      "type": "Location",
+      "f": {
+        "Name": "Austin, Texas — US HQ",
+        "Address": "Del Valle, Austin, Texas (moved from Pleasanton CA in 2019)",
+        "Type": "US Headquarters"
+      }
+    },
+    {
+      "id": "loc3",
+      "label": "Amsterdam, Netherlands",
+      "type": "Location",
+      "f": {
+        "Name": "Amsterdam, Netherlands",
+        "Address": "Amsterdam, Netherlands",
+        "Type": "EU Headquarters & EU DC — GDPR data residency"
+      }
+    },
+    {
+      "id": "loc4",
+      "label": "Sydney, Australia",
+      "type": "Location",
+      "f": {
+        "Name": "Sydney, Australia",
+        "Address": "Sydney, New South Wales",
+        "Type": "APAC Regional Office & Data Centre"
+      }
+    },
+    {
+      "id": "loc5",
+      "label": "London, UK",
+      "type": "Location",
+      "f": {
+        "Name": "London, United Kingdom",
+        "Address": "London, UK",
+        "Type": "UK Office & New Data Centre (April 2026)"
+      }
+    },
+    {
+      "id": "obj1",
+      "label": "Accelerate AI-Native Product Experience",
+      "type": "Objective",
+      "f": {
+        "Name": "Accelerate AI-Native Product Experience",
+        "Description": "Embed Zia AI across the suite to be the default AI-native SaaS platform.",
+        "Owner": "Sridhar Vembu",
+        "Horizon": "FY26"
+      }
+    },
+    {
+      "id": "obj2",
+      "label": "Improve Customer Retention & Support Efficiency",
+      "type": "Objective",
+      "f": {
+        "Name": "Improve Customer Retention & Support Efficiency",
+        "Description": "Raise CSAT and reduce support resolution time across products.",
+        "Owner": "Bharath Sridhar",
+        "Horizon": "FY26"
+      }
+    },
+    {
+      "id": "obj3",
+      "label": "Strengthen Financial Governance & Compliance",
+      "type": "Objective",
+      "f": {
+        "Name": "Strengthen Financial Governance & Compliance",
+        "Description": "Harden SOX/GDPR posture across finance and customer-data applications.",
+        "Owner": "Sridhar Iyengar",
+        "Horizon": "FY26"
+      }
+    },
+    {
+      "id": "obj4",
+      "label": "Unify Data & Analytics Platform",
+      "type": "Objective",
+      "f": {
+        "Name": "Unify Data & Analytics Platform",
+        "Description": "Consolidate analytics and integration surfaces into one coherent data platform.",
+        "Owner": "Vamsi Krishna",
+        "Horizon": "FY27"
+      }
+    },
+    {
+      "id": "kpi1",
+      "label": "Zia Assistant Adoption Rate",
+      "type": "KPI",
+      "f": {
+        "Name": "Zia Assistant Adoption Rate",
+        "Target": "60% MAU",
+        "Current": "34%"
+      }
+    },
+    {
+      "id": "kpi2",
+      "label": "Customer Support CSAT Score",
+      "type": "KPI",
+      "f": {
+        "Name": "Customer Support CSAT Score",
+        "Target": "4.6 / 5",
+        "Current": "4.2 / 5"
+      }
+    },
+    {
+      "id": "kpi3",
+      "label": "SOX Audit Findings Closure Rate",
+      "type": "KPI",
+      "f": {
+        "Name": "SOX Audit Findings Closure Rate",
+        "Target": "100% within 30 days",
+        "Current": "78%"
+      }
+    },
+    {
+      "id": "kpi4",
+      "label": "Cross-App Data Sync Latency",
+      "type": "KPI",
+      "f": {
+        "Name": "Cross-App Data Sync Latency",
+        "Target": "< 5 min",
+        "Current": "22 min"
+      }
+    },
+    {
+      "id": "init1",
+      "label": "Zia LLM Platform Expansion",
+      "type": "Initiative",
+      "f": {
+        "Name": "Zia LLM Platform Expansion",
+        "Status": "In Progress",
+        "Sponsor": "Sridhar Vembu"
+      }
+    },
+    {
+      "id": "init2",
+      "label": "Zoho Desk AI Copilot Rollout",
+      "type": "Initiative",
+      "f": {
+        "Name": "Zoho Desk AI Copilot Rollout",
+        "Status": "In Progress",
+        "Sponsor": "Shailesh Kumar Davey"
+      }
+    },
+    {
+      "id": "init3",
+      "label": "SOX & GDPR Compliance Hardening",
+      "type": "Initiative",
+      "f": {
+        "Name": "SOX & GDPR Compliance Hardening",
+        "Status": "Planned",
+        "Sponsor": "Sridhar Iyengar"
+      }
+    },
+    {
+      "id": "init4",
+      "label": "Analytics Data Lake Consolidation",
+      "type": "Initiative",
+      "f": {
+        "Name": "Analytics Data Lake Consolidation",
+        "Status": "In Progress",
+        "Sponsor": "Bharath Sridhar"
+      }
+    },
+    {
+      "id": "risk1",
+      "label": "Legacy ERP Single Point of Failure",
+      "type": "Risk",
+      "f": {
+        "Name": "Legacy ERP Single Point of Failure",
+        "Severity": "High",
+        "Likelihood": "Medium"
+      }
+    },
+    {
+      "id": "risk2",
+      "label": "Third-Party LLM Data Leakage Risk",
+      "type": "Risk",
+      "f": {
+        "Name": "Third-Party LLM Data Leakage Risk",
+        "Severity": "High",
+        "Likelihood": "Medium"
+      }
+    },
+    {
+      "id": "risk3",
+      "label": "Customer Data Residency Non-Compliance",
+      "type": "Risk",
+      "f": {
+        "Name": "Customer Data Residency Non-Compliance",
+        "Severity": "Critical",
+        "Likelihood": "Low"
+      }
+    },
+    {
+      "id": "risk4",
+      "label": "Analytics Pipeline Data Quality Drift",
+      "type": "Risk",
+      "f": {
+        "Name": "Analytics Pipeline Data Quality Drift",
+        "Severity": "Medium",
+        "Likelihood": "High"
+      }
+    },
+    {
+      "id": "comp1",
+      "label": "GDPR",
+      "type": "Compliance",
+      "f": {
+        "Name": "GDPR",
+        "Region": "EU",
+        "Description": "General Data Protection Regulation."
+      }
+    },
+    {
+      "id": "comp2",
+      "label": "SOX",
+      "type": "Compliance",
+      "f": {
+        "Name": "SOX",
+        "Region": "US",
+        "Description": "Sarbanes-Oxley financial controls."
+      }
+    },
+    {
+      "id": "comp3",
+      "label": "ISO 27001",
+      "type": "Compliance",
+      "f": {
+        "Name": "ISO 27001",
+        "Region": "Global",
+        "Description": "Information security management standard."
+      }
+    },
+    {
+      "id": "strat1",
+      "label": "AI-First Product Strategy",
+      "type": "Strategy",
+      "f": {
+        "Name": "AI-First Product Strategy",
+        "Horizon": "FY26-FY28"
+      }
+    },
+    {
+      "id": "strat2",
+      "label": "Trust & Compliance Strategy",
+      "type": "Strategy",
+      "f": {
+        "Name": "Trust & Compliance Strategy",
+        "Horizon": "FY26-FY27"
+      }
+    },
+    {
+      "id": "strat3",
+      "label": "Unified Platform Strategy",
+      "type": "Strategy",
+      "f": {
+        "Name": "Unified Platform Strategy",
+        "Horizon": "FY27-FY28"
+      }
+    },
+    {
+      "id": "epic1",
+      "label": "Embed Zia Copilot Across Suite",
+      "type": "Epic",
+      "f": {
+        "Name": "Embed Zia Copilot Across Suite",
+        "Status": "In Progress"
+      }
+    },
+    {
+      "id": "epic2",
+      "label": "Automate SOX Evidence Collection",
+      "type": "Epic",
+      "f": {
+        "Name": "Automate SOX Evidence Collection",
+        "Status": "Planned"
+      }
+    },
+    {
+      "id": "epic3",
+      "label": "Single Sign-On & Data Residency Controls",
+      "type": "Epic",
+      "f": {
+        "Name": "Single Sign-On & Data Residency Controls",
+        "Status": "In Progress"
+      }
+    },
+    {
+      "id": "epic4",
+      "label": "Cross-Product Data Lake API",
+      "type": "Epic",
+      "f": {
+        "Name": "Cross-Product Data Lake API",
+        "Status": "Planned"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "s": "p1",
+      "t": "ou7",
+      "r": "Owns"
+    },
+    {
+      "id": "e2",
+      "s": "p1",
+      "t": "app1",
+      "r": "Owns"
+    },
+    {
+      "id": "e3",
+      "s": "p2",
+      "t": "ou6",
+      "r": "Owns"
+    },
+    {
+      "id": "e4",
+      "s": "p2",
+      "t": "app18",
+      "r": "Owns"
+    },
+    {
+      "id": "e5",
+      "s": "p3",
+      "t": "ou1",
+      "r": "Owns"
+    },
+    {
+      "id": "e6",
+      "s": "p6",
+      "t": "ou4",
+      "r": "Owns"
+    },
+    {
+      "id": "e7",
+      "s": "p6",
+      "t": "app15",
+      "r": "Owns"
+    },
+    {
+      "id": "e8",
+      "s": "p6",
+      "t": "app16",
+      "r": "Owns"
+    },
+    {
+      "id": "e9",
+      "s": "p4",
+      "t": "ou11",
+      "r": "Owns"
+    },
+    {
+      "id": "e10",
+      "s": "p5",
+      "t": "ou8",
+      "r": "Owns"
+    },
+    {
+      "id": "e11",
+      "s": "p2",
+      "t": "bc1",
+      "r": "Is Expert In"
+    },
+    {
+      "id": "e12",
+      "s": "p2",
+      "t": "bc6",
+      "r": "Is Expert In"
+    },
+    {
+      "id": "e13",
+      "s": "p2",
+      "t": "bc11",
+      "r": "Is Expert In"
+    },
+    {
+      "id": "e14",
+      "s": "p6",
+      "t": "bc8",
+      "r": "Is Expert In"
+    },
+    {
+      "id": "e15",
+      "s": "p6",
+      "t": "bc9",
+      "r": "Is Expert In"
+    },
+    {
+      "id": "e16",
+      "s": "p5",
+      "t": "bc10",
+      "r": "Is Expert In"
+    },
+    {
+      "id": "e17",
+      "s": "p3",
+      "t": "bc1",
+      "r": "Is Expert In"
+    },
+    {
+      "id": "e18",
+      "s": "p2",
+      "t": "p1",
+      "r": "Reports To"
+    },
+    {
+      "id": "e19",
+      "s": "p3",
+      "t": "p1",
+      "r": "Reports To"
+    },
+    {
+      "id": "e20",
+      "s": "p4",
+      "t": "p1",
+      "r": "Reports To"
+    },
+    {
+      "id": "e21",
+      "s": "p5",
+      "t": "p1",
+      "r": "Reports To"
+    },
+    {
+      "id": "e22",
+      "s": "p6",
+      "t": "p3",
+      "r": "Reports To"
+    },
+    {
+      "id": "e23",
+      "s": "p1",
+      "t": "ou7",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e24",
+      "s": "p2",
+      "t": "ou6",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e25",
+      "s": "p3",
+      "t": "ou1",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e26",
+      "s": "p4",
+      "t": "ou11",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e27",
+      "s": "p5",
+      "t": "ou8",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e28",
+      "s": "p6",
+      "t": "ou4",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e29",
+      "s": "ou1",
+      "t": "org1",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e30",
+      "s": "ou2",
+      "t": "org1",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e31",
+      "s": "ou3",
+      "t": "org1",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e32",
+      "s": "ou4",
+      "t": "org1",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e33",
+      "s": "ou5",
+      "t": "org1",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e34",
+      "s": "ou6",
+      "t": "org1",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e35",
+      "s": "ou7",
+      "t": "org1",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e36",
+      "s": "ou8",
+      "t": "org1",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e37",
+      "s": "ou9",
+      "t": "org1",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e38",
+      "s": "ou10",
+      "t": "org1",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e39",
+      "s": "ou11",
+      "t": "org1",
+      "r": "Belongs To"
+    },
+    {
+      "id": "e40",
+      "s": "ou7",
+      "t": "app1",
+      "r": "Consumes"
+    },
+    {
+      "id": "e41",
+      "s": "ou7",
+      "t": "app2",
+      "r": "Consumes"
+    },
+    {
+      "id": "e42",
+      "s": "ou7",
+      "t": "app3",
+      "r": "Consumes"
+    },
+    {
+      "id": "e43",
+      "s": "ou10",
+      "t": "app9",
+      "r": "Consumes"
+    },
+    {
+      "id": "e44",
+      "s": "ou10",
+      "t": "app10",
+      "r": "Consumes"
+    },
+    {
+      "id": "e45",
+      "s": "ou9",
+      "t": "app12",
+      "r": "Consumes"
+    },
+    {
+      "id": "e46",
+      "s": "ou9",
+      "t": "app13",
+      "r": "Consumes"
+    },
+    {
+      "id": "e47",
+      "s": "ou8",
+      "t": "app14",
+      "r": "Consumes"
+    },
+    {
+      "id": "e48",
+      "s": "ou8",
+      "t": "app5",
+      "r": "Consumes"
+    },
+    {
+      "id": "e49",
+      "s": "ou1",
+      "t": "app1",
+      "r": "Consumes"
+    },
+    {
+      "id": "e50",
+      "s": "ou2",
+      "t": "app5",
+      "r": "Consumes"
+    },
+    {
+      "id": "e51",
+      "s": "ou2",
+      "t": "app6",
+      "r": "Consumes"
+    },
+    {
+      "id": "e52",
+      "s": "ou4",
+      "t": "app15",
+      "r": "Consumes"
+    },
+    {
+      "id": "e53",
+      "s": "ou11",
+      "t": "app17",
+      "r": "Consumes"
+    },
+    {
+      "id": "e54",
+      "s": "ou11",
+      "t": "app16",
+      "r": "Consumes"
+    },
+    {
+      "id": "e55",
+      "s": "bc1",
+      "t": "app1",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e56",
+      "s": "bc1",
+      "t": "ou1",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e57",
+      "s": "bc2",
+      "t": "app3",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e58",
+      "s": "bc2",
+      "t": "app2",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e59",
+      "s": "bc2",
+      "t": "app4",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e60",
+      "s": "bc3",
+      "t": "app9",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e61",
+      "s": "bc3",
+      "t": "app10",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e62",
+      "s": "bc3",
+      "t": "ou3",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e63",
+      "s": "bc4",
+      "t": "app12",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e64",
+      "s": "bc4",
+      "t": "app13",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e65",
+      "s": "bc4",
+      "t": "ou5",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e66",
+      "s": "bc5",
+      "t": "app14",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e67",
+      "s": "bc5",
+      "t": "ou5",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e68",
+      "s": "bc6",
+      "t": "ou1",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e69",
+      "s": "bc6",
+      "t": "ou4",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e70",
+      "s": "bc7",
+      "t": "app14",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e71",
+      "s": "bc7",
+      "t": "ou8",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e72",
+      "s": "bc8",
+      "t": "app15",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e73",
+      "s": "bc8",
+      "t": "ou4",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e74",
+      "s": "bc9",
+      "t": "app16",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e75",
+      "s": "bc9",
+      "t": "app17",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e76",
+      "s": "bc10",
+      "t": "app5",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e77",
+      "s": "bc10",
+      "t": "app7",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e78",
+      "s": "bc10",
+      "t": "app6",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e79",
+      "s": "bc10",
+      "t": "app8",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e80",
+      "s": "bc10",
+      "t": "ou2",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e81",
+      "s": "bc11",
+      "t": "app18",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e82",
+      "s": "bc11",
+      "t": "ou6",
+      "r": "Is Realized By"
+    },
+    {
+      "id": "e83",
+      "s": "am1",
+      "t": "app1",
+      "r": "Module Of"
+    },
+    {
+      "id": "e84",
+      "s": "app17",
+      "t": "if1",
+      "r": "Connects To"
+    },
+    {
+      "id": "e85",
+      "s": "if1",
+      "t": "app1",
+      "r": "Connects To"
+    },
+    {
+      "id": "e86",
+      "s": "if1",
+      "t": "app15",
+      "r": "Connects To"
+    },
+    {
+      "id": "e87",
+      "s": "if1",
+      "t": "app14",
+      "r": "Connects To"
+    },
+    {
+      "id": "e88",
+      "s": "ds1",
+      "t": "app15",
+      "r": "Module Of"
+    },
+    {
+      "id": "e89",
+      "s": "app1",
+      "t": "srv1",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e90",
+      "s": "app1",
+      "t": "srv2",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e91",
+      "s": "app14",
+      "t": "srv1",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e92",
+      "s": "app14",
+      "t": "srv2",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e93",
+      "s": "app7",
+      "t": "srv1",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e94",
+      "s": "app7",
+      "t": "srv3",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e95",
+      "s": "app14",
+      "t": "srv3",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e96",
+      "s": "app5",
+      "t": "srv1",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e97",
+      "s": "app5",
+      "t": "srv2",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e98",
+      "s": "app9",
+      "t": "srv1",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e99",
+      "s": "app12",
+      "t": "srv2",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e100",
+      "s": "app6",
+      "t": "srv2",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e101",
+      "s": "app6",
+      "t": "ts1",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e102",
+      "s": "ds1",
+      "t": "srv1",
+      "r": "Is Supported By"
+    },
+    {
+      "id": "e103",
+      "s": "srv1",
+      "t": "loc1",
+      "r": "Is Located At"
+    },
+    {
+      "id": "e104",
+      "s": "srv2",
+      "t": "loc2",
+      "r": "Is Located At"
+    },
+    {
+      "id": "e105",
+      "s": "srv3",
+      "t": "loc3",
+      "r": "Is Located At"
+    },
+    {
+      "id": "e106",
+      "s": "srv4",
+      "t": "loc4",
+      "r": "Is Located At"
+    },
+    {
+      "id": "e107",
+      "s": "srv5",
+      "t": "loc5",
+      "r": "Is Located At"
+    },
+    {
+      "id": "e108",
+      "s": "ts2",
+      "t": "loc2",
+      "r": "Is Located At"
+    },
+    {
+      "id": "e109",
+      "s": "tp1",
+      "t": "srv1",
+      "r": "Deploys To"
+    },
+    {
+      "id": "e110",
+      "s": "tp1",
+      "t": "srv2",
+      "r": "Deploys To"
+    },
+    {
+      "id": "e111",
+      "s": "tp1",
+      "t": "srv3",
+      "r": "Deploys To"
+    },
+    {
+      "id": "e112",
+      "s": "tp2",
+      "t": "srv1",
+      "r": "Deploys To"
+    },
+    {
+      "id": "e113",
+      "s": "tp3",
+      "t": "srv1",
+      "r": "Deploys To"
+    },
+    {
+      "id": "e114",
+      "s": "tp3",
+      "t": "ds1",
+      "r": "Deploys To"
+    },
+    {
+      "id": "e115",
+      "s": "app3",
+      "t": "app2",
+      "r": "Has Successor"
+    },
+    {
+      "id": "ve1",
+      "s": "obj1",
+      "t": "bc11",
+      "r": "Enabled By"
+    },
+    {
+      "id": "ve2",
+      "s": "obj2",
+      "t": "bc7",
+      "r": "Enabled By"
+    },
+    {
+      "id": "ve3",
+      "s": "obj3",
+      "t": "bc3",
+      "r": "Enabled By"
+    },
+    {
+      "id": "ve4",
+      "s": "obj4",
+      "t": "bc8",
+      "r": "Enabled By"
+    },
+    {
+      "id": "ve5",
+      "s": "obj4",
+      "t": "bc9",
+      "r": "Enabled By"
+    },
+    {
+      "id": "ve6",
+      "s": "obj1",
+      "t": "kpi1",
+      "r": "Measured By"
+    },
+    {
+      "id": "ve7",
+      "s": "obj2",
+      "t": "kpi2",
+      "r": "Measured By"
+    },
+    {
+      "id": "ve8",
+      "s": "obj3",
+      "t": "kpi3",
+      "r": "Measured By"
+    },
+    {
+      "id": "ve9",
+      "s": "obj4",
+      "t": "kpi4",
+      "r": "Measured By"
+    },
+    {
+      "id": "ve10",
+      "s": "init1",
+      "t": "obj1",
+      "r": "Supports"
+    },
+    {
+      "id": "ve11",
+      "s": "init2",
+      "t": "obj2",
+      "r": "Supports"
+    },
+    {
+      "id": "ve12",
+      "s": "init3",
+      "t": "obj3",
+      "r": "Supports"
+    },
+    {
+      "id": "ve13",
+      "s": "init4",
+      "t": "obj4",
+      "r": "Supports"
+    },
+    {
+      "id": "ve14",
+      "s": "bc11",
+      "t": "init1",
+      "r": "Impacted By"
+    },
+    {
+      "id": "ve15",
+      "s": "bc6",
+      "t": "init1",
+      "r": "Impacted By"
+    },
+    {
+      "id": "ve16",
+      "s": "bc7",
+      "t": "init2",
+      "r": "Impacted By"
+    },
+    {
+      "id": "ve17",
+      "s": "bc3",
+      "t": "init3",
+      "r": "Impacted By"
+    },
+    {
+      "id": "ve18",
+      "s": "bc8",
+      "t": "init4",
+      "r": "Impacted By"
+    },
+    {
+      "id": "ve19",
+      "s": "bc9",
+      "t": "init4",
+      "r": "Impacted By"
+    },
+    {
+      "id": "ve20",
+      "s": "risk1",
+      "t": "app11",
+      "r": "Affects"
+    },
+    {
+      "id": "ve21",
+      "s": "risk1",
+      "t": "bc3",
+      "r": "Affects"
+    },
+    {
+      "id": "ve22",
+      "s": "risk2",
+      "t": "app18",
+      "r": "Affects"
+    },
+    {
+      "id": "ve23",
+      "s": "risk2",
+      "t": "bc11",
+      "r": "Affects"
+    },
+    {
+      "id": "ve24",
+      "s": "risk3",
+      "t": "app1",
+      "r": "Affects"
+    },
+    {
+      "id": "ve25",
+      "s": "risk3",
+      "t": "bc1",
+      "r": "Affects"
+    },
+    {
+      "id": "ve26",
+      "s": "risk4",
+      "t": "app15",
+      "r": "Affects"
+    },
+    {
+      "id": "ve27",
+      "s": "risk4",
+      "t": "bc8",
+      "r": "Affects"
+    },
+    {
+      "id": "ve28",
+      "s": "init3",
+      "t": "risk1",
+      "r": "Mitigates"
+    },
+    {
+      "id": "ve29",
+      "s": "init1",
+      "t": "risk2",
+      "r": "Mitigates"
+    },
+    {
+      "id": "ve30",
+      "s": "init3",
+      "t": "risk3",
+      "r": "Mitigates"
+    },
+    {
+      "id": "ve31",
+      "s": "init4",
+      "t": "risk4",
+      "r": "Mitigates"
+    },
+    {
+      "id": "ve32",
+      "s": "app1",
+      "t": "comp1",
+      "r": "Complies With"
+    },
+    {
+      "id": "ve33",
+      "s": "app7",
+      "t": "comp1",
+      "r": "Complies With"
+    },
+    {
+      "id": "ve34",
+      "s": "app12",
+      "t": "comp1",
+      "r": "Complies With"
+    },
+    {
+      "id": "ve35",
+      "s": "app9",
+      "t": "comp2",
+      "r": "Complies With"
+    },
+    {
+      "id": "ve36",
+      "s": "app11",
+      "t": "comp2",
+      "r": "Complies With"
+    },
+    {
+      "id": "ve37",
+      "s": "app10",
+      "t": "comp2",
+      "r": "Complies With"
+    },
+    {
+      "id": "ve38",
+      "s": "app18",
+      "t": "comp3",
+      "r": "Complies With"
+    },
+    {
+      "id": "ve39",
+      "s": "app6",
+      "t": "comp3",
+      "r": "Complies With"
+    },
+    {
+      "id": "ve40",
+      "s": "app5",
+      "t": "comp3",
+      "r": "Complies With"
+    },
+    {
+      "id": "ve41",
+      "s": "strat1",
+      "t": "epic1",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve42",
+      "s": "strat2",
+      "t": "epic2",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve43",
+      "s": "strat2",
+      "t": "epic3",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve44",
+      "s": "strat3",
+      "t": "epic4",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve45",
+      "s": "epic1",
+      "t": "bc11",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve46",
+      "s": "epic1",
+      "t": "app18",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve47",
+      "s": "epic2",
+      "t": "bc3",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve48",
+      "s": "epic2",
+      "t": "app11",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve49",
+      "s": "epic3",
+      "t": "bc1",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve50",
+      "s": "epic3",
+      "t": "app1",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve51",
+      "s": "epic4",
+      "t": "bc9",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve52",
+      "s": "epic4",
+      "t": "bc8",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve53",
+      "s": "epic4",
+      "t": "app15",
+      "r": "Delivers"
+    },
+    {
+      "id": "ve54",
+      "s": "p2",
+      "t": "init1",
+      "r": "Leads"
+    },
+    {
+      "id": "ve55",
+      "s": "p1",
+      "t": "init2",
+      "r": "Leads"
+    },
+    {
+      "id": "ve56",
+      "s": "p5",
+      "t": "init3",
+      "r": "Leads"
+    },
+    {
+      "id": "ve57",
+      "s": "p6",
+      "t": "init4",
+      "r": "Leads"
+    },
+    {
+      "id": "ve58",
+      "s": "p2",
+      "t": "bc11",
+      "r": "Is Expert In"
+    },
+    {
+      "id": "ve59",
+      "s": "p6",
+      "t": "bc8",
+      "r": "Is Expert In"
+    },
+    {
+      "id": "ve60",
+      "s": "p5",
+      "t": "bc3",
+      "r": "Is Expert In"
+    },
+    {
+      "id": "ve61",
+      "s": "p1",
+      "t": "bc6",
+      "r": "Is Expert In"
+    }
+  ]
 }
