@@ -381,52 +381,60 @@ function expandTypes(list){
   list.forEach(function(t){(TYPE_ALIASES[t]||[t]).forEach(function(alt){out[alt]=1;});});
   return Object.keys(out);
 }
+/* Every viewpoint routes to the real Cytoscape node-link canvas ('graph').
+   The card/list-style "views" in this app (Dependency Map, Tree, Swimlanes,
+   Capability Map) are text renderings in the #viewpane div — none of them
+   draw an actual connecting line between components, so a Viewpoint routed
+   to one of those always LOOKS empty/disconnected even when the underlying
+   data is fully wired. The Cytoscape canvas is the only true diagram, so
+   that's what a "professional graph" needs to render into. Each viewpoint
+   also picks the layout that reads best for its shape of data. */
 var VIEWPOINTS={
   'product-hosting':{label:'Product Hosting',
     desc:'How business capabilities are supported by applications, and which locations host the servers they run on.',
-    types:['Business Capability','Application','Server','Location'],view:'dependency-map'},
+    types:['Business Capability','Application','Server','Location'],view:'graph',layout:'tree-td'},
   'relationship-overview':{label:'Relationship Overview',
     desc:'A general-purpose view of every component and how it relates to everything else it touches.',
-    types:null,view:'graph'},
+    types:null,view:'graph',layout:'clusters'},
   'application-risk':{label:'Application Risk',
     desc:'Which risks affect which applications, and which initiatives are mitigating them.',
-    types:['Application','Risk','Initiative'],view:'dependency-map'},
+    types:['Application','Risk','Initiative'],view:'graph',layout:'cose'},
   'application-integrations':{label:'Application Integrations',
     desc:'How applications connect to each other via interfaces.',
-    types:['Application','Interface'],view:'graph'},
+    types:['Application','Interface'],view:'graph',layout:'cose'},
   'products-to-location':{label:'Products to Location',
     desc:'Applications, the servers / tech products they deploy to, and the physical locations that host them.',
-    types:['Application','Tech Product','Server','Location'],view:'dependency-map'},
+    types:['Application','Tech Product','Server','Location'],view:'graph',layout:'tree-td'},
   'app-lifecycle-by-capability':{label:'Application Lifecycle by Capability',
     desc:'Applications grouped by the business capability they realize, with lifecycle phase and successors.',
-    types:['Business Capability','Application'],view:'tree'},
+    types:['Business Capability','Application'],view:'graph',layout:'tree-td'},
   'security-review':{label:'Architecture Domain Security Review',
     desc:'Which applications comply with which security / compliance domains, and risks affecting them.',
-    types:['Application','Compliance','Risk'],view:'graph'},
+    types:['Application','Compliance','Risk'],view:'graph',layout:'cose'},
   'initiative-expert-network':{label:'Initiative Expert Network',
     desc:'Who leads or is an expert on each initiative, and which objectives those initiatives support.',
-    types:['Person','Initiative','Objective'],view:'graph'},
+    types:['Person','Initiative','Objective'],view:'graph',layout:'cose'},
   'risk-to-objectives':{label:'Risk to Objectives',
     desc:'How risk exposure on capabilities and applications ultimately threatens company objectives.',
-    types:['Risk','Business Capability','Objective'],view:'dependency-map'},
+    types:['Risk','Business Capability','Objective'],view:'graph',layout:'tree-td'},
   'common-data-objects':{label:'Common Data Objects',
     desc:'Shared data stores and which applications and org units consume or are built on them.',
-    types:['Data Store','Application','Org Unit'],view:'graph'},
+    types:['Data Store','Application','Org Unit'],view:'graph',layout:'cose'},
   'capability-realization':{label:'Capability Realization',
     desc:'Which applications and org units realize each business capability.',
-    types:['Business Capability','Application','Org Unit'],view:'capability-map'},
+    types:['Business Capability','Application','Org Unit'],view:'graph',layout:'tree-td'},
   'app-integration-and-capability':{label:'Application Integration and Capability',
     desc:'Business capabilities, the applications that realize them, and how those applications integrate.',
-    types:['Business Capability','Application','Interface'],view:'graph'},
+    types:['Business Capability','Application','Interface'],view:'graph',layout:'tree-td'},
   'okrs-initiatives-impacts':{label:'OKRs, Initiatives and Impacts',
     desc:'Objectives, the KPIs that measure them, and the initiatives supporting them and impacting capabilities.',
-    types:['Objective','KPI','Initiative','Business Capability'],view:'swimlanes'},
+    types:['Objective','KPI','Initiative','Business Capability'],view:'graph',layout:'tree-td'},
   'strategies-to-epics':{label:'Strategies to Epics',
     desc:'Strategies broken down into epics, and the capabilities / applications those epics deliver.',
-    types:['Strategy','Epic','Business Capability','Application'],view:'tree'},
+    types:['Strategy','Epic','Business Capability','Application'],view:'graph',layout:'tree-td'},
   'capability-experts-network':{label:'Capability Experts Network',
     desc:'Which people are recognized experts in which business capabilities.',
-    types:['Person','Business Capability'],view:'graph'}
+    types:['Person','Business Capability'],view:'graph',layout:'concentric'}
 };
 function applyViewpoint(key){
   var vwp=VIEWPOINTS[key];
@@ -440,7 +448,17 @@ function applyViewpoint(key){
   buildLegend();
   var view=(vwp&&vwp.view)||'graph';
   document.getElementById('view-sel').value=view;setView(view);
-  if(cy)cy.fit(50);
+  if(cy){
+    cy.elements().removeClass('vp-edge vp-node');
+    if(vwp&&view==='graph'){
+      cy.nodes().filter(function(n){return n.style('display')!=='none';}).addClass('vp-node');
+      cy.edges().filter(function(e){return e.style('display')!=='none';}).addClass('vp-edge');
+      applyLayout(vwp.layout||'cose');
+      var ls=document.getElementById('layout-sel');
+      if(ls&&vwp.layout)ls.value=vwp.layout;
+    }
+    cy.fit(50);
+  }
   var hb=document.getElementById('hint-bar');
   if(vwp){hb.style.display='';hb.textContent='📌 '+vwp.label+' — '+vwp.desc;}
   else{hb.textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
@@ -473,12 +491,17 @@ function initCy(){
     style:[
       {selector:'node',style:{'label':'data(label)','color':'#fff','background-color':'data(color)','border-color':'data(bc)','border-width':2,'shape':'data(shape)','width':'data(nw)','height':'data(nh)','font-size':10,'font-weight':'500','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'data(tmw)','cursor':'pointer','transition-property':'opacity','transition-duration':'150ms'}},
       {selector:'node:selected',style:{'border-width':4,'border-color':'#2c2c2a'}},
-      {selector:'edge',style:{'curve-style':'bezier','target-arrow-shape':'vee','target-arrow-color':'#c0beba','line-color':'#c0beba','width':1.5,'label':'data(ref)','font-size':8,'color':'#888780','text-rotation':'autorotate','text-background-color':'#fafaf8','text-background-opacity':0.88,'text-background-padding':'2px','opacity':0.6}},
+      {selector:'edge',style:{'curve-style':'bezier','target-arrow-shape':'vee','target-arrow-color':'#c0beba','line-color':'#c0beba','width':1.5,'arrow-scale':1,'label':'data(ref)','font-size':8,'color':'#888780','text-rotation':'autorotate','text-background-color':'#fafaf8','text-background-opacity':0.88,'text-background-padding':'2px','opacity':0.6}},
       {selector:'edge[ref="Child Of"],edge[ref="Module Of"]',style:{'line-style':'dashed','width':1}},
       {selector:'edge[?inferred]',style:{'line-style':'dashed','line-dash-pattern':[6,3],'opacity':0.75}},
       {selector:'node[?missing]',style:{'border-style':'dashed','border-width':2,'opacity':0.55}},
       {selector:'.hi',style:{'line-color':'data(rc)','target-arrow-color':'data(rc)','color':'data(rc)','opacity':1,'width':2.5,'font-weight':'600'}},
-      {selector:'.dim',style:{'opacity':0.06}},{selector:'.dim-n',style:{'opacity':0.09}}
+      {selector:'.dim',style:{'opacity':0.06}},{selector:'.dim-n',style:{'opacity':0.09}},
+      /* Viewpoint mode: a curated, small subgraph should read as confident and
+         clear — like an Ardoq Discover diagram — not as faint as the full
+         91-component graph. Bolder edges/arrows, crisper labels. */
+      {selector:'edge.vp-edge',style:{'opacity':0.92,'width':2,'font-size':9,'font-weight':'600','target-arrow-shape':'triangle','arrow-scale':1.2}},
+      {selector:'node.vp-node',style:{'border-width':3,'font-size':11,'font-weight':'700'}}
     ],
     layout:{name:'cose',idealEdgeLength:120,nodeOverlap:20,fit:true,padding:50,randomize:false,componentSpacing:120,nodeRepulsion:500000,gravity:80,numIter:1200},
     minZoom:0.08,maxZoom:4,wheelSensitivity:0.3});
@@ -873,10 +896,32 @@ function clusterLayout(){
   });
   cy.layout({name:'preset',positions:pos,fit:true,padding:70,animate:true,animationDuration:600}).run();
 }
+/* Picks a sensible root set for tree layouts. Previously this was hardcoded
+   to the single "org1" (Zoho Corporation) node, which meant every tree/
+   hierarchical layout silently broke (empty roots → an arbitrary/degenerate
+   layout) on any Viewpoint that hides Organization/Company — i.e. almost
+   every Viewpoint except Relationship Overview. Now it prefers whichever
+   "most upstream" type is actually visible, with Business Capability given
+   priority since it's the anchor most viewpoints are built around, and falls
+   back to nodes with no incoming visible reference. */
+var ROOT_TYPE_PRIORITY=['Organization','Company','Strategy','Business Capability','Capability',
+  'Objective','Initiative','KPI','Person','Application'];
+function pickTreeRoots(){
+  var vis=cy.nodes().filter(function(n){return n.style('display')!=='none';});
+  if(!vis.length)return cy.collection();
+  for(var i=0;i<ROOT_TYPE_PRIORITY.length;i++){
+    var m=vis.filter(function(n){return n.data('type')===ROOT_TYPE_PRIORITY[i];});
+    if(m.length)return m;
+  }
+  var hasIncoming={};
+  cy.edges().forEach(function(e){if(e.style('display')!=='none')hasIncoming[e.target().id()]=1;});
+  var noIncoming=vis.filter(function(n){return !hasIncoming[n.id()];});
+  return noIncoming.length?noIncoming:vis;
+}
 function applyLayout(name){
   if(name==='clusters'){clusterLayout();return;}
-  if(name==='tree-td'){cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:cy.$('#org1'),spacingFactor:1.7,animate:true}).run();return;}
-  if(name==='tree-lr'){var l=cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:cy.$('#org1'),spacingFactor:1.7,animate:false});l.run();cy.nodes().forEach(function(n){var p=n.position();n.position({x:p.y*1.4,y:p.x*0.75});});cy.fit(50);return;}
+  if(name==='tree-td'){cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:pickTreeRoots(),spacingFactor:1.7,animate:true}).run();return;}
+  if(name==='tree-lr'){var l=cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:pickTreeRoots(),spacingFactor:1.7,animate:false});l.run();cy.nodes().forEach(function(n){var p=n.position();n.position({x:p.y*1.4,y:p.x*0.75});});cy.fit(50);return;}
   if(name==='concentric'){var order=Object.keys(TC);cy.layout({name:'concentric',fit:true,padding:50,animate:true,minNodeSpacing:28,concentric:function(n){return order.length-order.indexOf(n.data('type'));}}).run();return;}
   if(name==='circle'){cy.layout({name:'circle',fit:true,padding:50,animate:true}).run();return;}
   if(name==='grid'){cy.layout({name:'grid',fit:true,padding:50,animate:true,avoidOverlap:true}).run();return;}
@@ -996,6 +1041,7 @@ function applyRationalization(){document.getElementById('view-sel').value='ratio
 /* ─── WORKSPACES + DATA LOAD + MAIN ─────────────────────────── */
 var currentWS='';
 function urlWorkspace(){var m=location.search.match(/[?&]workspace=([^&]+)/);return m?decodeURIComponent(m[1]):'';}
+function urlViewpoint(){var m=location.search.match(/[?&]viewpoint=([^&]+)/);return m?decodeURIComponent(m[1]):'';}
 function loadGraphData(ws){
   currentWS=ws||'';
   var p='/api/graph'+(currentWS?('?workspace='+encodeURIComponent(currentWS)):'');
@@ -1040,6 +1086,11 @@ window.addEventListener('load',function(){
       document.getElementById('mm-al-add').addEventListener('click',mmAddAllowed);
       document.getElementById('tv-apply').addEventListener('click',traverse);
       document.getElementById('tv-clear').addEventListener('click',clearTraverse);
+      var vpFromUrl=urlViewpoint();
+      if(vpFromUrl&&VIEWPOINTS[vpFromUrl]){
+        document.getElementById('viewpoint-sel').value=vpFromUrl;
+        applyViewpoint(vpFromUrl);
+      }
     }catch(err){document.getElementById('cy').innerHTML='<div style="padding:30px;color:#993C1D;font-family:sans-serif">⚠ Init error: '+err.message+'<br><pre style="font-size:10px">'+err.stack+'</pre></div>';console.error(err);}
   });
 });
