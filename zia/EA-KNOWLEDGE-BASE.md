@@ -74,6 +74,40 @@ Only these (from → reference → to) combinations are valid. The API's
 - Tech Service — Is Located At → Location
 - Tech Product — Deploys To → Server / Tech Service
 
+## Viewpoint-supporting types (added for the dashboard's Viewpoint dropdown)
+
+The dashboard now has a **Viewpoint** selector (Ardoq Discover-style curated
+diagrams — see `cypher/03-viewpoints-metamodel.cypher` for the authoritative
+schema). It introduces seven more component types and their references,
+additive to everything above:
+
+| Type | Meaning |
+|---|---|
+| Objective | A strategic goal ("Accelerate AI-Native Product Experience"). |
+| KPI | A measurable metric tracking an Objective. |
+| Initiative | A funded program of work supporting an Objective. |
+| Risk | A threat to an Application or Business Capability. |
+| Compliance | A regulatory/security domain an Application must comply with (GDPR, SOX, ISO 27001...). |
+| Strategy | A high-level strategic direction, broken into Epics. |
+| Epic | A body of work delivering a Strategy, realized against Capabilities/Applications. |
+
+| Reference | Meaning |
+|---|---|
+| Enabled By | Objective → Business Capability (the capability that enables the objective). |
+| Measured By | Objective → KPI. |
+| Supports | Initiative → Objective. |
+| Impacted By | Business Capability → Initiative. |
+| Affects | Risk → Application / Business Capability. |
+| Mitigates | Initiative → Risk. |
+| Complies With | Application → Compliance. |
+| Delivers | Strategy → Epic; Epic → Business Capability / Application. |
+| Leads | Person → Initiative. |
+
+Every new onboarded workspace should get this data via the
+`enrichWorkspaceViewpoints` tool right after it's built — otherwise the
+Viewpoint dropdown will look empty for that company even though the base
+Application/Objective/Person data is fine.
+
 ## Field catalog (common fields per type)
 
 - **All:** Name (required), Description.
