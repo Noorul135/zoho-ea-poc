@@ -33,6 +33,48 @@ The dashboard, Cypher schema, seed data, and Zia tool configs are shared and
 work with either backend. `render.yaml` is currently set to the **Python**
 option. Don't run both at once.
 
+## Viewpoints (new)
+
+The dashboard's topbar now has a **Viewpoint** dropdown (next to the existing
+View dropdown), modeled on Ardoq Discover's Viewpoints concept: each option is
+a predefined "chain of triples" — a curated set of component types (Business
+Capability, Application, Server, Risk, Objective, Initiative, Epic, Strategy,
+etc.) that answers one specific question, e.g. *Product Hosting*, *Application
+Risk*, *OKRs, Initiatives and Impacts*, *Strategies to Epics*. Picking one
+filters the graph down to just those component types (and the references
+that naturally connect them) and switches to a fitting view style.
+
+- Config lives client-side in `public/index.html` → `VIEWPOINTS` object +
+  `applyViewpoint()`.
+- New component/reference types the viewpoints need (Objective, KPI,
+  Initiative, Risk, Compliance, Epic, Strategy) are defined in
+  **`cypher/03-viewpoints-metamodel.cypher`** — run it once in the Neo4j
+  console, after `01-constraints.cypher` and `02-metamodel.cypher`.
+- Sample instances of those new types (wired into the real Zoho Corporation
+  graph — e.g. `Objective → Enabled By → Business Capability`,
+  `Risk → Affects → Application`) were added to `data.json`. Re-run the seed
+  loader (`GET/POST /api/admin/seed`, or `python seed.py`) to load them.
+
+## Enriching an existing sparse workspace (e.g. ZappyWorks)
+
+Workspaces built live through the Zia onboarding chat (rather than the
+`data.json` seed) often only end up with a handful of component types
+(Person, Application, Company, Objective, KPI) — enough for a couple of
+viewpoints but not most of them. **`enrich_workspace.py`** adds the missing
+types (Capability, Risk, Initiative, Compliance, Technology, Location,
+OrgUnit, Epic, Strategy) into an already-live workspace, wired to whatever
+Applications/Objectives/People already exist there (it queries them at
+runtime — you don't need to know their exact labels):
+
+```
+python enrich_workspace.py "ZappyWorks"
+python enrich_workspace.py "ZappyWorks" --wipe   # removes prior enrichment first, then re-adds
+```
+
+Reload `…/?workspace=ZappyWorks` afterwards — Product Hosting, Application
+Risk, Capability Realization, OKRs/Initiatives, Strategies to Epics, etc.
+should now render real, non-empty graphs for that workspace too.
+
 ## What's in this repo
 
 | Path | What it is |
