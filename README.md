@@ -79,6 +79,49 @@ that naturally connect them) and switches to a fitting view style.
   `Risk → Affects → Application`) were added to `data.json`. Re-run the seed
   loader (`GET/POST /api/admin/seed`, or `python seed.py`) to load them.
 
+## Matching Ardoq Discover's visual style (latest round)
+
+The 15 viewpoints above now use four Ardoq-style rendering modes instead of
+one generic node-link graph, matching what Ardoq Discover actually shows for
+each viewpoint shape (per [Ardoq's Discover getting-started
+guide](https://help.ardoq.com/en/articles/43903-legacy-experience-getting-started-with-ardoq-discover)):
+
+- **Lifecycle Timeline** (`app-lifecycle-by-capability`) — a real Gantt-style
+  chart: Business Capabilities as row-group headers, each realized
+  Application drawn as a colored bar spanning its `Go Live Date` →
+  `Planned Retirement`, colored by `Lifecycle Phase` (Live / Implementing /
+  Phasing Out / Retired), with year gridlines, a red "today" marker, and a
+  legend — this is the view the reference screenshots singled out as the
+  standard to match. Implemented in `vLifecycleTimeline()`.
+- **Grouped containers** (`product-hosting`, `products-to-location`,
+  `risk-to-objectives`, `capability-realization`,
+  `app-integration-and-capability`, `okrs-initiatives-impacts`,
+  `strategies-to-epics`) — nodes are nested inside a dashed, labeled box per
+  component type (e.g. a "Business Capability" box, an "Application" box),
+  matching Ardoq's Products-to-Locations nested-box style. Implemented with
+  real Cytoscape compound (parent) nodes in `applyGrouping()` /
+  `clearGrouping()`; pick **Grouped by type (containers)** in the View
+  dropdown to use this on any viewpoint manually.
+- **Hub-centered concentric** (`initiative-expert-network`,
+  `capability-experts-network`) — previously "concentric" just stacked whole
+  component types into rings by a fixed tier order; now it picks the
+  most-connected visible node as the hub via a real BFS over the visible
+  edges and rings everything else by hop-distance from it, giving the
+  radial hub-and-spoke look Ardoq's Initiative Expert Network / Relationship
+  Overview screenshots show (a person/initiative in the center, everything
+  they touch fanned around).
+- **Type icon glyphs** — every component type now gets a small icon (🧩
+  Business Capability, 💻 Application, 👤 Person, ⚠️ Risk, 🎯 Objective, etc.,
+  see `TYPE_ICON` in `public/index.html`) next to its name in graph node
+  labels, the type legend, detail-panel badges, reference chips, and the
+  Pages view — quicker visual recognition without needing licensed brand
+  icon assets.
+
+All 15 viewpoints were re-verified against the seeded Zoho Corporation data
+(`data.json`, 91 components / 176 references): every viewpoint has full type
+coverage and a non-zero edge count, so none should show the "missing data"
+advisory banner out of the box.
+
 ## Enriching an existing sparse workspace (e.g. ZappyWorks)
 
 Workspaces built live through the Zia onboarding chat (rather than the
