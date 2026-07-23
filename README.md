@@ -63,6 +63,17 @@ that naturally connect them) and switches to a fitting view style.
   `zia/EA-KNOWLEDGE-BASE.md`) now knows about all 15 viewpoints (so it can
   recommend and link to the right one) and about `enrichWorkspaceViewpoints`,
   which it should call right after onboarding any new company.
+- Two rendering bugs that made viewpoints look broken (overlapping/stacked
+  boxes with no visible connections) are fixed: the "Clusters by type" ring
+  layout now sizes each type's inner ring from the actual node dimensions
+  instead of a flat `count*15px` (which guaranteed overlap for any group of
+  2+), and the tree layout no longer forces a breadthfirst hierarchy when a
+  workspace doesn't actually have one (e.g. only one component type present)
+  — it falls back to a clean overlap-free grid instead.
+- If a workspace genuinely doesn't have the component types (or references)
+  a viewpoint needs yet, an on-canvas advisory banner explains exactly what's
+  missing and what to do (run the enrichment tool / switch workspace),
+  instead of silently rendering an empty or confusing diagram.
 - Sample instances of those new types (wired into the real Zoho Corporation
   graph — e.g. `Objective → Enabled By → Business Capability`,
   `Risk → Affects → Application`) were added to `data.json`. Re-run the seed
