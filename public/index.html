@@ -149,6 +149,7 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
     <optgroup label="Analytics">
       <option value="rationalization">Rationalization (TIME)</option>
       <option value="capability-map">Capability Map</option>
+      <option value="lifecycle-timeline">Lifecycle Timeline</option>
       <option value="treemap">Treemap</option>
       <option value="bubble">Bubble Chart</option>
       <option value="spider">Spider Chart</option>
@@ -184,6 +185,7 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
     <select id="layout-sel" class="sel">
     <option value="clusters" selected>Clusters by type</option>
     <option value="cose">Force directed</option>
+    <option value="cose-grouped">Grouped by type (containers)</option>
     <option value="tree-td">Tree — top down</option>
     <option value="tree-lr">Tree — left to right</option>
     <option value="concentric">Concentric (tier)</option>
@@ -354,6 +356,20 @@ Object.assign(RC,{
 });
 function tcfg(t){return TC[t]||{c:'#888780',b:'#5F5E5A',s:'roundrectangle',w:130,h:44,tier:11};}
 function rcol(r){return RC[r]||'#888780';}
+/* Ardoq's Discover UI leans heavily on per-type icon glyphs for fast visual
+   recognition (see the Relationship Overview / Initiative Expert Network
+   screenshots). There are no licensed brand icon assets available here, so
+   this uses plain unicode/emoji glyphs — same idea, zero dependencies. */
+var TYPE_ICON={
+  'Organization':'🏢','Company':'🏢','Org Unit':'🏬','OrgUnit':'🏬','Person':'👤',
+  'Business Capability':'🧩','Capability':'🧩','Application':'💻','Product':'📦',
+  'App Module':'🔧','Interface':'🔌','Data Store':'🗄️','Data':'🗄️','Server':'🖥️',
+  'Tech Service':'☁️','Tech Product':'⚙️','Location':'📍','Objective':'🎯','KPI':'📊',
+  'Process':'🔁','Integration':'🔗','Technology':'🛠️','Vendor':'🏭','Policy':'📜',
+  'Risk':'⚠️','Initiative':'🚀','Compliance':'✅','Customer':'🧑‍💼','Market':'📈',
+  'Competitor':'🥊','Document':'📄','Epic':'📘','Strategy':'♟️'
+};
+function ticon(t){return TYPE_ICON[t]||'●';}
 
 /* ─── VIEWPOINTS (Ardoq-Discover-style) ─────────────────────────
    Each viewpoint is a curated "chain of triples" — a fixed set of
@@ -395,8 +411,8 @@ function expandTypes(list){
    also picks the layout that reads best for its shape of data. */
 var VIEWPOINTS={
   'product-hosting':{label:'Product Hosting',
-    desc:'How business capabilities are supported by applications, and which locations host the servers they run on.',
-    types:['Business Capability','Application','Server','Location'],view:'graph',layout:'tree-td'},
+    desc:'How business capabilities are supported by applications, and which locations host the servers they run on. Grouped into labeled containers by type, like Ardoq\'s Product Hosting viewpoint.',
+    types:['Business Capability','Application','Server','Location'],view:'graph',layout:'tree-td',group:true},
   'relationship-overview':{label:'Relationship Overview',
     desc:'A general-purpose view of every component and how it relates to everything else it touches.',
     types:null,view:'graph',layout:'clusters'},
@@ -407,37 +423,37 @@ var VIEWPOINTS={
     desc:'How applications connect to each other via interfaces.',
     types:['Application','Interface'],view:'graph',layout:'cose'},
   'products-to-location':{label:'Products to Location',
-    desc:'Applications, the servers / tech products they deploy to, and the physical locations that host them.',
-    types:['Application','Tech Product','Server','Location'],view:'graph',layout:'tree-td'},
+    desc:'Applications, the servers / tech products they deploy to, and the physical locations that host them, nested in labeled type containers.',
+    types:['Application','Tech Product','Server','Location'],view:'graph',layout:'tree-td',group:true},
   'app-lifecycle-by-capability':{label:'Application Lifecycle by Capability',
-    desc:'Applications grouped by the business capability they realize, with lifecycle phase and successors.',
-    types:['Business Capability','Application'],view:'graph',layout:'tree-td'},
+    desc:'Applications grouped by the business capability they realize, plotted on a lifecycle timeline (go-live → planned retirement).',
+    types:['Business Capability','Application'],view:'lifecycle-timeline'},
   'security-review':{label:'Architecture Domain Security Review',
     desc:'Which applications comply with which security / compliance domains, and risks affecting them.',
     types:['Application','Compliance','Risk'],view:'graph',layout:'cose'},
   'initiative-expert-network':{label:'Initiative Expert Network',
-    desc:'Who leads or is an expert on each initiative, and which objectives those initiatives support.',
-    types:['Person','Initiative','Objective'],view:'graph',layout:'cose'},
+    desc:'Who leads or is an expert on each initiative, and which objectives those initiatives support — shown as a hub-and-spoke network.',
+    types:['Person','Initiative','Objective'],view:'graph',layout:'concentric'},
   'risk-to-objectives':{label:'Risk to Objectives',
-    desc:'How risk exposure on capabilities and applications ultimately threatens company objectives.',
-    types:['Risk','Business Capability','Objective'],view:'graph',layout:'tree-td'},
+    desc:'How risk exposure on capabilities and applications ultimately threatens company objectives, grouped by type.',
+    types:['Risk','Business Capability','Objective'],view:'graph',layout:'tree-td',group:true},
   'common-data-objects':{label:'Common Data Objects',
     desc:'Shared data stores and which applications and org units consume or are built on them.',
     types:['Data Store','Application','Org Unit'],view:'graph',layout:'cose'},
   'capability-realization':{label:'Capability Realization',
-    desc:'Which applications and org units realize each business capability.',
-    types:['Business Capability','Application','Org Unit'],view:'graph',layout:'tree-td'},
+    desc:'Which applications and org units realize each business capability, grouped by type.',
+    types:['Business Capability','Application','Org Unit'],view:'graph',layout:'tree-td',group:true},
   'app-integration-and-capability':{label:'Application Integration and Capability',
-    desc:'Business capabilities, the applications that realize them, and how those applications integrate.',
-    types:['Business Capability','Application','Interface'],view:'graph',layout:'tree-td'},
+    desc:'Business capabilities, the applications that realize them, and how those applications integrate, grouped by type.',
+    types:['Business Capability','Application','Interface'],view:'graph',layout:'tree-td',group:true},
   'okrs-initiatives-impacts':{label:'OKRs, Initiatives and Impacts',
-    desc:'Objectives, the KPIs that measure them, and the initiatives supporting them and impacting capabilities.',
-    types:['Objective','KPI','Initiative','Business Capability'],view:'graph',layout:'tree-td'},
+    desc:'Objectives, the KPIs that measure them, and the initiatives supporting them and impacting capabilities, grouped by type.',
+    types:['Objective','KPI','Initiative','Business Capability'],view:'graph',layout:'tree-td',group:true},
   'strategies-to-epics':{label:'Strategies to Epics',
-    desc:'Strategies broken down into epics, and the capabilities / applications those epics deliver.',
-    types:['Strategy','Epic','Business Capability','Application'],view:'graph',layout:'tree-td'},
+    desc:'Strategies broken down into epics, and the capabilities / applications those epics deliver, grouped by type.',
+    types:['Strategy','Epic','Business Capability','Application'],view:'graph',layout:'tree-td',group:true},
   'capability-experts-network':{label:'Capability Experts Network',
-    desc:'Which people are recognized experts in which business capabilities.',
+    desc:'Which people are recognized experts in which business capabilities — shown as a hub-and-spoke network.',
     types:['Person','Business Capability'],view:'graph',layout:'concentric'}
 };
 /* If the CURRENT workspace simply doesn't have the component types (or the
@@ -487,11 +503,14 @@ function applyViewpoint(key){
   if(cy){
     cy.elements().removeClass('vp-edge vp-node');
     if(vwp&&view==='graph'){
-      cy.nodes().filter(function(n){return n.style('display')!=='none';}).addClass('vp-node');
+      cy.nodes().filter(function(n){return n.style('display')!=='none'&&!n.data('isGroupParent');}).addClass('vp-node');
       cy.edges().filter(function(e){return e.style('display')!=='none';}).addClass('vp-edge');
-      applyLayout(vwp.layout||'cose');
+      var layoutName=vwp.group?'cose-grouped':(vwp.layout||'cose');
+      applyLayout(layoutName);
       var ls=document.getElementById('layout-sel');
-      if(ls&&vwp.layout)ls.value=vwp.layout;
+      if(ls)ls.value=layoutName;
+    }else if(groupingActive){
+      groupingActive=false;clearGrouping();
     }
     cy.fit(50);
   }
@@ -517,12 +536,12 @@ function tagsOf(n){var t=n&&n.f&&n.f.Tags;if(!t)return [];if(Array.isArray(t))re
 function typesInUse(){var s={};NODES.forEach(function(n){s[n.type]=(s[n.type]||0)+1;});return s;}
 function matchesSearch(n){if(!SEARCH)return true;var q=SEARCH.toLowerCase();return n.label.toLowerCase().indexOf(q)>=0||n.type.toLowerCase().indexOf(q)>=0||tagsOf(n).join(' ').toLowerCase().indexOf(q)>=0;}
 function visibleNodes(){return NODES.filter(function(n){return !hiddenTypes[n.type]&&matchesSearch(n)&&(!activeTag||tagsOf(n).indexOf(activeTag)>=0);});}
-function chip(n){return '<span class="chip" style="background:'+tcfg(n.type).c+'" onclick="openDetail(\''+n.id+'\')" title="'+escH(n.type)+'"><span class="cdot"></span>'+escH(n.label)+'</span>';}
+function chip(n){return '<span class="chip" style="background:'+tcfg(n.type).c+'" onclick="openDetail(\''+n.id+'\')" title="'+escH(n.type)+'"><span class="cdot"></span>'+ticon(n.type)+' '+escH(n.label)+'</span>';}
 
 /* ─── CYTOSCAPE GRAPH ───────────────────────────────────────── */
 function initCy(){
   var els=[];
-  NODES.forEach(function(n){var t=tcfg(n.type);els.push({data:{id:n.id,label:n.label,type:n.type,nf:n.f,color:t.c,bc:t.b,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px',missing:(n.status==='missing')}});});
+  NODES.forEach(function(n){var t=tcfg(n.type);els.push({data:{id:n.id,label:ticon(n.type)+' '+n.label,type:n.type,nf:n.f,color:t.c,bc:t.b,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px',missing:(n.status==='missing')}});});
   EDGES.forEach(function(e){els.push({data:{id:e.id,source:e.s,target:e.t,ref:e.r,rc:rcol(e.r),inferred:!!e.inferred}});});
   cy=cytoscape({container:document.getElementById('cy'),elements:els,
     style:[
@@ -538,7 +557,14 @@ function initCy(){
          clear — like an Ardoq Discover diagram — not as faint as the full
          91-component graph. Bolder edges/arrows, crisper labels. */
       {selector:'edge.vp-edge',style:{'opacity':0.92,'width':2,'font-size':9,'font-weight':'600','target-arrow-shape':'triangle','arrow-scale':1.2}},
-      {selector:'node.vp-node',style:{'border-width':3,'font-size':11,'font-weight':'700'}}
+      {selector:'node.vp-node',style:{'border-width':3,'font-size':11,'font-weight':'700'}},
+      /* Labeled type-container boxes for grouped viewpoints (Ardoq's nested
+         "Business Products" / "Applications" style boxes). */
+      {selector:'node.group-parent',style:{'shape':'roundrectangle','background-color':'data(gcolor)','background-opacity':0.07,
+        'border-width':2,'border-style':'dashed','border-color':'data(gcolor)','border-opacity':0.6,
+        'label':'data(label)','text-valign':'top','text-halign':'left','font-size':12,'font-weight':'700',
+        'color':'data(gcolor)','padding':'26px','text-margin-y':4,'text-margin-x':10,'text-background-color':'#fafaf8',
+        'text-background-opacity':0.9,'text-background-padding':'3px'}}
     ],
     layout:{name:'cose',idealEdgeLength:120,nodeOverlap:20,fit:true,padding:50,randomize:false,componentSpacing:120,nodeRepulsion:500000,gravity:80,numIter:1200},
     minZoom:0.08,maxZoom:4,wheelSensitivity:0.3});
@@ -561,7 +587,7 @@ function onBgTap(){if(inFocus)return;selNodeId=null;cy.elements().removeClass('h
 function openDetail(id){selNodeId=id;showDetail(id);if(currentView==='graph'){var n=cy.$('#'+id);if(n.length)n.emit('tap');}}
 function showDetail(id){
   var n=nById(id);if(!n)return;var t=tcfg(n.type);
-  var badge=document.getElementById('rp-badge');badge.textContent=n.type;
+  var badge=document.getElementById('rp-badge');badge.textContent=ticon(n.type)+' '+n.type;
   badge.style.cssText='background:'+t.c+'22;color:'+t.c+';border:1px solid '+t.c+'55;display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-bottom:4px';
   document.getElementById('rp-name').textContent=n.label;
   document.getElementById('rp-narr').textContent=buildNarrative(id);
@@ -586,7 +612,7 @@ function showDetail(id){
   document.getElementById('rp-content').style.display='flex';
   document.getElementById('rp-focus-btn').style.display=currentView==='graph'?'':'none';
 }
-function refRow(ref,otherId,dir){var t=tcfg(ntype(otherId));return '<div class="rref" onclick="openDetail(\''+otherId+'\')"><div class="rr-dot" style="background:'+rcol(ref)+'"></div><div class="rr-body"><div class="rr-type">'+escH(ref)+'</div><div class="rr-tgt" style="color:'+t.c+'">'+escH(nl(otherId))+'</div></div><div class="rr-dir '+dir+'">'+dir+'</div></div>';}
+function refRow(ref,otherId,dir){var t=tcfg(ntype(otherId));return '<div class="rref" onclick="openDetail(\''+otherId+'\')"><div class="rr-dot" style="background:'+rcol(ref)+'"></div><div class="rr-body"><div class="rr-type">'+escH(ref)+'</div><div class="rr-tgt" style="color:'+t.c+'">'+ticon(ntype(otherId))+' '+escH(nl(otherId))+'</div></div><div class="rr-dir '+dir+'">'+dir+'</div></div>';}
 function hideDetail(){document.getElementById('rp-empty').style.display='';document.getElementById('rp-content').style.display='none';}
 
 /* ─── NARRATIVE ─────────────────────────────────────────────── */
@@ -607,7 +633,7 @@ function buildNarrative(id){
 }
 
 /* ─── VIEW ROUTER ───────────────────────────────────────────── */
-var VIEWS={graph:renderGraph,'dependency-map':vDependencyMap,tree:vTree,swimlanes:vSwimlanes,wheel:vWheel,pages:vPages,table:vTable,'reference-table':vRefTable,matrix:vMatrix,'dependency-matrix':vDepMatrix,relationships:vRelationships,rationalization:vRationalization,'capability-map':vCapabilityMap,treemap:vTreemap,bubble:vBubble,spider:vSpider,tagscape:vTagscape};
+var VIEWS={graph:renderGraph,'dependency-map':vDependencyMap,tree:vTree,swimlanes:vSwimlanes,wheel:vWheel,pages:vPages,table:vTable,'reference-table':vRefTable,matrix:vMatrix,'dependency-matrix':vDepMatrix,relationships:vRelationships,rationalization:vRationalization,'capability-map':vCapabilityMap,'lifecycle-timeline':vLifecycleTimeline,treemap:vTreemap,bubble:vBubble,spider:vSpider,tagscape:vTagscape};
 function setView(name){
   currentView=name;
   var isGraph=name==='graph';
@@ -627,7 +653,7 @@ function vPages(){
   var h=head('Pages','All '+ns.length+' components in context, grouped by type.');
   Object.keys(TC).concat(Object.keys(byT).filter(function(k){return !TC[k];})).forEach(function(t){
     if(!byT[t])return;
-    h+='<div style="margin:6px 0 4px;font-size:12px;font-weight:700;color:'+tcfg(t).c+'">'+escH(t)+' ('+byT[t].length+')</div>';
+    h+='<div style="margin:6px 0 4px;font-size:12px;font-weight:700;color:'+tcfg(t).c+'">'+ticon(t)+' '+escH(t)+' ('+byT[t].length+')</div>';
     h+='<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">';
     byT[t].forEach(function(n){
       var f=n.f||{},keys=Object.keys(f).filter(function(k){return k!=='Tags'&&k!=='Name';}).slice(0,4);
@@ -735,6 +761,72 @@ function vCapabilityMap(){
     h+='<div style="margin-top:4px">'+(apps.length?apps.map(function(e){return chip(nById(e.t));}).join(''):'<span class="warn" style="color:#993C1D;font-size:10px">⚠ no realizing app</span>')+'</div></div>';
   });
   h+='</div>';vp(h);
+}
+
+/* Lifecycle Timeline: Business Capability rows grouping their realizing
+   Applications, each drawn as a date-range bar (Ardoq Discover's
+   "Application Lifecycles by Capability" view) rather than a text card. */
+function parseYear(s){if(!s)return null;var m=String(s).match(/(\d{4})/);return m?parseInt(m[1],10):null;}
+var PHASE_COLOR={'Live':'#3B6D11','Implementing':'#BA7517','Phasing Out':'#993C1D','Retired':'#888780'};
+function vLifecycleTimeline(){
+  var caps=visibleNodes().filter(function(n){return n.type==='Business Capability'||n.type==='Capability';});
+  var apps=visibleNodes().filter(function(n){return n.type==='Application';});
+  var appById={};apps.forEach(function(a){appById[a.id]=a;});
+  var rows=[],used={};
+  caps.forEach(function(c){
+    var realized=outE(c.id,'Is Realized By').map(function(e){return e.t;}).filter(function(id){return appById[id];});
+    if(!realized.length)return;
+    rows.push({kind:'cap',node:c});
+    realized.forEach(function(aid){used[aid]=1;rows.push({kind:'app',node:appById[aid]});});
+  });
+  var orphan=apps.filter(function(a){return !used[a.id];});
+  if(orphan.length){
+    rows.push({kind:'cap',node:{id:'__unassigned',label:'Unassigned Applications'}});
+    orphan.forEach(function(a){rows.push({kind:'app',node:a});});
+  }
+  var h=head('Application Lifecycle by Capability','Applications grouped under the business capability they realize, plotted against their lifecycle timeline. Dashed red line = today.');
+  if(!rows.length){h+='<div class="card">No Business Capability realizes an Application in this context.</div>';vp(h);return;}
+  var years=[];
+  rows.forEach(function(r){
+    if(r.kind!=='app')return;var f=r.node.f||{};
+    var go=parseYear(f['Go Live Date']),end=parseYear(f['Planned Retirement']);
+    if(go)years.push(go);if(end)years.push(end);
+  });
+  var thisYear=new Date().getFullYear();
+  var minY=years.length?Math.min.apply(null,years.concat([thisYear-2])):thisYear-5;
+  var maxY=Math.max.apply(null,years.concat([thisYear+6]));
+  minY=Math.floor(minY/2)*2;maxY=Math.ceil(maxY/2)*2;if(maxY===minY)maxY=minY+2;
+  var rowH=30,labelW=250,chartW=720,padTop=34,H=padTop+rows.length*rowH+16,W=labelW+chartW+40;
+  function xOf(y){return labelW+20+((y-minY)/(maxY-minY))*chartW;}
+  h+='<div style="overflow-x:auto"><svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" style="background:#fff;border:1px solid #e2e0d8;border-radius:8px;min-width:640px;font-family:inherit">';
+  for(var y=minY;y<=maxY;y+=2){
+    var x=xOf(y);
+    h+='<line x1="'+x+'" y1="'+(padTop-8)+'" x2="'+x+'" y2="'+(H-8)+'" stroke="#f0efe9"/>';
+    h+='<text x="'+x+'" y="'+(padTop-14)+'" font-size="10" fill="#888780" text-anchor="middle">'+y+'</text>';
+  }
+  var tx=xOf(Math.min(Math.max(thisYear,minY),maxY));
+  h+='<line x1="'+tx+'" y1="'+(padTop-14)+'" x2="'+tx+'" y2="'+(H-8)+'" stroke="#E8212A" stroke-width="1.5" stroke-dasharray="3,3"/>';
+  rows.forEach(function(r,ri){
+    var y=padTop+ri*rowH;
+    if(r.kind==='cap'){
+      h+='<text x="8" y="'+(y+18)+'" font-size="11.5" font-weight="700" fill="'+tcfg('Business Capability').c+'" style="cursor:pointer" onclick="openDetail(\''+r.node.id+'\')">'+escH(r.node.label)+'</text>';
+      h+='<line x1="0" y1="'+(y+rowH-6)+'" x2="'+W+'" y2="'+(y+rowH-6)+'" stroke="#f4f3f0"/>';
+    }else{
+      var n=r.node,f=n.f||{};
+      h+='<text x="26" y="'+(y+18)+'" font-size="11" fill="#2c2c2a" style="cursor:pointer" onclick="openDetail(\''+n.id+'\')">'+escH(n.label)+'</text>';
+      var go=parseYear(f['Go Live Date'])||minY,end=parseYear(f['Planned Retirement'])||maxY;
+      var phase=(f['Lifecycle Phase']||'Live').replace(/\s*\(.*?\)/,'');
+      var col=PHASE_COLOR[phase]||tcfg('Application').c;
+      var x1=xOf(go),x2=xOf(end);
+      h+='<rect x="'+x1+'" y="'+(y+4)+'" width="'+Math.max(6,x2-x1)+'" height="14" rx="4" fill="'+col+'" fill-opacity="0.85" style="cursor:pointer" onclick="openDetail(\''+n.id+'\')"><title>'+escH(n.label+' — '+phase+(f['Go Live Date']?(' — live from '+f['Go Live Date']):'')+(f['Planned Retirement']?(' — retiring '+f['Planned Retirement']):' — no planned end date'))+'</title></rect>';
+    }
+  });
+  h+='</svg></div>';
+  h+='<div style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap">';
+  Object.keys(PHASE_COLOR).forEach(function(p){h+='<div style="display:flex;align-items:center;gap:5px;font-size:10.5px;color:#5F5E5A"><span style="width:11px;height:11px;border-radius:3px;background:'+PHASE_COLOR[p]+';display:inline-block"></span>'+p+'</div>';});
+  h+='<div style="display:flex;align-items:center;gap:5px;font-size:10.5px;color:#5F5E5A"><span style="width:11px;height:2px;background:#E8212A;display:inline-block"></span>Today ('+thisYear+')</div>';
+  h+='</div>';
+  vp(h);
 }
 
 /* Dependency Map: horizontal lanes by tier; outgoing refs listed */
@@ -980,7 +1072,41 @@ function pickTreeRoots(){
 function hasRealHierarchy(roots,vis){
   return vis.length>0 && roots.length < vis.length*0.7 && roots.length < vis.length;
 }
+/* ─── COMPOUND GROUPING (Ardoq-style nested type containers) ───
+   Several viewpoints (Product Hosting, Products to Location, Capability
+   Realization...) look best when nodes are visually nested inside a
+   labeled box per component type — matching Ardoq's grouped-container
+   diagrams — instead of loose floating boxes. Cytoscape supports this
+   natively via compound nodes: we add one invisible-data "container" node
+   per visible type and move() the real nodes into it as children; the
+   container auto-sizes/positions to wrap its children, no plugin needed. */
+var groupingActive=false;
+function clearGrouping(){
+  if(!cy)return;
+  cy.nodes().forEach(function(n){if(n.data('isGroupParent'))return;if(n.data('parent'))n.move({parent:null});});
+  cy.nodes('[?isGroupParent]').remove();
+}
+function applyGrouping(){
+  if(!cy)return;
+  clearGrouping();
+  var vis=cy.nodes().filter(function(n){return !n.data('isGroupParent')&&n.style('display')!=='none';});
+  var byType={};
+  vis.forEach(function(n){var t=n.data('type');(byType[t]=byType[t]||[]).push(n);});
+  var types=Object.keys(byType);
+  if(types.length<2)return;
+  types.forEach(function(t){
+    var pid='grp__'+t.replace(/[^a-zA-Z0-9]/g,'_');
+    cy.add({group:'nodes',data:{id:pid,label:ticon(t)+' '+t,isGroupParent:true,gcolor:tcfg(t).c},classes:'group-parent'});
+    byType[t].forEach(function(n){n.move({parent:pid});});
+  });
+}
 function applyLayout(name){
+  if(name==='cose-grouped'){
+    groupingActive=true;applyGrouping();
+    cy.layout({name:'cose',fit:true,padding:60,nestingFactor:0.1,componentSpacing:110,nodeRepulsion:420000,idealEdgeLength:130,animate:true,gravity:65,numIter:1000}).run();
+    return;
+  }
+  if(groupingActive){groupingActive=false;clearGrouping();}
   if(name==='clusters'){clusterLayout();return;}
   if(name==='tree-td'){
     var vis=cy.nodes().filter(function(n){return n.style('display')!=='none';});
@@ -994,14 +1120,48 @@ function applyLayout(name){
     if(!hasRealHierarchy(roots2,vis2)){cy.layout({name:'grid',fit:true,padding:50,animate:true,avoidOverlap:true,condense:false}).run();return;}
     var l=cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:roots2,spacingFactor:1.7,animate:false});l.run();cy.nodes().forEach(function(n){var p=n.position();n.position({x:p.y*1.4,y:p.x*0.75});});cy.fit(50);return;
   }
-  if(name==='concentric'){var order=Object.keys(TC);cy.layout({name:'concentric',fit:true,padding:50,animate:true,minNodeSpacing:28,concentric:function(n){return order.length-order.indexOf(n.data('type'));}}).run();return;}
+  if(name==='concentric'){
+    /* True hub-and-spoke: previously this ranked rings by a fixed type
+       "tier" order, which just stacks whole types into rings regardless of
+       who's actually connected to whom — not the hub-centered radial fan
+       Ardoq shows for Initiative Expert Network / Capability Experts
+       Network (a person/initiative in the middle, everything they touch
+       fanned around them). Instead: pick the most-connected visible node
+       (weighted slightly by ROOT_TYPE_PRIORITY as a tie-break) as the hub,
+       BFS out from it over visible edges, and rank rings by BFS distance —
+       so the hub sits dead center and each ring is "N hops away". */
+    var vis=cy.nodes().filter(function(n){return n.style('display')!=='none'&&!n.data('isGroupParent');});
+    if(!vis.length){cy.layout({name:'concentric',fit:true,padding:50}).run();return;}
+    var adj={};vis.forEach(function(n){adj[n.id()]=[];});
+    cy.edges().forEach(function(e){
+      if(e.style('display')==='none')return;
+      var s=e.data('source'),t=e.data('target');
+      if(adj[s]&&adj[t]){adj[s].push(t);adj[t].push(s);}
+    });
+    var hubId=null,bestScore=-1;
+    vis.forEach(function(n){
+      var id=n.id(),d=(adj[id]||[]).length,pr=ROOT_TYPE_PRIORITY.indexOf(n.data('type'));
+      var score=d*10+(pr>=0?(ROOT_TYPE_PRIORITY.length-pr):0);
+      if(score>bestScore){bestScore=score;hubId=id;}
+    });
+    var dist={};dist[hubId]=0;var q=[hubId];
+    while(q.length){
+      var cur=q.shift();
+      (adj[cur]||[]).forEach(function(nb){if(dist[nb]===undefined){dist[nb]=dist[cur]+1;q.push(nb);}});
+    }
+    var maxDist=0;Object.keys(dist).forEach(function(k){if(dist[k]>maxDist)maxDist=dist[k];});
+    cy.layout({name:'concentric',fit:true,padding:50,animate:true,minNodeSpacing:32,equidistant:true,
+      concentric:function(n){var d=dist[n.id()];return d===undefined?0:(maxDist-d+2)*10;}
+    }).run();
+    return;
+  }
   if(name==='circle'){cy.layout({name:'circle',fit:true,padding:50,animate:true}).run();return;}
   if(name==='grid'){cy.layout({name:'grid',fit:true,padding:50,animate:true,avoidOverlap:true}).run();return;}
   cy.layout({name:'cose',fit:true,padding:50,nodeRepulsion:500000,idealEdgeLength:120,animate:true,gravity:80,numIter:800}).run();
 }
 function applyHiddenTypes(){if(!cy)return;cy.nodes().forEach(function(n){n.style('display',hiddenTypes[n.data('type')]?'none':'element');});cy.edges().forEach(function(e){var hs=cy.$('#'+e.data('source')).style('display')==='none',ht=cy.$('#'+e.data('target')).style('display')==='none';e.style('display',(hs||ht)?'none':'element');});}
-function toggleType(t){hiddenTypes[t]=!hiddenTypes[t];if(currentView==='graph')applyHiddenTypes();else setView(currentView);}
-function showAll(){inFocus=false;selNodeId=null;hiddenTypes={};activeTag=null;SEARCH='';document.getElementById('search').value='';document.getElementById('viewpoint-sel').value='';Array.prototype.forEach.call(document.querySelectorAll('.leg-row'),function(r){r.classList.remove('off');});buildTagLegend();if(cy){cy.elements().removeClass('hi dim dim-n vp-edge vp-node').style('display','element');cy.fit(50);}hideDetail();if(currentView!=='graph')setView(currentView);document.getElementById('vp-advisory').style.display='none';document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
+function toggleType(t){hiddenTypes[t]=!hiddenTypes[t];if(currentView==='graph'){applyHiddenTypes();if(groupingActive)applyGrouping();}else setView(currentView);}
+function showAll(){inFocus=false;selNodeId=null;hiddenTypes={};activeTag=null;SEARCH='';document.getElementById('search').value='';document.getElementById('viewpoint-sel').value='';Array.prototype.forEach.call(document.querySelectorAll('.leg-row'),function(r){r.classList.remove('off');});buildTagLegend();groupingActive=false;clearGrouping();if(cy){cy.elements().removeClass('hi dim dim-n vp-edge vp-node').style('display','element');cy.fit(50);}hideDetail();if(currentView!=='graph')setView(currentView);document.getElementById('vp-advisory').style.display='none';document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
 
 /* ─── LEGENDS ───────────────────────────────────────────────── */
 function buildLegend(){
@@ -1009,7 +1169,7 @@ function buildLegend(){
   Object.keys(TC).concat(Object.keys(counts).filter(function(k){return !TC[k];})).forEach(function(type){
     var cnt=counts[type]||0;if(!cnt)return;var cfg=tcfg(type);
     var d=document.createElement('div');d.className='leg-row'+(hiddenTypes[type]?' off':'');
-    d.innerHTML='<div class="ldot'+(cfg.s==='ellipse'?' oval':'')+'" style="background:'+cfg.c+'"></div><span class="lname">'+escH(type)+'</span><span class="lcnt">'+cnt+'</span>';
+    d.innerHTML='<div class="ldot'+(cfg.s==='ellipse'?' oval':'')+'" style="background:'+cfg.c+'"></div><span class="lname">'+ticon(type)+' '+escH(type)+'</span><span class="lcnt">'+cnt+'</span>';
     d.onclick=function(){d.classList.toggle('off');toggleType(type);};tDiv.appendChild(d);
   });
   var rDiv=document.getElementById('ref-legend');rDiv.innerHTML='';var used={};EDGES.forEach(function(e){used[e.r]=true;});
