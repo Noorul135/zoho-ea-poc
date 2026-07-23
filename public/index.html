@@ -40,6 +40,9 @@ select.sel{padding:6px 8px;border:1px solid #d3d1c7;border-radius:6px;font-size:
 #cy{flex:1;background:#fafaf8;background-image:radial-gradient(circle,#e0ded8 1px,transparent 1px);background-size:22px 22px}
 #viewpane{flex:1;overflow:auto;background:#fafaf8;display:none;padding:16px}
 #hint-bar{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(44,44,42,.78);color:#fff;padding:6px 16px;border-radius:20px;font-size:11px;pointer-events:none;white-space:nowrap}
+#vp-advisory{display:none;position:absolute;top:14px;left:50%;transform:translateX(-50%);max-width:min(560px,88%);background:#FAEEDA;border:1px solid #EF9F27;color:#5F5E5A;padding:10px 16px;border-radius:10px;font-size:11.5px;line-height:1.6;z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+#vp-advisory b{color:#2c2c2a}
+#vp-advisory .vpa-close{float:right;cursor:pointer;color:#888780;font-weight:700;margin-left:10px}
 #rpanel{width:300px;flex-shrink:0;display:flex;flex-direction:column;background:#fff;border-left:1px solid #d3d1c7;min-height:0;overflow:hidden}
 #rp-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px 18px;text-align:center;gap:10px}
 .rpe-ico{font-size:36px}.rpe-t{font-size:13px;color:#888780;font-weight:500}.rpe-s{font-size:11px;color:#b4b2a9;line-height:1.6;margin-top:4px}
@@ -215,6 +218,7 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
   <div id="canvas-wrap">
     <div id="cy"></div>
     <div id="viewpane"></div>
+    <div id="vp-advisory"></div>
     <div id="hint-bar">Loading…</div>
   </div>
   <div id="rpanel">
@@ -436,6 +440,38 @@ var VIEWPOINTS={
     desc:'Which people are recognized experts in which business capabilities.',
     types:['Person','Business Capability'],view:'graph',layout:'concentric'}
 };
+/* If the CURRENT workspace simply doesn't have the component types (or the
+   references between them) a viewpoint needs, the canvas will legitimately
+   render near-empty or disconnected — that's a data gap, not a bug, but a
+   blank/overlapping canvas with no explanation looks broken. This banner
+   tells the user exactly what's missing and what to do about it (matching
+   Ardoq's own behaviour of telling you when a viewpoint has no data for
+   your current context), instead of failing silently. */
+function viewpointAdvisory(vwp){
+  var el=document.getElementById('vp-advisory');
+  if(!el)return;
+  if(!vwp||!vwp.types){el.style.display='none';return;}
+  var present={};NODES.forEach(function(n){present[n.type]=true;});
+  var missing=vwp.types.filter(function(t){
+    var aliases=TYPE_ALIASES[t]||[t];
+    return !aliases.some(function(a){return present[a];});
+  });
+  var vis={};NODES.forEach(function(n){if(!hiddenTypes[n.type])vis[n.id]=1;});
+  var visEdgeCount=EDGES.filter(function(e){return vis[e.s]&&vis[e.t];}).length;
+  var wsLabel=escH(currentWS||'this workspace');
+  if(missing.length){
+    el.innerHTML='<span class="vpa-close" onclick="document.getElementById(\'vp-advisory\').style.display=\'none\'">✕</span>'+
+      '⚠ <b>'+wsLabel+'</b> doesn\'t have any <b>'+missing.map(escH).join('</b>, <b>')+'</b> components yet, so this viewpoint can\'t show its full chain here. '+
+      'Run the enrichment tool for this workspace (<code>/api/admin/enrich-workspace?workspace='+encodeURIComponent(currentWS||'')+'</code>), or switch to a workspace that already has this data (e.g. Zoho Corporation).';
+    el.style.display='';
+  }else if(visEdgeCount===0){
+    el.innerHTML='<span class="vpa-close" onclick="document.getElementById(\'vp-advisory\').style.display=\'none\'">✕</span>'+
+      '⚠ The components this viewpoint needs exist in <b>'+wsLabel+'</b>, but none of them are linked to each other yet. Add the missing references (or re-run the enrichment tool) to see the connections.';
+    el.style.display='';
+  }else{
+    el.style.display='none';
+  }
+}
 function applyViewpoint(key){
   var vwp=VIEWPOINTS[key];
   hiddenTypes={};
@@ -459,6 +495,7 @@ function applyViewpoint(key){
     }
     cy.fit(50);
   }
+  viewpointAdvisory(vwp);
   var hb=document.getElementById('hint-bar');
   if(vwp){hb.style.display='';hb.textContent='📌 '+vwp.label+' — '+vwp.desc;}
   else{hb.textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
@@ -880,15 +917,29 @@ function clearTraverse(){inFocus=false;if(cy){cy.elements().style('display','ele
 /* ─── LAYOUT / FILTER ───────────────────────────────────────── */
 function clusterLayout(){
   /* Ardoq-style: each component TYPE forms its own bubble cluster,
-     clusters placed evenly on a big ring, nodes in a small ring inside. */
+     clusters placed evenly on a big ring, nodes in a small ring inside.
+     The inner ring radius MUST scale with both node count and actual node
+     size, or same-type nodes stack directly on top of each other (this was
+     the cause of the illegible overlapping blobs of Applications/Objectives/
+     KPIs seen in the full-graph view) — the previous formula (gn*15) gave a
+     15px-per-node radius against ~130px-wide boxes, guaranteeing overlap
+     for any group of 2+. */
   var vis=cy.nodes().filter(function(n){return n.style('display')!=='none';});
   var byType={};vis.forEach(function(n){var t=n.data('type');(byType[t]=byType[t]||[]).push(n);});
   var types=Object.keys(byType).sort(function(a,b){return tcfg(a).tier-tcfg(b).tier;});
-  var CN=types.length||1;var bigR=Math.max(360,CN*115);var pos={};
+  var CN=types.length||1;
+  var smallRs=types.map(function(t){
+    var gn=byType[t].length,w=tcfg(t).w||130,h=tcfg(t).h||44,diag=Math.sqrt(w*w+h*h);
+    if(gn<=1)return 0;
+    return Math.max(70,(gn*(diag+26))/(2*Math.PI));
+  });
+  var maxSmallR=Math.max.apply(null,smallRs.concat([0]));
+  var bigR=Math.max(380,CN*130,maxSmallR*2.6);
+  var pos={};
   types.forEach(function(t,ti){
     var ang=-Math.PI/2+ti*2*Math.PI/CN;
     var ccx=bigR*Math.cos(ang),ccy=bigR*Math.sin(ang);
-    var group=byType[t],gn=group.length,smallR=Math.max(30,gn*15);
+    var group=byType[t],gn=group.length,smallR=smallRs[ti];
     group.forEach(function(n,gi){
       if(gn===1)pos[n.id()]={x:ccx,y:ccy};
       else{var a2=gi*2*Math.PI/gn;pos[n.id()]={x:ccx+smallR*Math.cos(a2),y:ccy+smallR*Math.sin(a2)};}
@@ -918,10 +969,31 @@ function pickTreeRoots(){
   var noIncoming=vis.filter(function(n){return !hasIncoming[n.id()];});
   return noIncoming.length?noIncoming:vis;
 }
+/* A tree layout only makes sense if there IS a hierarchy — i.e. most visible
+   nodes have an incoming edge from another visible node. If every (or nearly
+   every) visible node is a "root" with no parent, breadthfirst lays them all
+   out side-by-side with zero vertical structure, which at typical node sizes
+   overlaps badly (this was the cause of the stacked/overlapping boxes seen
+   on viewpoints with only one component type actually present in a
+   workspace, e.g. Product Hosting on a workspace with no Capability/Server/
+   Location data yet). Detect that case and fall back to an overlap-free grid. */
+function hasRealHierarchy(roots,vis){
+  return vis.length>0 && roots.length < vis.length*0.7 && roots.length < vis.length;
+}
 function applyLayout(name){
   if(name==='clusters'){clusterLayout();return;}
-  if(name==='tree-td'){cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:pickTreeRoots(),spacingFactor:1.7,animate:true}).run();return;}
-  if(name==='tree-lr'){var l=cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:pickTreeRoots(),spacingFactor:1.7,animate:false});l.run();cy.nodes().forEach(function(n){var p=n.position();n.position({x:p.y*1.4,y:p.x*0.75});});cy.fit(50);return;}
+  if(name==='tree-td'){
+    var vis=cy.nodes().filter(function(n){return n.style('display')!=='none';});
+    var roots=pickTreeRoots();
+    if(!hasRealHierarchy(roots,vis)){cy.layout({name:'grid',fit:true,padding:50,animate:true,avoidOverlap:true,condense:false}).run();return;}
+    cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:roots,spacingFactor:1.7,animate:true}).run();return;
+  }
+  if(name==='tree-lr'){
+    var vis2=cy.nodes().filter(function(n){return n.style('display')!=='none';});
+    var roots2=pickTreeRoots();
+    if(!hasRealHierarchy(roots2,vis2)){cy.layout({name:'grid',fit:true,padding:50,animate:true,avoidOverlap:true,condense:false}).run();return;}
+    var l=cy.layout({name:'breadthfirst',fit:true,padding:50,directed:true,roots:roots2,spacingFactor:1.7,animate:false});l.run();cy.nodes().forEach(function(n){var p=n.position();n.position({x:p.y*1.4,y:p.x*0.75});});cy.fit(50);return;
+  }
   if(name==='concentric'){var order=Object.keys(TC);cy.layout({name:'concentric',fit:true,padding:50,animate:true,minNodeSpacing:28,concentric:function(n){return order.length-order.indexOf(n.data('type'));}}).run();return;}
   if(name==='circle'){cy.layout({name:'circle',fit:true,padding:50,animate:true}).run();return;}
   if(name==='grid'){cy.layout({name:'grid',fit:true,padding:50,animate:true,avoidOverlap:true}).run();return;}
@@ -929,7 +1001,7 @@ function applyLayout(name){
 }
 function applyHiddenTypes(){if(!cy)return;cy.nodes().forEach(function(n){n.style('display',hiddenTypes[n.data('type')]?'none':'element');});cy.edges().forEach(function(e){var hs=cy.$('#'+e.data('source')).style('display')==='none',ht=cy.$('#'+e.data('target')).style('display')==='none';e.style('display',(hs||ht)?'none':'element');});}
 function toggleType(t){hiddenTypes[t]=!hiddenTypes[t];if(currentView==='graph')applyHiddenTypes();else setView(currentView);}
-function showAll(){inFocus=false;selNodeId=null;hiddenTypes={};activeTag=null;SEARCH='';document.getElementById('search').value='';document.getElementById('viewpoint-sel').value='';Array.prototype.forEach.call(document.querySelectorAll('.leg-row'),function(r){r.classList.remove('off');});buildTagLegend();if(cy){cy.elements().removeClass('hi dim dim-n').style('display','element');cy.fit(50);}hideDetail();if(currentView!=='graph')setView(currentView);document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
+function showAll(){inFocus=false;selNodeId=null;hiddenTypes={};activeTag=null;SEARCH='';document.getElementById('search').value='';document.getElementById('viewpoint-sel').value='';Array.prototype.forEach.call(document.querySelectorAll('.leg-row'),function(r){r.classList.remove('off');});buildTagLegend();if(cy){cy.elements().removeClass('hi dim dim-n vp-edge vp-node').style('display','element');cy.fit(50);}hideDetail();if(currentView!=='graph')setView(currentView);document.getElementById('vp-advisory').style.display='none';document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
 
 /* ─── LEGENDS ───────────────────────────────────────────────── */
 function buildLegend(){
