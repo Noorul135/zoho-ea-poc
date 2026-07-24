@@ -126,6 +126,35 @@ guide](https://help.ardoq.com/en/articles/43903-legacy-experience-getting-starte
   Pages view — quicker visual recognition without needing licensed brand
   icon assets.
 
+## UI polish pass (enterprise/C-suite quality)
+
+The topbar, sidebar, canvas and detail panel were reworked for a denser,
+more professional enterprise-SaaS feel instead of a POC look:
+
+- **Fixed the topbar wrap bug.** Native `<select>` elements auto-size to
+  their widest `<option>` text — with options like "Application Integration
+  and Capability", the dropdowns were rendering far wider than intended,
+  overflowing the topbar and wrapping the Rationalize button onto its own
+  line with a large empty gap next to it. All topbar controls now have
+  explicit widths, a custom chevron/search icon (replacing the bulky native
+  ones), and the toolbar is grouped into logical clusters (search+workspace |
+  view controls | actions) separated by thin dividers, with the action
+  buttons right-aligned.
+- **Fixed the empty bar at the bottom.** `buildInsights()` — the function
+  meant to populate the executive insights strip below the canvas — was a
+  no-op stub, so the bar's fixed height was reserved but always empty. It
+  now computes real, ontology-agnostic metrics (capabilities with no
+  realizing application, applications flagged Eliminate/Invest, open/
+  unmitigated risks, single-owner key-person dependencies) and renders them
+  as clickable cards; if a workspace genuinely has nothing to flag, the bar
+  hides itself entirely instead of showing dead space.
+- **Sidebar and detail panel** got tighter spacing, a count "pill" per
+  component type, a persistent "Component details" header on the right
+  panel (so it doesn't read as an empty void before you select anything),
+  and a refined empty-state icon badge.
+- Kept the existing white/light color theme throughout — only spacing,
+  sizing and small structural additions changed, no new dependencies.
+
 All 15 viewpoints were re-verified against the seeded Zoho Corporation data
 (`data.json`, 91 components / 176 references): every viewpoint has full type
 coverage and a non-zero edge count, so none should show the "missing data"
