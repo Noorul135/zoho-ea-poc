@@ -100,8 +100,17 @@ guide](https://help.ardoq.com/en/articles/43903-legacy-experience-getting-starte
   component type (e.g. a "Business Capability" box, an "Application" box),
   matching Ardoq's Products-to-Locations nested-box style. Implemented with
   real Cytoscape compound (parent) nodes in `applyGrouping()` /
-  `clearGrouping()`; pick **Grouped by type (containers)** in the View
-  dropdown to use this on any viewpoint manually.
+  `clearGrouping()`; pick **Grouped by type (containers)** in the Layout
+  dropdown to use this on any viewpoint manually. Positions are placed with a
+  deterministic packed grid (`groupedGridLayout()`) rather than a
+  force-directed layout — an earlier version used Cytoscape's compound-aware
+  `cose`, which could occasionally converge on degenerate positions with many
+  cross-group edges and make the whole canvas appear blank after fit(); the
+  grid version cannot diverge. Turning this on is now "sticky": switching the
+  Viewpoint dropdown afterward keeps using grouped containers for whichever
+  viewpoint you pick next (re-grouping its own filtered set) instead of
+  reverting to that viewpoint's own default layout — pick a different Layout
+  option to turn it back off.
 - **Hub-centered concentric** (`initiative-expert-network`,
   `capability-experts-network`) — previously "concentric" just stacked whole
   component types into rings by a fixed tier order; now it picks the
