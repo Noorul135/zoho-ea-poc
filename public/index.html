@@ -502,11 +502,23 @@ function applyViewpoint(key){
   document.getElementById('view-sel').value=view;setView(view);
   if(cy){
     cy.elements().removeClass('vp-edge vp-node');
-    if(vwp&&view==='graph'){
-      cy.nodes().filter(function(n){return n.style('display')!=='none'&&!n.data('isGroupParent');}).addClass('vp-node');
-      cy.edges().filter(function(e){return e.style('display')!=='none';}).addClass('vp-edge');
-      var layoutName=vwp.group?'cose-grouped':(vwp.layout||'cose');
+    if(view==='graph'){
+      /* If the person has manually turned on "Grouped by type (containers)",
+         keep it on for every viewpoint they switch to afterward (as long as
+         it renders to the graph canvas) instead of silently reverting to
+         that viewpoint's own default layout — the grouping choice should
+         stick until they pick a different layout themselves. Classes are
+         added AFTER applyLayout() runs (not before) because grouping moves
+         nodes into parent containers, which — per Cytoscape's compound-node
+         API — removes and re-adds the underlying elements; adding classes
+         first meant they were silently wiped out by that move(). */
+      var useGroup=userLockedGrouping||(vwp&&vwp.group);
+      var layoutName=useGroup?'cose-grouped':((vwp&&vwp.layout)||'cose');
       applyLayout(layoutName);
+      if(vwp){
+        cy.nodes().filter(function(n){return n.style('display')!=='none'&&!n.data('isGroupParent');}).addClass('vp-node');
+        cy.edges().filter(function(e){return e.style('display')!=='none';}).addClass('vp-edge');
+      }
       var ls=document.getElementById('layout-sel');
       if(ls)ls.value=layoutName;
     }else if(groupingActive){
@@ -1081,29 +1093,74 @@ function hasRealHierarchy(roots,vis){
    per visible type and move() the real nodes into it as children; the
    container auto-sizes/positions to wrap its children, no plugin needed. */
 var groupingActive=false;
+/* userLockedGrouping: true once the person has manually chosen "Grouped by
+   type (containers)" from the Layout dropdown. While true, switching the
+   Viewpoint should KEEP using grouped containers for whichever viewpoint is
+   selected next (re-grouping its own filtered set), instead of reverting to
+   that viewpoint's own default layout — this is what makes the choice
+   "stick" across viewpoint changes, as requested. Picking any OTHER layout
+   manually clears it. */
+var userLockedGrouping=false;
 function clearGrouping(){
   if(!cy)return;
   cy.nodes().forEach(function(n){if(n.data('isGroupParent'))return;if(n.data('parent'))n.move({parent:null});});
   cy.nodes('[?isGroupParent]').remove();
 }
+/* Returns the number of groups (types) actually formed, so callers can fall
+   back cleanly if there's nothing meaningful to group (e.g. only one
+   component type visible). */
 function applyGrouping(){
-  if(!cy)return;
+  if(!cy)return 0;
   clearGrouping();
   var vis=cy.nodes().filter(function(n){return !n.data('isGroupParent')&&n.style('display')!=='none';});
   var byType={};
   vis.forEach(function(n){var t=n.data('type');(byType[t]=byType[t]||[]).push(n);});
   var types=Object.keys(byType);
-  if(types.length<2)return;
+  if(types.length<2)return 0;
   types.forEach(function(t){
     var pid='grp__'+t.replace(/[^a-zA-Z0-9]/g,'_');
     cy.add({group:'nodes',data:{id:pid,label:ticon(t)+' '+t,isGroupParent:true,gcolor:tcfg(t).c},classes:'group-parent'});
     byType[t].forEach(function(n){n.move({parent:pid});});
   });
+  return types.length;
+}
+/* Deterministic grid placement instead of a force-directed (cose) layout.
+   Cytoscape's built-in 'cose' does technically support compound/parent
+   nodes, but with many groups and lots of cross-group edges (a general
+   Viewpoint graph) it can converge on degenerate positions — nodes pushed
+   far outside the fitted viewport or collapsed on top of each other, which
+   reads as "everything just disappeared" once cy.fit() zooms to that
+   (invalid-looking) bounding box. A plain grid — each type's box arranged
+   in a packed grid of boxes, each box's members arranged in a small grid
+   inside it — is fully deterministic, cannot diverge, and reads cleanly as
+   Ardoq's own nested-container style. */
+function groupedGridLayout(){
+  var parents=cy.nodes('[?isGroupParent]');
+  if(!parents.length){cy.layout({name:'grid',fit:true,padding:50,animate:true,avoidOverlap:true}).run();return;}
+  var pos={},cellW=150,cellH=56,pad=70,boxes=[];
+  parents.forEach(function(p){
+    var kids=p.children();
+    var n=kids.length||1,icols=Math.max(1,Math.ceil(Math.sqrt(n))),irows=Math.ceil(n/icols);
+    boxes.push({kids:kids,icols:icols,irows:irows,w:icols*cellW,h:irows*cellH});
+  });
+  boxes.sort(function(a,b){return b.kids.length-a.kids.length;});
+  var maxCols=Math.max(1,Math.ceil(Math.sqrt(boxes.length))),x=0,y=0,rowH=0,colCount=0;
+  boxes.forEach(function(box){
+    if(colCount>=maxCols){x=0;y+=rowH+pad;rowH=0;colCount=0;}
+    box.kids.forEach(function(k,i){
+      var col=i%box.icols,row=Math.floor(i/box.icols);
+      pos[k.id()]={x:x+col*cellW+cellW/2,y:y+row*cellH+cellH/2};
+    });
+    x+=box.w+pad;rowH=Math.max(rowH,box.h);colCount++;
+  });
+  cy.layout({name:'preset',positions:pos,fit:true,padding:70,animate:true,animationDuration:500}).run();
 }
 function applyLayout(name){
   if(name==='cose-grouped'){
-    groupingActive=true;applyGrouping();
-    cy.layout({name:'cose',fit:true,padding:60,nestingFactor:0.1,componentSpacing:110,nodeRepulsion:420000,idealEdgeLength:130,animate:true,gravity:65,numIter:1000}).run();
+    groupingActive=true;
+    var nGroups=applyGrouping();
+    if(nGroups<2){cy.layout({name:'grid',fit:true,padding:50,animate:true,avoidOverlap:true}).run();return;}
+    groupedGridLayout();
     return;
   }
   if(groupingActive){groupingActive=false;clearGrouping();}
@@ -1160,8 +1217,8 @@ function applyLayout(name){
   cy.layout({name:'cose',fit:true,padding:50,nodeRepulsion:500000,idealEdgeLength:120,animate:true,gravity:80,numIter:800}).run();
 }
 function applyHiddenTypes(){if(!cy)return;cy.nodes().forEach(function(n){n.style('display',hiddenTypes[n.data('type')]?'none':'element');});cy.edges().forEach(function(e){var hs=cy.$('#'+e.data('source')).style('display')==='none',ht=cy.$('#'+e.data('target')).style('display')==='none';e.style('display',(hs||ht)?'none':'element');});}
-function toggleType(t){hiddenTypes[t]=!hiddenTypes[t];if(currentView==='graph'){applyHiddenTypes();if(groupingActive)applyGrouping();}else setView(currentView);}
-function showAll(){inFocus=false;selNodeId=null;hiddenTypes={};activeTag=null;SEARCH='';document.getElementById('search').value='';document.getElementById('viewpoint-sel').value='';Array.prototype.forEach.call(document.querySelectorAll('.leg-row'),function(r){r.classList.remove('off');});buildTagLegend();groupingActive=false;clearGrouping();if(cy){cy.elements().removeClass('hi dim dim-n vp-edge vp-node').style('display','element');cy.fit(50);}hideDetail();if(currentView!=='graph')setView(currentView);document.getElementById('vp-advisory').style.display='none';document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
+function toggleType(t){hiddenTypes[t]=!hiddenTypes[t];if(currentView==='graph'){applyHiddenTypes();if(groupingActive){var nGroups=applyGrouping();if(nGroups<2){cy.layout({name:'grid',fit:true,padding:50,animate:true,avoidOverlap:true}).run();}else{groupedGridLayout();}}}else setView(currentView);}
+function showAll(){inFocus=false;selNodeId=null;hiddenTypes={};activeTag=null;SEARCH='';document.getElementById('search').value='';document.getElementById('viewpoint-sel').value='';Array.prototype.forEach.call(document.querySelectorAll('.leg-row'),function(r){r.classList.remove('off');});buildTagLegend();groupingActive=false;userLockedGrouping=false;clearGrouping();var ls0=document.getElementById('layout-sel');if(ls0&&ls0.value==='cose-grouped')ls0.value='clusters';if(cy){cy.elements().removeClass('hi dim dim-n vp-edge vp-node').style('display','element');cy.fit(50);}hideDetail();if(currentView!=='graph')setView(currentView);document.getElementById('vp-advisory').style.display='none';document.getElementById('hint-bar').textContent='● Live — '+NODES.length+' components, '+EDGES.length+' references';}
 
 /* ─── LEGENDS ───────────────────────────────────────────────── */
 function buildLegend(){
@@ -1242,7 +1299,7 @@ function deleteNode(){
   if(LIVE)apiSend('DELETE','/api/node/'+encodeURIComponent(id)).catch(function(e){alert('Removed on screen but not deleted: '+e.message);});
   selNodeId=null;hideDetail();refreshAll();
 }
-function refreshAll(){var els=[];NODES.forEach(function(n){var t=tcfg(n.type);els.push({data:{id:n.id,label:n.label,type:n.type,nf:n.f,color:t.c,bc:t.b,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px',missing:(n.status==='missing')}});});EDGES.forEach(function(e){els.push({data:{id:e.id,source:e.s,target:e.t,ref:e.r,rc:rcol(e.r),inferred:!!e.inferred}});});cy.json({elements:els});cy.on('tap','node',function(evt){onGraphTap(evt.target);});applyLayout(document.getElementById('layout-sel').value);buildLegend();if(currentView!=='graph')setView(currentView);}
+function refreshAll(){groupingActive=false;var els=[];NODES.forEach(function(n){var t=tcfg(n.type);els.push({data:{id:n.id,label:ticon(n.type)+' '+n.label,type:n.type,nf:n.f,color:t.c,bc:t.b,shape:t.s,nw:t.w,nh:t.h,tmw:(t.w-14)+'px',missing:(n.status==='missing')}});});EDGES.forEach(function(e){els.push({data:{id:e.id,source:e.s,target:e.t,ref:e.r,rc:rcol(e.r),inferred:!!e.inferred}});});cy.json({elements:els});cy.on('tap','node',function(evt){onGraphTap(evt.target);});applyLayout(document.getElementById('layout-sel').value);buildLegend();if(currentView!=='graph')setView(currentView);}
 
 /* ─── METAMODEL EDITOR ──────────────────────────────────────── */
 var MM={componentTypes:[],referenceTypes:[],allowed:[]};
@@ -1299,7 +1356,7 @@ window.addEventListener('load',function(){
       document.getElementById('search').addEventListener('input',function(){SEARCH=this.value;if(currentView==='graph'){cy.elements().removeClass('dim dim-n');if(SEARCH){cy.nodes().forEach(function(n){if(!matchesSearch(nById(n.data('id'))))n.addClass('dim-n');});cy.edges().addClass('dim');}}else setView(currentView);});
       document.getElementById('view-sel').addEventListener('change',function(){setView(this.value);});
       document.getElementById('viewpoint-sel').addEventListener('change',function(){applyViewpoint(this.value);});
-      document.getElementById('layout-sel').addEventListener('change',function(){applyLayout(this.value);});
+      document.getElementById('layout-sel').addEventListener('change',function(){userLockedGrouping=(this.value==='cose-grouped');applyLayout(this.value);});
       document.getElementById('show-all-btn').addEventListener('click',showAll);
       document.getElementById('add-node-btn').addEventListener('click',openAddModal);
       document.getElementById('metamodel-btn').addEventListener('click',openMM);
